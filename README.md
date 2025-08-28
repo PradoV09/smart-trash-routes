@@ -21,7 +21,7 @@ Crear un sistema que permita:
 
 ## 🛠️ Tecnologías
 - **Frontend:** Angular Standalone  
-- **Backend:** Laravel (API REST)  
+- **Backend:** NestJS (API REST)  
 - **Base de Datos:** Neo4j (grafo de la ciudad y rutas dinámicas)  
 - **DevOps:**  
   - GitHub Actions (CI/CD)  
