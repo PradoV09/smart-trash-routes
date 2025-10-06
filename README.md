@@ -22,7 +22,7 @@ Crear un sistema que permita:
 ## 🛠️ Tecnologías
 - **Frontend:** Angular Standalone  
 - **Backend:** NestJS (API REST)  
-- **Base de Datos:** Neo4j (grafo de la ciudad y rutas dinámicas)  
+- **Base de Datos:** PostgreSQL + PostGIS  
 - **DevOps:**  
   - GitHub Actions (CI/CD)  
   - Deploy en Netlify/Vercel (staging)  
