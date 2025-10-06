@@ -1,0 +1,26 @@
+{
+  "name": "smart-trash-routes",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Sistema web para visualizar y gestionar rutas de camiones de basura en Buenaventura (Angular + NestJS).",
+  "scripts": {
+    "install:all": "npm run install:front && npm run install:back",
+    "install:front": "cd front-end && npm install",
+    "install:back": "cd back-end && pnpm install",
+    "dev": "npm-run-all --parallel dev:front dev:back",
+    "dev:front": "cd front-end && npm start",
+    "dev:back": "cd back-end && pnpm start:dev",
+    "build:all": "npm run build:front && npm run build:back",
+    "build:front": "cd front-end && npm run build",
+    "build:back": "cd back-end && pnpm run build",
+    "format": "cd back-end && pnpm run format && cd ../front-end && npm run format || echo 'Format done'"
+  },
+  "devDependencies": {
+    "npm-run-all": "^4.1.5"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "author": "Equipo Smart Trash Routes - Universidad del Valle",
+  "license": "MIT"
+}
