@@ -75,7 +75,7 @@ Esto instala dependencias en **frontend (npm)** y **backend (pnpm)** automática
 npm run dev
 ```
 
-Esto iniciará **Angular** y **NestJS** en paralelo.
+Esto iniciará **Angular** y **NestJS** en paralelo usando `npm-run-all`.
 
 - Frontend: `http://localhost:4200`
 - Backend: `http://localhost:3000`
@@ -90,14 +90,18 @@ npm run build:all
 
 ## ⚙️ Scripts Disponibles (desde la raíz)
 
-| Script                | Descripción                             |
-| --------------------- | --------------------------------------- |
-| `npm run install:all` | Instala dependencias en ambos proyectos |
-| `npm run dev`         | Levanta front y back en paralelo        |
-| `npm run dev:front`   | Solo frontend                           |
-| `npm run dev:back`    | Solo backend                            |
-| `npm run build:all`   | Compila ambos proyectos                 |
-| `npm run format`      | Formatea el código en ambos proyectos   |
+| Script                | Descripción                                           |
+| --------------------- | ----------------------------------------------------- |
+| `npm run install:all` | Instala dependencias en frontend y backend            |
+| `npm run install:front` | Instala solo dependencias del frontend              |
+| `npm run install:back` | Instala solo dependencias del backend                |
+| `npm run dev`         | Levanta front y back en paralelo con npm-run-all     |
+| `npm run dev:front`   | Solo frontend (`npm start`)                          |
+| `npm run dev:back`    | Solo backend (`pnpm start:dev`)                      |
+| `npm run build:all`   | Compila ambos proyectos                              |
+| `npm run build:front` | Compila solo el frontend                             |
+| `npm run build:back`  | Compila solo el backend                              |
+| `npm run format`      | Formatea el código en ambos proyectos                |
 
 ---
 
@@ -129,10 +133,10 @@ Aplicamos **Scrum** con **sprints de 2 semanas**, usando GitHub Projects para la
 
 ## 🧑‍💻 Requisitos Previos
 
-- Node.js >= 18
-- npm >= 9
-- pnpm >= 8
-- PostgreSQL con extensión PostGIS habilitada
+- **Node.js >= 18** (definido en `engines`)
+- **npm >= 9**
+- **pnpm >= 8**
+- **PostgreSQL** con extensión **PostGIS** habilitada
 
 ---
 
@@ -159,4 +163,4 @@ Las contribuciones son bienvenidas. Por favor, abre un issue o pull request para
 
 ---
 
-**Desarrollado con 💚 por el equipo de Smart Trash Routes**
+**Desarrollado con 💚 por el equipo de Smart Trash Routes - Universidad del Valle**
