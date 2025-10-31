@@ -1,0 +1,45 @@
+name: 🚀 Deploy Fullstack to Apache2 VM
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: self-hosted
+
+    steps:
+      - name: 🧩 Checkout código
+        uses: actions/checkout@v4
+
+      - name: ⚙️ Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: 📦 Instalar dependencias (todo el repo)
+        run: npm run install:all
+
+      - name: 🏗️ Build frontend y backend desde la raíz
+        run: npm run build:all
+
+      # ----------------- FRONTEND -----------------
+      - name: 🚚 Copiar frontend a /var/www/jose_site/frontend
+        run: |
+          sudo rm -rf /var/www/jose_site/frontend/*
+          sudo cp -r front-end/dist/proyecto/* /var/www/jose_site/frontend/
+          sudo chown -R www-data:www-data /var/www/jose_site/frontend
+          sudo chmod -R 755 /var/www/jose_site/frontend
+
+      - name: 🔁 Reiniciar Apache
+        run: sudo systemctl restart apache2
+
+      # ----------------- BACKEND -----------------
+      - name: 🚀 Desplegar backend con PM2
+        run: |
+          sudo mkdir -p /var/www/jose_site/backend
+          cp -r back-end/dist/* /var/www/jose_site/backend/
+          cd /var/www/jose_site/backend
+          pm2 start main.js --name backend --update-env || pm2 restart backend
+          pm2 save
