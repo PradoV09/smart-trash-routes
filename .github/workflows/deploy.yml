@@ -30,7 +30,7 @@ jobs:
         run: npm run install:all
 
       # ----------------- BUILD FRONTEND -----------------
-      - name: 🏗️ Build frontend (solo browser)
+      - name: 🏗️ Build frontend (sin crear browser/)
         run: |
           cd front-end
           ng build --configuration production --base-href /jose_site/
@@ -43,11 +43,11 @@ jobs:
           npm run build || echo "⚠️ No build script, se usará código fuente"
           cd ..
 
-      # ----------------- PREPARAR FRONTEND (aplanar estructura) -----------------
+      # ----------------- PREPARAR FRONTEND (nivel plano) -----------------
       - name: 🧩 Preparar archivos frontend (nivel plano)
         run: |
           mkdir -p deploy-frontend
-          cp -r front-end/dist/front-end/browser/* deploy-frontend/
+          cp -r front-end/dist/jose_site/* deploy-frontend/
 
       # ----------------- DEBUG: VERIFICAR CONTENIDO -----------------
       - name: 🧾 Ver contenido de deploy-frontend
@@ -64,7 +64,7 @@ jobs:
           key: ${{ secrets.SERVER_SSH_KEY }}
           port: ${{ secrets.SERVER_PORT || '22' }}
           source: "deploy-frontend/**"
-          target: "/var/www/jose_site/"
+          target: "/var/www/jose_site/deploy-frontend"
           overwrite: true
 
       # ----------------- UPLOAD BACKEND -----------------
@@ -89,7 +89,7 @@ jobs:
           port: ${{ secrets.SERVER_PORT || '22' }}
           script: |
             echo "✅ Archivos subidos correctamente"
-            chmod -R 775 /var/www/jose_site/frontend
+            chmod -R 775 /var/www/jose_site/deploy-frontend
             chmod -R 775 /var/www/jose_site/backend
 
             # Reiniciar PM2 si existe

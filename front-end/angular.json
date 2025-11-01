@@ -24,7 +24,8 @@
             "styles": [
               "src/styles.css"
             ],
-            "outputMode": "static"
+            "outputMode": "static",
+            "outputPath": "dist/jose_site"
           },
           "configurations": {
             "production": {
