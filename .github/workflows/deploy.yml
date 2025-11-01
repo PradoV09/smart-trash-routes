@@ -43,6 +43,11 @@ jobs:
           npm run build || echo "⚠️ No build script, se usará código fuente"
           cd ..
 
+      # ----------------- AJUSTAR BASE HREF -----------------
+      - name: 🧩 Ajustar ruta base en index.html
+        run: |
+          sed -i 's|<base href="/jose_site/">|<base href="/jose_site/deploy-frontend/">|' front-end/dist/jose_site/browser/index.html
+
       # ----------------- PREPARAR FRONTEND (aplanar) -----------------
       - name: 🧩 Preparar archivos frontend
         run: |
