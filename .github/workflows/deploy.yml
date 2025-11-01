@@ -18,6 +18,9 @@ jobs:
         with:
           node-version: '22'
 
+      - name: 💡 Instalar npm-run-all como dev dependency
+        run: npm install --save-dev npm-run-all
+
       - name: 📦 Instalar dependencias (todo el repo)
         run: npm run install:all
 
