@@ -51,7 +51,6 @@ jobs:
           echo "=== BACKEND DIST ==="
           ls -R back-end/dist || true
 
-      # ----------------- UPLOAD FRONTEND -----------------
       - name: 📤 Subir frontend (solo browser) al servidor
         uses: appleboy/scp-action@v0.1.7
         with:
