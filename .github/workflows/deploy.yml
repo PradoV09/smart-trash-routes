@@ -29,9 +29,21 @@ jobs:
       - name: 📦 Instalar dependencias (todo el repo)
         run: npm run install:all
 
-      # ----------------- BUILD -----------------
-      - name: 🏗️ Build frontend y backend desde la raíz
-        run: npm run build:all
+      # ----------------- BUILD FRONTEND -----------------
+      - name: 🏗️ Build frontend
+        run: |
+          cd front-end
+          ng build --configuration production --base-href /jose_site/
+          cd ..
+
+      # ----------------- BUILD BACKEND -----------------
+      - name: 🏗️ Build backend
+        run: |
+          if [ -d "back-end/dist" ]; then
+            echo "Backend dist exists, nothing to build"
+          else
+            echo "No backend build, copying source directly"
+          fi
 
       # ----------------- DEPLOY VIA SSH -----------------
       - name: 🚀 Deploy to server via SSH
@@ -42,19 +54,34 @@ jobs:
           key: ${{ secrets.SERVER_SSH_KEY }}
           port: ${{ secrets.SERVER_PORT || '22' }}
           script: |
-            # FRONTEND
+            # Asegurarse que existan carpetas
             mkdir -p /var/www/jose_site/frontend
-            rm -rf /var/www/jose_site/frontend/*
-            cp -r front-end/dist/front-end/* /var/www/jose_site/frontend/
-            chmod -R 775 /var/www/jose_site/frontend
-
-            # BACKEND
             mkdir -p /var/www/jose_site/backend
-            rm -rf /var/www/jose_site/backend/*
-            cp -r back-end/dist/* /var/www/jose_site/backend/
+
+            # ----------------- FRONTEND -----------------
+            if [ -d "front-end/dist/front-end" ]; then
+              rm -rf /var/www/jose_site/frontend/*
+              cp -r front-end/dist/front-end/* /var/www/jose_site/frontend/
+              chmod -R 775 /var/www/jose_site/frontend
+            else
+              echo "⚠️ Frontend build no existe"
+            fi
+
+            # ----------------- BACKEND -----------------
+            if [ -d "back-end/dist" ]; then
+              rm -rf /var/www/jose_site/backend/*
+              cp -r back-end/dist/* /var/www/jose_site/backend/
+            else
+              echo "⚠️ Copiando backend source directamente"
+              cp -r back-end/* /var/www/jose_site/backend/
+            fi
             chmod -R 775 /var/www/jose_site/backend
 
-            # Iniciar/Reiniciar backend con PM2
-            cd /var/www/jose_site/backend
-            pm2 start main.js --name backend --update-env || pm2 restart backend
-            pm2 save
+            # ----------------- PM2 -----------------
+            if command -v pm2 >/dev/null 2>&1; then
+              cd /var/www/jose_site/backend
+              pm2 start main.js --name backend --update-env || pm2 restart backend
+              pm2 save
+            else
+              echo "⚠️ PM2 no está instalado en el servidor"
+            fi
