@@ -59,10 +59,9 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           port: ${{ secrets.SERVER_PORT || '22' }}
-          source: "front-end/dist/front-end/browser/**"
+          source: "front-end/dist/**"
           target: "/var/www/jose_site/frontend/"
           overwrite: true
-          strip_components: 3
 
       # ----------------- UPLOAD BACKEND -----------------
       - name: 📤 Subir backend al servidor
