@@ -64,7 +64,7 @@ jobs:
           key: ${{ secrets.SERVER_SSH_KEY }}
           port: ${{ secrets.SERVER_PORT || '22' }}
           source: "deploy-frontend/**"
-          target: "/var/www/jose_site/frontend/"
+          target: "/var/www/jose_site/"
           overwrite: true
 
       # ----------------- UPLOAD BACKEND -----------------
