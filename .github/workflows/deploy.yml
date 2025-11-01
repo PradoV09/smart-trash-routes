@@ -10,23 +10,26 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # ----------------- CHECKOUT -----------------
       - name: 🧩 Checkout código
         uses: actions/checkout@v4
 
+      # ----------------- NODE -----------------
       - name: ⚙️ Configurar Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '22'
 
-      - name: 💡 Instalar npm-run-all
-        run: npm install --save-dev npm-run-all
-
-      - name: 💡 Instalar Angular CLI
-        run: npm install -g @angular/cli
+      # ----------------- DEPENDENCIAS -----------------
+      - name: 💡 Instalar npm-run-all y Angular CLI
+        run: |
+          npm install --save-dev npm-run-all
+          npm install -g @angular/cli
 
       - name: 📦 Instalar dependencias (todo el repo)
         run: npm run install:all
 
+      # ----------------- BUILD -----------------
       - name: 🏗️ Build frontend y backend desde la raíz
         run: npm run build:all
 
@@ -40,14 +43,13 @@ jobs:
           port: ${{ secrets.SERVER_PORT || '22' }}
           script: |
             # FRONTEND
-            sudo rm -rf /var/www/jose_site/frontend/*
-            sudo cp -r front-end/dist/proyecto/* /var/www/jose_site/frontend/
-            sudo chown -R www-data:www-data /var/www/jose_site/frontend
-            sudo chmod -R 755 /var/www/jose_site/frontend
-            sudo systemctl restart apache2
+            rm -rf /var/www/jose_site/frontend/*
+            cp -r front-end/dist/proyecto/* /var/www/jose_site/frontend/
+            chown -R www-data:www-data /var/www/jose_site/frontend
+            chmod -R 755 /var/www/jose_site/frontend
 
             # BACKEND
-            sudo mkdir -p /var/www/jose_site/backend
+            mkdir -p /var/www/jose_site/backend
             cp -r back-end/dist/* /var/www/jose_site/backend/
             cd /var/www/jose_site/backend
             pm2 start main.js --name backend --update-env || pm2 restart backend
