@@ -7,7 +7,7 @@ on:
 
 jobs:
   build-and-deploy:
-    runs-on: ubuntu-latest  # Ahora usa GitHub runner en la nube
+    runs-on: ubuntu-latest
 
     steps:
       - name: 🧩 Checkout código
@@ -18,8 +18,11 @@ jobs:
         with:
           node-version: '22'
 
-      - name: 💡 Instalar npm-run-all como dev dependency
+      - name: 💡 Instalar npm-run-all
         run: npm install --save-dev npm-run-all
+
+      - name: 💡 Instalar Angular CLI
+        run: npm install -g @angular/cli
 
       - name: 📦 Instalar dependencias (todo el repo)
         run: npm run install:all
