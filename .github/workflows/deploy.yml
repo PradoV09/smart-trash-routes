@@ -30,7 +30,7 @@ jobs:
         run: npm run install:all
 
       # ----------------- BUILD FRONTEND -----------------
-      - name: 🏗️ Build frontend (sin crear browser/)
+      - name: 🏗️ Build frontend
         run: |
           cd front-end
           ng build --configuration production --base-href /jose_site/
@@ -43,13 +43,17 @@ jobs:
           npm run build || echo "⚠️ No build script, se usará código fuente"
           cd ..
 
-      # ----------------- PREPARAR FRONTEND (nivel plano) -----------------
-      - name: 🧩 Preparar archivos frontend (nivel plano)
+      # ----------------- PREPARAR FRONTEND (aplanar) -----------------
+      - name: 🧩 Preparar archivos frontend
         run: |
           mkdir -p deploy-frontend
-          cp -r front-end/dist/jose_site/* deploy-frontend/
+          # Copiar contenido de browser (index, js, css, favicon)
+          cp -r front-end/dist/jose_site/browser/* deploy-frontend/
+          # Copiar archivos extra generados por Angular
+          cp front-end/dist/jose_site/3rdpartylicenses.txt deploy-frontend/ || true
+          cp front-end/dist/jose_site/prerendered-routes.json deploy-frontend/ || true
 
-      # ----------------- DEBUG: VERIFICAR CONTENIDO -----------------
+      # ----------------- DEBUG -----------------
       - name: 🧾 Ver contenido de deploy-frontend
         run: |
           echo "=== ARCHIVOS LISTOS PARA SUBIR ==="
@@ -64,7 +68,7 @@ jobs:
           key: ${{ secrets.SERVER_SSH_KEY }}
           port: ${{ secrets.SERVER_PORT || '22' }}
           source: "deploy-frontend/**"
-          target: "/var/www/jose_site/deploy-frontend"
+          target: "/var/www/jose_site/"
           overwrite: true
 
       # ----------------- UPLOAD BACKEND -----------------
@@ -89,7 +93,7 @@ jobs:
           port: ${{ secrets.SERVER_PORT || '22' }}
           script: |
             echo "✅ Archivos subidos correctamente"
-            chmod -R 775 /var/www/jose_site/deploy-frontend
+            chmod -R 775 /var/www/jose_site
             chmod -R 775 /var/www/jose_site/backend
 
             # Reiniciar PM2 si existe
