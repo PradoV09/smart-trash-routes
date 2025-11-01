@@ -45,6 +45,14 @@ jobs:
             echo "No backend build, copying source directly"
           fi
 
+      # ----------------- DEBUG: VERIFICAR DIST -----------------
+      - name: 🧾 Ver contenido del dist antes de subir
+        run: |
+          echo "=== FRONTEND DIST ==="
+          ls -R front-end/dist || true
+          echo "=== BACKEND DIST ==="
+          ls -R back-end/dist || true
+
       # ----------------- UPLOAD FRONTEND -----------------
       - name: 📤 Subir frontend al servidor
         uses: appleboy/scp-action@v0.1.7
@@ -53,7 +61,7 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           port: ${{ secrets.SERVER_PORT || '22' }}
-          source: "front-end/dist/front-end/*"
+          source: "front-end/dist/front-end/browser/*"
           target: "/var/www/jose_site/frontend/"
           overwrite: true
 
@@ -65,7 +73,10 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           port: ${{ secrets.SERVER_PORT || '22' }}
+          # Si tu backend genera dist:
           source: "back-end/dist/*"
+          # O si solo quieres copiar el código fuente:
+          # source: "back-end/*"
           target: "/var/www/jose_site/backend/"
           overwrite: true
 
