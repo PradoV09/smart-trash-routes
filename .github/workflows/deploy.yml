@@ -44,7 +44,7 @@ jobs:
           script: |
             # FRONTEND
             rm -rf /var/www/jose_site/frontend/*
-            cp -r front-end/dist/proyecto/* /var/www/jose_site/frontend/
+            cp -r front-end/dist/front-end/* /var/www/jose_site/frontend/
             chown -R www-data:www-data /var/www/jose_site/frontend
             chmod -R 755 /var/www/jose_site/frontend
 
