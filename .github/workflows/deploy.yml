@@ -43,14 +43,18 @@ jobs:
           port: ${{ secrets.SERVER_PORT || '22' }}
           script: |
             # FRONTEND
+            mkdir -p /var/www/jose_site/frontend
             rm -rf /var/www/jose_site/frontend/*
             cp -r front-end/dist/front-end/* /var/www/jose_site/frontend/
-            chown -R www-data:www-data /var/www/jose_site/frontend
-            chmod -R 755 /var/www/jose_site/frontend
+            chmod -R 775 /var/www/jose_site/frontend
 
             # BACKEND
             mkdir -p /var/www/jose_site/backend
+            rm -rf /var/www/jose_site/backend/*
             cp -r back-end/dist/* /var/www/jose_site/backend/
+            chmod -R 775 /var/www/jose_site/backend
+
+            # Iniciar/Reiniciar backend con PM2
             cd /var/www/jose_site/backend
             pm2 start main.js --name backend --update-env || pm2 restart backend
             pm2 save
