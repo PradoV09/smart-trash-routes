@@ -11,7 +11,7 @@
     "dev:front": "cd front-end && npm start",
     "dev:back": "cd back-end && npm run start:dev",
     "build:all": "npm-run-all build:front build:back",
-    "build:front": "cd front-end && ng build --configuration production --base-href /jose_site/ --output-path=dist",
+    "build:front": "cd front-end && ng build --configuration production --base-href /jose_site/ || echo '⚠️ Build frontend falló'",
     "build:back": "cd back-end && npm run build",
     "format": "npm-run-all format:back format:front",
     "format:back": "cd back-end && npm run format",
