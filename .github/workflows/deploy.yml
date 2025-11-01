@@ -30,7 +30,7 @@ jobs:
         run: npm run install:all
 
       # ----------------- BUILD FRONTEND -----------------
-      - name: 🏗️ Build frontend
+      - name: 🏗️ Build frontend (solo browser)
         run: |
           cd front-end
           ng build --configuration production --base-href /jose_site/
@@ -47,12 +47,12 @@ jobs:
       - name: 🧾 Ver contenido del dist antes de subir
         run: |
           echo "=== FRONTEND DIST ==="
-          ls -R front-end/dist || true
+          ls -R front-end/dist/front-end/browser || true
           echo "=== BACKEND DIST ==="
           ls -R back-end/dist || true
 
       # ----------------- UPLOAD FRONTEND -----------------
-      - name: 📤 Subir frontend al servidor
+      - name: 📤 Subir frontend (solo browser) al servidor
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.SERVER_HOST }}
@@ -74,7 +74,6 @@ jobs:
           source: "back-end/dist/**"
           target: "/var/www/jose_site/backend/"
           overwrite: true
-          strip_components: 2
 
       # ----------------- SSH TASKS -----------------
       - name: ⚙️ Configurar permisos y reiniciar PM2
