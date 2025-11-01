@@ -39,11 +39,9 @@ jobs:
       # ----------------- BUILD BACKEND -----------------
       - name: 🏗️ Build backend
         run: |
-          if [ -d "back-end/dist" ]; then
-            echo "Backend dist exists, nothing to build"
-          else
-            echo "No backend build, copying source directly"
-          fi
+          cd back-end
+          npm run build || echo "⚠️ No build script, se usará código fuente"
+          cd ..
 
       # ----------------- DEBUG: VERIFICAR DIST -----------------
       - name: 🧾 Ver contenido del dist antes de subir
@@ -61,9 +59,10 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           port: ${{ secrets.SERVER_PORT || '22' }}
-          source: "front-end/dist/front-end/browser/*"
+          source: "front-end/dist/front-end/browser/**"
           target: "/var/www/jose_site/frontend/"
           overwrite: true
+          strip_components: 3
 
       # ----------------- UPLOAD BACKEND -----------------
       - name: 📤 Subir backend al servidor
@@ -73,12 +72,10 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           port: ${{ secrets.SERVER_PORT || '22' }}
-          # Si tu backend genera dist:
-          source: "back-end/dist/*"
-          # O si solo quieres copiar el código fuente:
-          # source: "back-end/*"
+          source: "back-end/dist/**"
           target: "/var/www/jose_site/backend/"
           overwrite: true
+          strip_components: 2
 
       # ----------------- SSH TASKS -----------------
       - name: ⚙️ Configurar permisos y reiniciar PM2
