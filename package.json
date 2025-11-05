@@ -24,5 +24,8 @@
     "node": ">=18"
   },
   "author": "Equipo Smart Trash Routes - Universidad del Valle",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "google-one-tap": "^1.0.6"
+  }
 }

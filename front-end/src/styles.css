@@ -1,1 +1,13 @@
-/* You can add global styles to this file, and also import other style files */
+/* Fondo solo para la página de login */
+.login-background {
+  background-image: url('assets/wallpaper.png');
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
