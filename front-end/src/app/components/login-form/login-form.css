@@ -127,12 +127,25 @@
   padding: 10px 20px;
   border: none;
   outline: none;
+  color: white;
 }
 
 /* color del texto del correo de ejmplo */
 #correodeejemplo::placeholder {
   color: #A4A4A4;
 }
+
+#correodeejemplo:focus {
+  outline: none;
+  background-color: #261046;
+}
+
+#correodeejemplo:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0 1000px #261046 inset;
+  -webkit-text-fill-color: white;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
 
 #registrarse {
   background-color: rgba(80, 23, 148, 1);
