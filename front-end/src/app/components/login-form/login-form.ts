@@ -7,5 +7,7 @@ import { Component } from '@angular/core';
   styleUrl: './login-form.css'
 })
 export class LoginForm {
-
+  onRegister() {
+  console.log('Botón Registrarse presionado');
+  }
 }

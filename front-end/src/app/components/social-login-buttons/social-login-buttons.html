@@ -1,12 +1,24 @@
-O continuar con
-<br />
-<div id="googleBtn"></div>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+
+<hr id="rayita">
+<br>
+<p class="poppins-semibold" id="continuar">O continuar con</p>
+
+<div class="social-buttons">
+  <button class="google-custom-btn" (click)="loginWithGoogle()">
+  <img src="assets/google.svg" alt="Google">
+  Google
+</button>
+
 <button (click)="loginWithDiscord()" class="discord-btn">
   <img
-    src="https://www.svgrepo.com/show/353655/discord-icon.svg"
+    src="assets/discord.svg"
     alt="Discord"
     width="20"
     height="20"
   />
-  Iniciar sesión con Discord
+  Discord
 </button>
+</div>

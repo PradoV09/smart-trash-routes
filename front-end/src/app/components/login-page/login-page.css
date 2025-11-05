@@ -1,0 +1,23 @@
+app-header-logo {
+  position: absolute;
+  top: 2%;
+  left: 1%;
+}
+
+app-login-form {
+  position: absolute;
+  top: 10%;
+  left: 65%;
+}
+
+app-social-login-buttons {
+  position: relative;
+  top: 25%;
+  left: 30%;
+}
+
+app-call-to-action-footer {
+  position: relative;
+  top: 29%;
+  right: 26%;
+}
