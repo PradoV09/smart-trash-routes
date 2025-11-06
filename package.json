@@ -12,17 +12,21 @@
     "dev:back": "cd back-end && npm run start:dev",
     "build:all": "npm-run-all build:front build:back",
     "build:front": "cd front-end && ng build --configuration production --base-href /jose_site/deploy-frontend/",
-    "build:back": "cd back-end && npm run build",
+    "build:back": "cd back-end && cross-env NODE_ENV=production npm run build",
     "format": "npm-run-all format:back format:front",
     "format:back": "cd back-end && npm run format",
     "format:front": "cd front-end && npm run format"
   },
   "devDependencies": {
+    "cross-env": "^10.1.0",
     "npm-run-all": "^4.1.5"
   },
   "engines": {
     "node": ">=18"
   },
   "author": "Equipo Smart Trash Routes - Universidad del Valle",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "google-one-tap": "^1.0.6"
+  }
 }
