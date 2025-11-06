@@ -1,4 +1,5 @@
 import { Component, AfterViewInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { environment } from '../../../environments/environment';
 
 declare const google: any;
@@ -10,6 +11,7 @@ declare const google: any;
   styleUrls: ['./social-login-buttons.css'],
 })
 export class SocialLoginButtons implements AfterViewInit {
+  constructor(private router: Router) {}
 
   ngAfterViewInit() {
     this.loadGoogleScript();
@@ -32,11 +34,15 @@ export class SocialLoginButtons implements AfterViewInit {
   }
 
   loginWithGoogle() {
-    google.accounts.id.prompt(); // o puedes abrir tu flujo OAuth manual
+    google.accounts.id.prompt();
   }
 
   handleCredentialResponse(response: any) {
     console.log('Token JWT de Google:', response.credential);
+
+    // llamar backend para guardar token
+    localStorage.setItem('token', response.credential);
+    this.router.navigate(['/dashboard']);
   }
 
   loginWithDiscord() {
