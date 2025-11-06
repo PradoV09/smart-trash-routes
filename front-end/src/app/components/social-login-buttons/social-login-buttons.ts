@@ -1,4 +1,5 @@
 import { Component, AfterViewInit } from '@angular/core';
+import { environment } from '../../../environments/environment';
 
 declare const google: any;
 
@@ -25,7 +26,7 @@ export class SocialLoginButtons implements AfterViewInit {
 
   private initializeGoogleButton() {
     google.accounts.id.initialize({
-      client_id: '1003933300683-r0u915secc94tr156h3vasevbnjiatpq.apps.googleusercontent.com',
+      client_id: environment.googleClientId,
       callback: (response: any) => this.handleCredentialResponse(response),
     });
   }
@@ -39,7 +40,7 @@ export class SocialLoginButtons implements AfterViewInit {
   }
 
   loginWithDiscord() {
-    const clientId = '1435453183110414518';
+    const clientId = environment.discordClientId;
     const redirectUri = encodeURIComponent('http://localhost:4200/auth/discord/callback');
     const scope = 'identify email';
     const discordAuthUrl = `https://discord.com/oauth2/authorize?client_id=${clientId}&response_type=code&redirect_uri=${redirectUri}&scope=${scope}`;
