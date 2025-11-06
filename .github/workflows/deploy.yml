@@ -1,4 +1,4 @@
-name: 🚀 Deploy Fullstack to Apache2 VM
+name: 🚀 Deploy Fullstack to Apache2 VM 
 
 on:
   push:
@@ -38,31 +38,46 @@ jobs:
 
       # ----------------- BUILD BACKEND -----------------
       - name: 🏗️ Build backend
+        env:
+          NODE_ENV: production
+          DB_TYPE: ${{ secrets.DB_TYPE }}
+          DB_HOST: ${{ secrets.DB_HOST }}
+          DB_PORT: ${{ secrets.DB_PORT }}
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          DB_NAME: ${{ secrets.DB_NAME }}
+          PORT: ${{ secrets.PORT }}
+
         run: |
           cd back-end
-          npm run build || echo "⚠️ No build script, se usará código fuente"
-          cd ..
+          npm run build
 
       # ----------------- AJUSTAR BASE HREF -----------------
       - name: 🧩 Ajustar ruta base en index.html
         run: |
           sed -i 's|<base href="/jose_site/">|<base href="/jose_site/deploy-frontend/">|' front-end/dist/jose_site/browser/index.html
 
-      # ----------------- PREPARAR FRONTEND (aplanar) -----------------
+      # ----------------- PREPARAR FRONTEND -----------------
       - name: 🧩 Preparar archivos frontend
         run: |
           mkdir -p deploy-frontend
-          # Copiar contenido de browser (index, js, css, favicon)
           cp -r front-end/dist/jose_site/browser/* deploy-frontend/
-          # Copiar archivos extra generados por Angular
           cp front-end/dist/jose_site/3rdpartylicenses.txt deploy-frontend/ || true
           cp front-end/dist/jose_site/prerendered-routes.json deploy-frontend/ || true
 
-      # ----------------- DEBUG -----------------
-      - name: 🧾 Ver contenido de deploy-frontend
+      # ----------------- PREPARAR BACKEND -----------------
+      - name: 🧩 Preparar archivos backend
         run: |
-          echo "=== ARCHIVOS LISTOS PARA SUBIR ==="
+          mkdir -p deploy-backend
+          cp -r back-end/dist/* deploy-backend/
+
+      # ----------------- DEBUG -----------------
+      - name: 🧾 Ver contenido listo para deploy
+        run: |
+          echo "=== FRONTEND ==="
           ls -R deploy-frontend || true
+          echo "=== BACKEND ==="
+          ls -R deploy-backend || true
 
       # ----------------- UPLOAD FRONTEND -----------------
       - name: 📤 Subir frontend al servidor
@@ -84,8 +99,8 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           port: ${{ secrets.SERVER_PORT || '22' }}
-          source: "back-end/dist/**"
-          target: "/var/www/jose_site/backend/"
+          source: "deploy-backend/**"
+          target: "/var/www/jose_site/deploy-backend/"
           overwrite: true
 
       # ----------------- SSH TASKS -----------------
@@ -99,11 +114,11 @@ jobs:
           script: |
             echo "✅ Archivos subidos correctamente"
             chmod -R 775 /var/www/jose_site
-            chmod -R 775 /var/www/jose_site/backend
+            chmod -R 775 /var/www/jose_site/deploy-backend
 
             # Reiniciar PM2 si existe
             if command -v pm2 >/dev/null 2>&1; then
-              cd /var/www/jose_site/backend
+              cd /var/www/jose_site/deploy-backend
               pm2 start main.js --name backend --update-env || pm2 restart backend
               pm2 save
             else
