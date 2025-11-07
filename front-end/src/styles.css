@@ -1,7 +1,7 @@
 /* Fondo solo para la página de login */
 .login-background {
   background: linear-gradient(to right, rgba(0, 0, 0, 0.6) 0%, #160430 50%, #160430 100%),
-    url('assets/wallpaper.png') left center / cover no-repeat;
+    url('/assets/wallpaper.png') left center / cover no-repeat;
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center;

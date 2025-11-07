@@ -6,15 +6,6 @@ html, body {
   overflow: hidden;
 }
 
-.login-background {
-  position: relative;
-  width: 111%;
-  height: 111%;
-  transform: scale(0.9);
-  transform-origin: top left;
-  background: url('/assets/wallpaper.png') no-repeat center center / cover;
-}
-
 app-header-logo {
   position: absolute;
   top: 2%;
@@ -24,17 +15,17 @@ app-header-logo {
 app-login-form {
   position: absolute;
   top: 10%;
-  left: 65%;
+  left: 64%;
 }
 
 app-social-login-buttons {
   position: relative;
-  top: 25%;
-  left: 30%;
+  top: 30%;
+  left: 30.5%;
 }
 
 app-call-to-action-footer {
   position: relative;
   top: 29%;
-  right: 26%;
+  right: 24%;
 }
