@@ -140,6 +140,7 @@
   app-header-logo #abajo {
     font-size: 0.95rem !important;
     margin-top: 0.35rem !important;
+    margin-left: 9.9rem !important;
   }
 
   app-login-form { max-width: 90%; }
