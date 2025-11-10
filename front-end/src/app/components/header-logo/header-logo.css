@@ -107,13 +107,48 @@
 }
 
 p {
-  font-size: 150%;
+  font-family: "Poppins", sans-serif;
   color: white;
-  height: 10%;
+  margin: 0;
+  line-height: 1.2;
+  text-align: center;
 }
+
+#arriba {
+  font-weight: 700;
+  font-size: 1.5rem;
+}
+
 #abajo {
-  font-size: 120%;
-  color: white;
-  height: 10%;
-  margin-left: 160px;
+  font-weight: 400;
+  font-size: 1.1rem;
+  display: block;
+  margin-top: 0.4rem;
+}
+
+#abajo {
+  font-weight: 400;
+  font-size: 1.1rem;
+  display: block;
+  margin-top: 0.4rem !important; /* asegúrate de usar !important */
+}
+
+@media screen and (max-width: 768px) {
+  #arriba {
+    font-size: 1.2rem !important;
+  }
+  #abajo {
+    font-size: 0.95rem !important;
+    margin-top: -0.5rem !important; /* sube más */
+  }
+}
+
+@media screen and (max-width: 480px) {
+  #arriba {
+    font-size: 1rem !important;
+  }
+  #abajo {
+    font-size: 0.85rem !important;
+    margin-top: -0.6rem !important; /* sube aún más */
+  }
 }

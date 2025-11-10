@@ -1,7 +1,12 @@
 /* Tablet (1024px o menos) */
 @media screen and (max-width: 1024px) {
   .login-background {
-    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.6) 0%, #160430 50%, #160430 100%),
+    background: linear-gradient(
+        to bottom,
+        rgba(0, 0, 0, 0.6) 0%,
+        #160430 50%,
+        #160430 100%
+      ),
       url('/assets/wallpaper.png') center center / cover no-repeat;
     flex-direction: column;
     align-items: center;
@@ -37,15 +42,18 @@
     padding: 0 1rem;
   }
 
+  /* 🔹 Ajuste de separación y tamaño del logo (2 líneas) */
   app-header-logo p {
     font-size: 1.4rem !important;
-    margin: 0.2rem 0 !important;
-    line-height: 1.3;
+    margin: 0.3rem 0 !important;
+    line-height: 1.5 !important;
   }
 
   app-header-logo #abajo {
+    display: block !important;
     font-size: 1.1rem !important;
-    margin-top: 0.3rem !important;
+    margin-top: 0.5rem !important;
+    line-height: 1.4 !important;
   }
 
   app-login-form {
@@ -105,8 +113,17 @@
 
 /* Móviles (768px o menos) */
 @media screen and (max-width: 768px) {
-  app-header-logo p { font-size: 1.2rem !important; }
-  app-header-logo #abajo { font-size: 1rem !important; }
+  app-header-logo p {
+    font-size: 1.2rem !important;
+    margin: 0.25rem 0 !important;
+    line-height: 1.4 !important;
+  }
+
+  app-header-logo #abajo {
+    font-size: 1rem !important;
+    margin-top: 0.4rem !important;
+  }
+
   app-login-form #grande { font-size: 240% !important; }
   app-login-form #pequeno { font-size: 85% !important; }
   app-call-to-action-footer { display: none !important; }
@@ -114,13 +131,23 @@
 
 /* Móviles pequeños (480px o menos) */
 @media screen and (max-width: 480px) {
-  app-header-logo p { font-size: 1.1rem !important; }
-  app-header-logo #abajo { font-size: 0.9rem !important; }
+  app-header-logo p {
+    font-size: 1.1rem !important;
+    margin: 0.25rem 0 !important;
+    line-height: 1.4 !important;
+  }
+
+  app-header-logo #abajo {
+    font-size: 0.95rem !important;
+    margin-top: 0.35rem !important;
+  }
+
   app-login-form { max-width: 90%; }
   app-login-form #grande { font-size: 220% !important; }
   app-login-form #pequeno { font-size: 80% !important; }
   app-login-form #correodeejemplo,
   app-login-form #registrarse { height: 45px; }
+
   app-social-login-buttons { max-width: 90%; }
   app-social-login-buttons .google-custom-btn,
   app-social-login-buttons .discord-btn {
@@ -128,18 +155,30 @@
     font-size: 90%;
     padding: 8px 12px;
   }
+
   app-call-to-action-footer { display: none !important; }
 }
 
 /* Móviles muy pequeños (360px o menos) */
 @media screen and (max-width: 360px) {
-  app-header-logo p { font-size: 1rem !important; }
-  app-header-logo #abajo { font-size: 0.85rem !important; }
+  app-header-logo p {
+    font-size: 1rem !important;
+    margin: 0.2rem 0 !important;
+    line-height: 1.3 !important;
+  }
+
+  app-header-logo #abajo {
+    font-size: 0.85rem !important;
+    margin-top: 0.3rem !important;
+  }
+
   app-login-form #grande { font-size: 200% !important; }
   app-login-form #pequeno { font-size: 75% !important; }
+
   app-login-form #correodeejemplo,
   app-login-form #registrarse,
   app-social-login-buttons .google-custom-btn,
   app-social-login-buttons .discord-btn { height: 42px; }
+
   app-call-to-action-footer { display: none !important; }
 }
