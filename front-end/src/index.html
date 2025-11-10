@@ -12,26 +12,28 @@
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
     />
 
-    <script>
-      // Bloquea Ctrl + (zoom in), Ctrl - (zoom out) y Ctrl + rueda
-      document.addEventListener(
-        'wheel',
-        function (e) {
-          if (e.ctrlKey) e.preventDefault();
-        },
-        { passive: false }
-      );
-
-      document.addEventListener('keydown', function (e) {
-        if (e.ctrlKey && (e.key === '+' || e.key === '-' || e.key === '=' || e.key === '_')) {
-          e.preventDefault();
-        }
-      });
-    </script>
-
     <link rel="icon" type="image/x-icon" href="favicon.ico" />
   </head>
   <body>
     <app-root></app-root>
+
+    <script>
+      // Bloquea Ctrl + (zoom in), Ctrl - (zoom out) y Ctrl + rueda
+      document.addEventListener('DOMContentLoaded', () => {
+        window.addEventListener(
+          'wheel',
+          (e) => {
+            if (e.ctrlKey) e.preventDefault();
+          },
+          { passive: false }
+        );
+
+        window.addEventListener('keydown', (e) => {
+          if (e.ctrlKey && ['+', '-', '=', '_'].includes(e.key)) {
+            e.preventDefault();
+          }
+        });
+      });
+    </script>
   </body>
 </html>
