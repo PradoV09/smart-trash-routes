@@ -52,60 +52,6 @@
   font-style: normal;
 }
 
-.poppins-thin-italic {
-  font-family: "Poppins", sans-serif;
-  font-weight: 100;
-  font-style: italic;
-}
-
-.poppins-extralight-italic {
-  font-family: "Poppins", sans-serif;
-  font-weight: 200;
-  font-style: italic;
-}
-
-.poppins-light-italic {
-  font-family: "Poppins", sans-serif;
-  font-weight: 300;
-  font-style: italic;
-}
-
-.poppins-regular-italic {
-  font-family: "Poppins", sans-serif;
-  font-weight: 400;
-  font-style: italic;
-}
-
-.poppins-medium-italic {
-  font-family: "Poppins", sans-serif;
-  font-weight: 500;
-  font-style: italic;
-}
-
-.poppins-semibold-italic {
-  font-family: "Poppins", sans-serif;
-  font-weight: 600;
-  font-style: italic;
-}
-
-.poppins-bold-italic {
-  font-family: "Poppins", sans-serif;
-  font-weight: 700;
-  font-style: italic;
-}
-
-.poppins-extrabold-italic {
-  font-family: "Poppins", sans-serif;
-  font-weight: 800;
-  font-style: italic;
-}
-
-.poppins-black-italic {
-  font-family: "Poppins", sans-serif;
-  font-weight: 900;
-  font-style: italic;
-}
-
 p {
   font-family: "Poppins", sans-serif;
   color: white;
@@ -123,32 +69,29 @@ p {
   font-weight: 400;
   font-size: 1.1rem;
   display: block;
-  margin-top: 0.4rem;
-}
-
-#abajo {
-  font-weight: 400;
-  font-size: 1.1rem;
-  display: block;
   margin-top: 0.4rem !important;
 }
 
-@media screen and (max-width: 768px) {
-  #arriba {
-    font-size: 1.2rem !important;
-  }
-  #abajo {
-    font-size: 0.95rem !important;
-    margin-top: -0.5rem !important; 
+@media screen and (min-width: 901px) {
+  :host ::ng-deep #abajo {
+    transform: translateX(5rem) !important;
   }
 }
 
-@media screen and (max-width: 480px) {
-  #arriba {
-    font-size: 1rem !important;
+@media screen and (max-width: 900px) {
+  :host ::ng-deep #abajo {
+    transform: translateX(5rem) !important;
   }
-  #abajo {
-    font-size: 0.85rem !important;
-    margin-top: -0.6rem !important;
+}
+
+@media screen and (max-width: 600px) {
+  :host ::ng-deep #abajo {
+    transform: translateX(-4.5rem) !important;
+  }
+}
+
+@media screen and (max-width: 400px) {
+  :host ::ng-deep #abajo {
+    transform: translateX(-1.5rem) !important;
   }
 }
