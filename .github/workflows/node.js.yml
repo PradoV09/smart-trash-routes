@@ -32,9 +32,8 @@ jobs:
         run: ng build --configuration production --base-href /jose_site/
 
       # ----------------- AJUSTAR BASE HREF -----------------
-      - name: 🧩 Ajustar ruta base en index.html
-        run: |
-          sed -i 's|<base href="/jose_site/">|<base href="/jose_site/deploy-frontend/">|' dist/jose_site/browser/index.html
+      - name: Reemplazar base href
+        run: sed -i 's|<base href="/">|<base href="/jose_site/deploy-frontend/">|' dist/front-end/browser/index.html
 
       # ----------------- PREPARAR FRONTEND -----------------
       - name: 🧩 Preparar archivos frontend
