@@ -32,16 +32,16 @@ jobs:
         run: ng build --configuration production --base-href /jose_site/
 
       # ----------------- AJUSTAR BASE HREF -----------------
-      - name: Reemplazar base href
-        run: sed -i 's|<base href="/">|<base href="/jose_site/deploy-frontend/">|' dist/front-end/browser/index.html
+      - name: 🔧 Reemplazar base href
+        run: sed -i 's|<base href="/jose_site/">|<base href="/jose_site/deploy-frontend/">|' dist/front-end/browser/index.html
 
       # ----------------- PREPARAR FRONTEND -----------------
-      - name: 🧩 Preparar archivos frontend
+      - name: 📁 Preparar archivos frontend
         run: |
           mkdir -p deploy-frontend
-          cp -r dist/jose_site/browser/* deploy-frontend/
-          cp dist/jose_site/3rdpartylicenses.txt deploy-frontend/ || true
-          cp dist/jose_site/prerendered-routes.json deploy-frontend/ || true
+          cp -r dist/front-end/browser/* deploy-frontend/
+          cp dist/front-end/3rdpartylicenses.txt deploy-frontend/ || true
+          cp dist/front-end/prerendered-routes.json deploy-frontend/ || true
 
       # ----------------- DEBUG -----------------
       - name: 🧾 Ver contenido listo para deploy
