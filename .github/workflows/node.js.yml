@@ -49,19 +49,6 @@ jobs:
           echo "=== FRONTEND ==="
           ls -R deploy-frontend || true
 
-      # ----------------- UPLOAD FRONTEND -----------------
-      - name: 📤 Subir frontend al servidor
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host: ${{ secrets.SERVER_HOST }}
-          username: ${{ secrets.SERVER_USER }}
-          key: ${{ secrets.SERVER_SSH_KEY }}
-          port: ${{ secrets.SERVER_PORT || '22' }}
-          source: "deploy-frontend/"
-          target: "/var/www/jose_site/"
-          overwrite: true
-
-      # ----------------- SSH TASKS -----------------
       - name: ⚙ Configurar permisos finales
         uses: appleboy/ssh-action@v1
         with:
@@ -71,4 +58,3 @@ jobs:
           port: ${{ secrets.SERVER_PORT || '22' }}
           script: |
             echo "✅ Frontend desplegado correctamente"
-            chmod -R 775 /var/www/jose_site
