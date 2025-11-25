@@ -10,24 +10,20 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # ----------------- CHECKOUT -----------------
       - name: 🧩 Checkout código
         uses: actions/checkout@v4
 
-      # ----------------- NODE -----------------
       - name: ⚙ Configurar Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '22'
 
-      # ----------------- DEPENDENCIAS -----------------
       - name: 💡 Instalar Angular CLI
         run: npm install -g @angular/cli
 
       - name: 📦 Instalar dependencias frontend
         run: npm install
 
-      # ----------------- BUILD FRONTEND -----------------
       - name: 🏗 Build frontend
         run: ng build --configuration production --base-href /jose_site/
 
@@ -36,15 +32,11 @@ jobs:
         run: |
           rm -rf deploy-frontend
           mkdir deploy-frontend
-          cp -r dist/jose_site/browser/* deploy-frontend/
-          cp dist/jose_site/3rdpartylicenses.txt deploy-frontend/ || true
-          cp dist/jose_site/prerendered-routes.json deploy-frontend/ || true
+          cp -r dist/front-end/* deploy-frontend/
 
-      # ----------------- DEBUG -----------------
       - name: 🧾 Ver contenido listo para deploy
         run: ls -R deploy-frontend
 
-      # ----------------- UPLOAD FRONTEND -----------------
       - name: 📤 Subir frontend al servidor
         uses: appleboy/scp-action@v0.1.7
         with:
@@ -56,7 +48,6 @@ jobs:
           target: "/var/www/jose_site/"
           overwrite: true
 
-      # ----------------- SSH TASKS -----------------
       - name: ⚙ Configurar permisos finales
         uses: appleboy/ssh-action@v1
         with:
