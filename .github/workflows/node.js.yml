@@ -10,20 +10,24 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # ----------------- CHECKOUT -----------------
       - name: 🧩 Checkout código
         uses: actions/checkout@v4
 
+      # ----------------- NODE -----------------
       - name: ⚙ Configurar Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '22'
 
+      # ----------------- DEPENDENCIAS -----------------
       - name: 💡 Instalar Angular CLI
         run: npm install -g @angular/cli
 
       - name: 📦 Instalar dependencias frontend
         run: npm install
 
+      # ----------------- BUILD FRONTEND -----------------
       - name: 🏗 Build frontend
         run: ng build --configuration production --base-href /jose_site/
 
@@ -32,11 +36,27 @@ jobs:
         run: |
           rm -rf deploy-frontend
           mkdir deploy-frontend
-          cp -r dist/front-end/* deploy-frontend/
+          cp -r dist/front-end/browser/* deploy-frontend/
+          cp dist/front-end/3rdpartylicenses.txt deploy-frontend/ || true
+          cp dist/front-end/prerendered-routes.json deploy-frontend/ || true
 
+      # ----------------- DEBUG -----------------
       - name: 🧾 Ver contenido listo para deploy
         run: ls -R deploy-frontend
 
+      # ----------------- LIMPIAR SERVIDOR -----------------
+      - name: 🧹 Limpiar contenido anterior
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          port: ${{ secrets.SERVER_PORT || '22' }}
+          script: |
+            rm -rf /var/www/jose_site/*
+            echo "✔ Carpeta limpiada"
+
+      # ----------------- SUBIR ARCHIVOS -----------------
       - name: 📤 Subir frontend al servidor
         uses: appleboy/scp-action@v0.1.7
         with:
@@ -44,10 +64,11 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           port: ${{ secrets.SERVER_PORT || '22' }}
-          source: "deploy-frontend/"
+          source: "deploy-frontend/*"
           target: "/var/www/jose_site/"
           overwrite: true
 
+      # ----------------- SSH TASKS -----------------
       - name: ⚙ Configurar permisos finales
         uses: appleboy/ssh-action@v1
         with:
