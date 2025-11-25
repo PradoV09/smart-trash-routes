@@ -10,42 +10,42 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # ----------------- CHECKOUT -----------------
       - name: 🧩 Checkout código
         uses: actions/checkout@v4
 
-      # ----------------- NODE -----------------
       - name: ⚙ Configurar Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '22'
 
-      # ----------------- DEPENDENCIAS -----------------
       - name: 💡 Instalar Angular CLI
         run: npm install -g @angular/cli
 
       - name: 📦 Instalar dependencias frontend
-        run: npm install
+        run: |
+          cd front-end
+          npm install
 
-      # ----------------- BUILD FRONTEND -----------------
       - name: 🏗 Build frontend
-        run: ng build --configuration production --base-href /jose_site/
+        run: |
+          cd front-end
+          ng build --configuration production --base-href /jose_site/
 
-      # ----------------- PREPARAR FRONTEND -----------------
+      # ❌ Se elimina este sed porque rompe el base href
+      # - name: 🧩 Ajustar ruta base en index.html
+
       - name: 🧩 Preparar archivos frontend
         run: |
+          rm -rf deploy-frontend
           mkdir -p deploy-frontend
-          cp -r dist/front-end/browser/* deploy-frontend/
-          cp dist/front-end/3rdpartylicenses.txt deploy-frontend/ || true
-          cp dist/front-end/prerendered-routes.json deploy-frontend/ || true
+          cp -r front-end/dist/jose_site/browser/* deploy-frontend/
+          cp front-end/dist/jose_site/3rdpartylicenses.txt deploy-frontend/ || true
+          cp front-end/dist/jose_site/prerendered-routes.json deploy-frontend/ || true
 
-      # ----------------- DEBUG -----------------
       - name: 🧾 Ver contenido listo para deploy
         run: |
-          echo "=== FRONTEND ==="
           ls -R deploy-frontend || true
 
-      # ----------------- UPLOAD FRONTEND -----------------
       - name: 📤 Subir frontend al servidor
         uses: appleboy/scp-action@v0.1.7
         with:
@@ -57,7 +57,6 @@ jobs:
           target: "/var/www/jose_site/"
           overwrite: true
 
-      # ----------------- SSH TASKS -----------------
       - name: ⚙ Configurar permisos finales
         uses: appleboy/ssh-action@v1
         with:
@@ -66,4 +65,4 @@ jobs:
           key: ${{ secrets.SERVER_SSH_KEY }}
           port: ${{ secrets.SERVER_PORT || '22' }}
           script: |
-            echo "✅ Frontend desplegado correctamente"
+            echo "✔ Deploy completado"
