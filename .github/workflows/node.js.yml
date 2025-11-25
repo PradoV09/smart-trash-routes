@@ -31,6 +31,11 @@ jobs:
       - name: 🏗 Build frontend
         run: ng build --configuration production --base-href /jose_site/
 
+      # ----------------- FIX BASE HREF -----------------
+      - name: 🛠 Cambiar base href para deploy-frontend
+        run: |
+          sed -i 's|<base href="/jose_site/">|<base href="/jose_site/deploy-frontend/">|' dist/front-end/browser/index.html
+
       # ----------------- PREPARAR FRONTEND -----------------
       - name: 🧩 Preparar archivos frontend
         run: |
