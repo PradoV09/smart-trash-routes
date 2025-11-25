@@ -1,0 +1,32 @@
+{
+  "usuarios": [
+    {
+      "id": 1,
+      "email": "admin",
+      "password": "admin123",
+      "nombre": "Administrador",
+      "rol": "admin",
+      "telefono": "3001234567",
+      "activo": true
+    },
+    {
+      "id": 2,
+      "email": "operador",
+      "password": "operador123",
+      "nombre": "Operador",
+      "rol": "operador",
+      "telefono": "3007654321",
+      "activo": true
+    },
+    {
+      "id": 3,
+      "email": "supervisor",
+      "password": "supervisor123",
+      "nombre": "Supervisor",
+      "rol": "supervisor",
+      "telefono": "3009876543",
+      "activo": true
+    }
+    
+  ]
+}
