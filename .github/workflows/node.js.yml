@@ -36,9 +36,9 @@ jobs:
         run: |
           rm -rf deploy-frontend
           mkdir -p deploy-frontend
-          cp -r dist/jose_site/browser/* deploy-frontend/
-          cp dist/jose_site/3rdpartylicenses.txt deploy-frontend/ || true
-          cp dist/jose_site/prerendered-routes.json deploy-frontend/ || true
+          cp -r dist/front-end/browser/* deploy-frontend/
+          cp dist/front-end/3rdpartylicenses.txt deploy-frontend/ || true
+          cp dist/front-end/prerendered-routes.json deploy-frontend/ || true
 
       # ----------------- DEBUG -----------------
       - name: 🧾 Ver contenido listo para deploy
