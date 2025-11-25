@@ -26,11 +26,6 @@ jobs:
           cd front-end
           npm install
 
-      - name: 🏗 Build frontend
-        run: |
-          cd front-end
-          ng build --configuration production --base-href /jose_site/
-
       # ❌ Se elimina este sed porque rompe el base href
       # - name: 🧩 Ajustar ruta base en index.html
 
