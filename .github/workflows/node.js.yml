@@ -25,28 +25,19 @@ jobs:
         run: npm install -g @angular/cli
 
       - name: 📦 Instalar dependencias frontend
-        run: |
-          cd front-end
-          npm install
+        run: npm install
 
       # ----------------- BUILD FRONTEND -----------------
       - name: 🏗 Build frontend
-        run: |
-          cd front-end
-          ng build --configuration production --base-href /jose_site/
-
-      # ----------------- AJUSTAR BASE HREF -----------------
-      - name: 🧩 Ajustar ruta base en index.html
-        run: |
-          sed -i 's|<base href="/jose_site/">|<base href="/jose_site/deploy-frontend/">|' front-end/dist/jose_site/browser/index.html
+        run: ng build --configuration production --base-href /jose_site/
 
       # ----------------- PREPARAR FRONTEND -----------------
       - name: 🧩 Preparar archivos frontend
         run: |
           mkdir -p deploy-frontend
-          cp -r front-end/dist/jose_site/browser/* deploy-frontend/
-          cp front-end/dist/jose_site/3rdpartylicenses.txt deploy-frontend/ || true
-          cp front-end/dist/jose_site/prerendered-routes.json deploy-frontend/ || true
+          cp -r dist/front-end/browser/* deploy-frontend/
+          cp dist/front-end/3rdpartylicenses.txt deploy-frontend/ || true
+          cp dist/front-end/prerendered-routes.json deploy-frontend/ || true
 
       # ----------------- DEBUG -----------------
       - name: 🧾 Ver contenido listo para deploy
