@@ -67,4 +67,3 @@ jobs:
           port: ${{ secrets.SERVER_PORT || '22' }}
           script: |
             echo "✅ Frontend desplegado correctamente"
-            chmod -R 775 /var/www/jose_site
