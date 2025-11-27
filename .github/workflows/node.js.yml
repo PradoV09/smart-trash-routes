@@ -44,8 +44,8 @@ jobs:
       - name: 🧾 Ver contenido listo para deploy
         run: ls -R deploy-frontend
 
-      # ----------------- LIMPIAR SERVIDOR -----------------
-      - name: 🧹 Limpiar contenido anterior
+      # ----------------- LIMPIAR CARPETA DEL FRONTEND -----------------
+      - name: 🧹 Limpiar solo deploy-frontend en el servidor
         uses: appleboy/ssh-action@v1
         with:
           host: ${{ secrets.SERVER_HOST }}
@@ -53,8 +53,9 @@ jobs:
           key: ${{ secrets.SERVER_SSH_KEY }}
           port: ${{ secrets.SERVER_PORT || '22' }}
           script: |
-            rm -rf /var/www/jose_site/*
-            echo "✔ Carpeta limpiada"
+            rm -rf /var/www/jose_site/deploy-frontend
+            mkdir -p /var/www/jose_site/deploy-frontend
+            echo "✔ Solo deploy-frontend fue limpiado"
 
       # ----------------- SUBIR ARCHIVOS -----------------
       - name: 📤 Subir frontend al servidor
@@ -65,7 +66,7 @@ jobs:
           key: ${{ secrets.SERVER_SSH_KEY }}
           port: ${{ secrets.SERVER_PORT || '22' }}
           source: "deploy-frontend/*"
-          target: "/var/www/jose_site/"
+          target: "/var/www/jose_site/deploy-frontend/"
           overwrite: true
 
       # ----------------- SSH TASKS -----------------
