@@ -1,6 +1,7 @@
-import { Component, AfterViewInit } from '@angular/core';
+import { Component, AfterViewInit, inject } from '@angular/core';
 import * as L from 'leaflet';
 import { RutasService, Ruta } from '../../../services/rutas.service';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -16,8 +17,8 @@ export class Rutas implements AfterViewInit {
   private routePoints: L.LatLng[] = [];
   private polyline: L.Polyline | null = null;
   public rutasGuardadas: Ruta[] = [];
-
-  constructor(private rutasService: RutasService) {}
+  private rutasService = inject(RutasService);
+  private http = inject(HttpClient);
 
   ngAfterViewInit(): void {
     this.initMap();
@@ -52,9 +53,15 @@ export class Rutas implements AfterViewInit {
         nombre: nombre,
         coordenadas: this.routePoints.map(p => ({ lat: p.lat, lng: p.lng }))
       };
-      this.rutasService.crearRuta(nuevaRuta).subscribe(() => {
-        this.cargarRutasGuardadas();
-        this.clearRoute();
+      this.rutasService.crearRuta(nuevaRuta).subscribe({
+        next: () => {
+          console.log('Ruta guardada exitosamente');
+          this.cargarRutasGuardadas();
+          this.clearRoute();
+        },
+        error: (err) => {
+          console.error('Error saving ruta:', err);
+        }
       });
     }
   }
@@ -68,9 +75,20 @@ export class Rutas implements AfterViewInit {
   }
 
   cargarRutasGuardadas(): void {
-    this.rutasService.obtenerRutas().subscribe((rutas: Ruta[]) => {
-      console.log('Rutas recibidas desde el backend:', rutas);
-      this.rutasGuardadas = rutas;
+    const token = typeof window !== 'undefined' ? localStorage.getItem('accessToken') : null;
+    let headers = new HttpHeaders();
+    if (token) {
+      headers = headers.set('Authorization', `Bearer ${token}`);
+    }
+
+    this.rutasService.obtenerRutas().subscribe({
+      next: (rutas: Ruta[]) => {
+        console.log('Rutas recibidas desde el backend:', rutas);
+        this.rutasGuardadas = rutas;
+      },
+      error: (err) => {
+        console.error('Error loading rutas:', err);
+      }
     });
   }
 
