@@ -1,7 +1,8 @@
 /* You can add global styles to this file, and also import other style files */
 
 /* Importa los estilos de Leaflet para que los mapas funcionen en toda la aplicación */
-@import "~leaflet/dist/leaflet.css";
+/* Corrección: Se eliminó la '~' para compatibilidad con Angular CLI moderno */
+@import "leaflet/dist/leaflet.css";
 
 html, body {
     height: 100%;
