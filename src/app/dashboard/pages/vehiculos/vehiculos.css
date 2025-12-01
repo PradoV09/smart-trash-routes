@@ -1,0 +1,97 @@
+/* Título */
+h2 {
+  color: #1b5e20;
+  font-size: 26px;
+  margin-bottom: 20px;
+}
+
+/* FORMULARIO */
+form {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+input {
+  padding: 10px;
+  border: 2px solid #2e7d32;
+  border-radius: 6px;
+  width: 200px;
+  font-size: 14px;
+  outline: none;
+  transition: 0.2s;
+}
+
+input:focus {
+  border-color: #1b5e20;
+  background: #e8f5e9;
+}
+
+/* BOTÓN PRINCIPAL */
+button {
+  background: #2e7d32;
+  color: white;
+  padding: 10px 18px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: 0.2s;
+}
+
+button:hover {
+  background: #1b5e20;
+}
+
+/* TABLA */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+  font-size: 15px;
+}
+
+thead {
+  background: #1b5e20;
+  color: white;
+}
+
+thead th {
+  padding: 12px;
+  text-align: left;
+}
+
+tbody tr:nth-child(even) {
+  background: #e8f5e9;
+}
+
+tbody tr:nth-child(odd) {
+  background: #f1f8e9;
+}
+
+td {
+  padding: 12px;
+}
+
+/* BOTONES DE ACCIÓN */
+td button {
+  margin-right: 10px;
+}
+
+/* Botón Editar */
+td button:first-child {
+  background: #43a047;
+}
+
+td button:first-child:hover {
+  background: #2e7d32;
+}
+
+/* Botón Eliminar */
+td button:last-child {
+  background: #e53935;
+}
+
+td button:last-child:hover {
+  background: #b71c1c;
+}
