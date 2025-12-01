@@ -36,7 +36,10 @@ jobs:
         run: |
           rm -rf deploy-frontend
           mkdir deploy-frontend
-          cp -r dist/front-end/* deploy-frontend/
+          # copiar solo el contenido de la build, no la carpeta entera
+          cp -r dist/front-end/browser/* deploy-frontend/
+          cp dist/front-end/3rdpartylicenses.txt deploy-frontend/ || true
+          cp dist/front-end/prerendered-routes.json deploy-frontend/ || true
 
       # ----------------- DEBUG -----------------
       - name: 🧾 Ver contenido listo para deploy
@@ -63,8 +66,8 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           port: ${{ secrets.SERVER_PORT || '22' }}
-          source: "deploy-frontend/*"
-          target: "/var/www/jose_site/deploy-frontend/"
+          source: "deploy-frontend/*"   
+          target: "/var/www/jose_site/deploy-frontend/"  
           overwrite: true
 
       # ----------------- SSH TASKS -----------------
