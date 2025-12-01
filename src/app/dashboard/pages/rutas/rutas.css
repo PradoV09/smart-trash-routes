@@ -1,0 +1,21 @@
+/* src/app/dashboard/pages/rutas/rutas.css */
+
+.map-container {
+  /* Define la altura del contenedor del mapa. 
+     Puedes ajustarla a tu gusto (ej. 600px, 80vh, etc.) */
+  height: 500px; 
+  margin-bottom: 20px;
+  display: flex;          /* Usamos flexbox para que el mapa llene el espacio */
+  flex-direction: column;
+}
+
+#map {
+  width: 100%;
+  flex-grow: 1; /* Hace que el mapa ocupe todo el espacio vertical disponible */
+  border: 1px solid #ccc;
+  border-radius: 8px;
+}
+
+.controls {
+  padding: 10px 0;
+}

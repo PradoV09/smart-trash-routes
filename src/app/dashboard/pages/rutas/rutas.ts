@@ -52,7 +52,7 @@ export class Rutas implements AfterViewInit {
         nombre: nombre,
         coordenadas: this.routePoints.map(p => ({ lat: p.lat, lng: p.lng }))
       };
-      this.rutasService.crearRuta(nuevaRuta).then(() => {
+      this.rutasService.crearRuta(nuevaRuta).subscribe(() => {
         this.cargarRutasGuardadas();
         this.clearRoute();
       });
@@ -69,25 +69,19 @@ export class Rutas implements AfterViewInit {
 
   cargarRutasGuardadas(): void {
     this.rutasService.obtenerRutas().subscribe((rutas: Ruta[]) => {
-      console.log('Rutas recibidas desde Firestore:', rutas); // <-- AÑADIDO PARA DEPURAR
+      console.log('Rutas recibidas desde el backend:', rutas);
       this.rutasGuardadas = rutas;
     });
   }
 
   verRuta(ruta: Ruta): void {
+    // El método obtenerRutaPorId no se usa directamente aquí, 
+    // pero está disponible en el servicio para futuras ampliaciones.
     this.clearRoute();
     this.routePoints = ruta.coordenadas.map((c: { lat: number; lng: number }) => L.latLng(c.lat, c.lng));
     this.drawPolyline();
     if (this.polyline) {
       this.map.fitBounds(this.polyline.getBounds());
-    }
-  }
-
-  borrarRuta(id: string | undefined): void {
-    if (id) {
-      this.rutasService.borrarRuta(id).then(() => {
-        this.cargarRutasGuardadas();
-      });
     }
   }
 }

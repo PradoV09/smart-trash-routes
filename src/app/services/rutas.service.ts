@@ -1,8 +1,6 @@
-// src/app/services/rutas.service.ts
 import { Injectable } from '@angular/core';
-import { AngularFirestore, DocumentChangeAction } from '@angular/fire/compat/firestore';
+import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
 
 export interface Ruta {
   id?: string;
@@ -14,31 +12,23 @@ export interface Ruta {
   providedIn: 'root'
 })
 export class RutasService {
-  private coleccionRutas = 'rutas';
+  // TODO: Reemplaza con la URL de tu backend NestJS
+  private backendUrl = 'http://TU_IP_Y_PUERTO_AQUI/rutas'; 
 
-  constructor(private firestore: AngularFirestore) { }
+  constructor(private http: HttpClient) { }
 
-  // C - Crear una nueva ruta
-  crearRuta(ruta: Ruta): Promise<any> {
-    return this.firestore.collection(this.coleccionRutas).add(ruta);
+  // POST /rutas - Crear una nueva ruta
+  crearRuta(ruta: Ruta): Observable<Ruta> {
+    return this.http.post<Ruta>(this.backendUrl, ruta);
   }
 
-  // R - Leer todas las rutas
+  // GET /rutas - Leer todas las rutas
   obtenerRutas(): Observable<Ruta[]> {
-    // Specify the type <Ruta> on the collection
-    return this.firestore.collection<Ruta>(this.coleccionRutas).snapshotChanges().pipe(
-      map(actions => {
-        return actions.map(a => {
-          const data = a.payload.doc.data();
-          const id = a.payload.doc.id;
-          return { id, ...data };
-        });
-      })
-    );
+    return this.http.get<Ruta[]>(this.backendUrl);
   }
 
-  // D - Borrar una ruta
-  borrarRuta(id: string): Promise<any> {
-    return this.firestore.collection(this.coleccionRutas).doc(id).delete();
+  // GET /rutas/:id - Obtener una ruta específica por su ID
+  obtenerRutaPorId(id: string): Observable<Ruta> {
+    return this.http.get<Ruta>(`${this.backendUrl}/${id}`);
   }
 }
