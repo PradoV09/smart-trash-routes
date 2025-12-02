@@ -127,5 +127,3 @@ export class AuthService {
     return this.currentUser?.rol || '';
   }
 }
-
-
