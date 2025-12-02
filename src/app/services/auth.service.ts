@@ -18,7 +18,7 @@ export class AuthService {
 
   private checkExistingSession(): void {
     if (typeof window === 'undefined') return; // SSR check
-    
+
     const userAuth = localStorage.getItem('user_authenticated');
     if (userAuth === 'true') {
       this.isAuthenticated = true;
@@ -30,7 +30,7 @@ export class AuthService {
   }
 
   login(email: string, password: string): Observable<boolean> {
-    return this.http.post<any>('http://10.50.77.224:3005/api/auth/login', { nameuser: email, password }).pipe(
+    return this.http.post<any>('http://127.0.0.1:3005/api/auth/login', { nameuser: email, password }).pipe(
       tap(response => {
         console.log('Raw login response:', response);
       }),
@@ -65,9 +65,9 @@ export class AuthService {
             return uEmail === email.trim().toLowerCase() && uPass === password;
           });
         }
-        
+
         console.log('Usuario encontrado:', usuario);
-        
+
         if (usuario && usuario.activo) {
           this.isAuthenticated = true;
           this.currentUser = {
@@ -83,7 +83,7 @@ export class AuthService {
             localStorage.setItem('user_rol', usuario.rol);
             localStorage.setItem('user_id', usuario.id || '1');
           }
-          
+
           return true;
         } else {
           console.log('Usuario inválido o inactivo');
@@ -100,14 +100,14 @@ export class AuthService {
   logout(): void {
     this.isAuthenticated = false;
     this.currentUser = null;
-    
+
     // Remover de localStorage solo si estamos en el navegador
     if (typeof window !== 'undefined') {
       localStorage.removeItem('user_authenticated');
       localStorage.removeItem('user_email');
       localStorage.removeItem('user_rol');
     }
-    
+
     this.router.navigate(['/login']);
   }
 
