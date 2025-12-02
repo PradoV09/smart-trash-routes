@@ -1,1 +1,19 @@
-<h1>Gestión de Rutas</h1>
+<!-- src/app/dashboard/pages/rutas/rutas.html -->
+<div class="map-container">
+    <div id="map"></div>
+    <div class="controls">
+      <button (click)="saveRoute()">Guardar Ruta</button>
+      <button (click)="clearRoute()">Limpiar Ruta</button>
+    </div>
+  </div>
+  <div class="saved-routes">
+    <h2>Rutas Guardadas</h2>
+    <ul>
+      <li *ngFor="let ruta of rutasGuardadas">
+        {{ ruta.nombre }}
+        <button (click)="verRuta(ruta)">Ver</button>
+        <!-- Botón de borrar eliminado -->
+      </li>
+    </ul>
+  </div>
+  

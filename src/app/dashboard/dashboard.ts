@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { Router, RouterOutlet, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -11,7 +12,8 @@ import { CommonModule } from '@angular/common';
 })
 export class Dashboard {
 
-  constructor (private router: Router) {}
+  private router = inject(Router);
+  private authService = inject(AuthService);
 
   isCollapsed = false;
   isMenuOpen = false;
@@ -33,8 +35,7 @@ export class Dashboard {
   }
 
   logout(): void {
-    localStorage.removeItem('user_authenticated');
-    window.location.href = '/login';
+    this.authService.logout();
   }
 
 }

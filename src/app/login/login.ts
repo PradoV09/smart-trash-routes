@@ -40,32 +40,32 @@ export class Login implements AfterViewInit {
         btn.classList.add('loading');
         btn.textContent = '⏳ Ingresando...';
         
-        // Validar credenciales contra AuthService
-        const isValid = await this.authService.login(email.value, pass.value);
-        
-        if (isValid) {
-          btn.classList.remove('loading');
-          btn.classList.add('success');
-          btn.textContent = '✅ ¡Bienvenido!';
-          
-          setTimeout(() => {
-            // Navegar al dashboard
-            this.router.navigate(['/dashboard']);
-            btn.classList.remove('success');
-            btn.textContent = '🌍 Ingresar';
-            email.value = '';
-            pass.value = '';
-          }, 800);
-        } else {
-          btn.classList.remove('loading');
-          email.classList.add('error');
-          pass.classList.add('error');
-          btn.textContent = '❌ Credenciales inválidas';
-          
-          setTimeout(() => {
-            btn.textContent = '🌍 Ingresar';
-          }, 1500);
-        }
+        // Validar credenciales contra AuthService (Observable)
+        this.authService.login(email.value, pass.value).subscribe(isValid => {
+          if (isValid) {
+            btn.classList.remove('loading');
+            btn.classList.add('success');
+            btn.textContent = '✅ ¡Bienvenido!';
+            
+            setTimeout(() => {
+              // Navegar al dashboard
+              this.router.navigate(['/dashboard']);
+              btn.classList.remove('success');
+              btn.textContent = '🌍 Ingresar';
+              email.value = '';
+              pass.value = '';
+            }, 800);
+          } else {
+            btn.classList.remove('loading');
+            email.classList.add('error');
+            pass.classList.add('error');
+            btn.textContent = '❌ Credenciales inválidas';
+            
+            setTimeout(() => {
+              btn.textContent = '🌍 Ingresar';
+            }, 1500);
+          }
+        });
       }
     });
 
