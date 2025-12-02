@@ -30,7 +30,7 @@ export class AuthService {
   }
 
   login(email: string, password: string): Observable<boolean> {
-    return this.http.post<any>('http://127.0.0.1:3005/api/auth/login', { nameuser: email, password }).pipe(
+    return this.http.post<any>('http://smartroutes.eleueleo.com/api/auth/login', { nameuser: email, password }).pipe(
       tap(response => {
         console.log('Raw login response:', response);
       }),
@@ -127,5 +127,3 @@ export class AuthService {
     return this.currentUser?.rol || '';
   }
 }
-
-

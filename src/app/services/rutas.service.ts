@@ -12,7 +12,7 @@ export interface Ruta {
   providedIn: 'root'
 })
 export class RutasService {
-  private backendUrl = 'http://127.0.0.1:3005/api/rutas';
+  private backendUrl = 'http://smartroutes.eleueleo.com/api/rutas';
 
   constructor(private http: HttpClient) { }
 
