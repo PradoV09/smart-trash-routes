@@ -1,13 +1,11 @@
 <h2>Gestión de Vehículos</h2>
 
 <form [formGroup]="form" (ngSubmit)="editMode ? guardarEdicion() : crearVehiculo()">
-<form [formGroup]="form">
-  <input formControlName="placa" placeholder="Placa">
-  <input formControlName="marca" placeholder="Marca">
-  <input formControlName="modelo" placeholder="Modelo">
+  <input formControlName="placa" placeholder="Placa" />
+  <input formControlName="marca" placeholder="Marca" />
+  <input formControlName="modelo" placeholder="Modelo" />
 
   <button type="submit">
-  <button (click)="editMode ? guardarEdicion() : crearVehiculo()">
     {{ editMode ? 'Guardar Cambios' : 'Registrar' }}
   </button>
 </form>
