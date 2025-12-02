@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { HttpClient, HttpClientModule, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
 
 @Component({
   selector: 'app-vehiculos',
@@ -69,6 +70,8 @@ export class Vehiculos implements OnInit {
       error: err => {
         console.error('Error fetching vehicles:', err);
       }
+    this.http.get<any[]>('assets/vehiculos.json').subscribe(res => {
+      this.vehiculos = res.map((v, i) => ({ id: i + 1, ...v }));
     });
   }
 
@@ -114,6 +117,13 @@ export class Vehiculos implements OnInit {
         alert(`Error: ${err.error?.message || err.error?.error || err.message || 'No se pudo crear el vehículo'}`);
       }
     });
+    const newVehiculo = {
+      id: Date.now(),
+      ...this.form.value
+    };
+
+    this.vehiculos.push(newVehiculo);
+    this.form.reset();
   }
 
   editarVehiculo(v: any) {
@@ -174,5 +184,15 @@ export class Vehiculos implements OnInit {
         console.error('Error deleting vehicle:', err);
       }
     });
+    const index = this.vehiculos.findIndex(x => x.id === this.selectedId);
+    this.vehiculos[index] = { id: this.selectedId, ...this.form.value };
+
+    this.editMode = false;
+    this.selectedId = null;
+    this.form.reset();
+  }
+
+  eliminarVehiculo(id: number) {
+    this.vehiculos = this.vehiculos.filter(v => v.id !== id);
   }
 }
