@@ -1,0 +1,62 @@
+<div class="inicio-container">
+  <div class="welcome-section">
+    <div class="welcome-card">
+      <i class="fas fa-user-circle welcome-icon"></i>
+      <div class="welcome-content">
+        <h1>¡Bienvenido!</h1>
+        <p class="welcome-name">{{ userName }}</p>
+        <p class="welcome-subtitle">Panel de administración de Smart Trash Routes</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="statistics-section" *ngIf="!isLoading">
+    <div class="stat-card">
+      <div class="stat-icon rutas-icon">
+        <i class="fas fa-map-marked-alt"></i>
+      </div>
+      <div class="stat-content">
+        <h3>Rutas Creadas</h3>
+        <p class="stat-number">{{ totalRutas }}</p>
+        <small>Total de rutas en el sistema</small>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon vehiculos-icon">
+        <i class="fas fa-car"></i>
+      </div>
+      <div class="stat-content">
+        <h3>Vehículos Registrados</h3>
+        <p class="stat-number">{{ totalVehiculos }}</p>
+        <small>Total de vehículos en el sistema</small>
+      </div>
+    </div>
+  </div>
+
+  <div class="loading-section" *ngIf="isLoading">
+    <p>Cargando estadísticas...</p>
+  </div>
+
+  <div class="quick-actions">
+    <h2>Acciones Rápidas</h2>
+    <div class="action-buttons">
+      <button type="button" class="action-btn rutas-btn" (click)="nuevaRuta()">
+        <i class="fas fa-plus"></i>
+        <span>Nueva Ruta</span>
+      </button>
+      <button type="button" class="action-btn vehiculos-btn" (click)="nuevoVehiculo()">
+        <i class="fas fa-plus"></i>
+        <span>Nuevo Vehículo</span>
+      </button>
+      <button type="button" class="action-btn ver-btn" (click)="verRutas()">
+        <i class="fas fa-eye"></i>
+        <span>Ver Rutas</span>
+      </button>
+      <button type="button" class="action-btn ver-btn" (click)="verVehiculos()">
+        <i class="fas fa-eye"></i>
+        <span>Ver Vehículos</span>
+      </button>
+    </div>
+  </div>
+</div>

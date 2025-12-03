@@ -12,7 +12,7 @@ export interface Ruta {
   providedIn: 'root'
 })
 export class RutasService {
-  private backendUrl = 'http://smartroutes.eleueleo.com/api/rutas';
+  private backendUrl = 'http://10.241.138.224:3005/api/rutas';
 
   constructor(private http: HttpClient) { }
 
@@ -41,4 +41,5 @@ export class RutasService {
   obtenerRutaPorId(id: string): Observable<Ruta> {
     return this.http.get<Ruta>(`${this.backendUrl}/${id}`, { headers: this.getHeaders() });
   }
+
 }

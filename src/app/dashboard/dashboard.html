@@ -7,31 +7,31 @@
     <i class="fas fa-bars" (click)="toggleSidebar()"></i>
   </div>
   <ul class="list-unstyled components">
-    <li class="active">
-      <a [routerLink]="['/dashboard']">
+    <li>
+      <a [routerLink]="['/dashboard']" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
         <i class="fas fa-home"></i>
         <span *ngIf="!isCollapsed">Inicio</span>
       </a>
     </li>
     <li>
-      <a [routerLink]="['/dashboard/addresses']">
+      <a [routerLink]="['/dashboard/addresses']" routerLinkActive="active">
         <i class="fas fa-envelope"></i>
         <span *ngIf="!isCollapsed">Rutas</span>
       </a>
     </li>
     <li>
-      <a [routerLink]="['/dashboard/vehiculos']">
+      <a [routerLink]="['/dashboard/vehiculos']" routerLinkActive="active">
         <i class="fas fa-car"></i>
         <span *ngIf="!isCollapsed">Vehículos</span>
       </a>
     </li>
-    <li>
-      <a href="#" data-bs-toggle="modal" data-bs-target="#sesionModal">
-        <i class="fas fa-sign-out-alt"></i>
-        <span>Salir</span>
-      </a>
-    </li>
   </ul>
+  <div class="sidebar-logout-section">
+    <button type="button" class="btn-logout" (click)="logout()" aria-label="Cerrar Sesión">
+      <i class="fas fa-sign-out-alt"></i>
+      <span>Cerrar Sesión</span>
+    </button>
+  </div>
 </nav>
 <nav class="topbar" [ngClass]="{ 'show-menu': isMenuOpen }">
   <div class="topbar-header" (click)="toggleMenu()">
@@ -57,34 +57,17 @@
         <span>Vehículos</span>
       </a>
     </li>
-    <li>
-      <a href="#" data-bs-toggle="modal" data-bs-target="#sesionModal">
-        <i class="fas fa-sign-out-alt"></i>
-        <span>Salir</span>
-      </a>
-    </li>
   </ul>
+  <div class="topbar-logout-section">
+    <button type="button" class="btn-logout" (click)="logout()" aria-label="Cerrar Sesión">
+      <i class="fas fa-sign-out-alt"></i>
+      <span>Cerrar Sesión</span>
+    </button>
+  </div>
 </nav>
 <main>
   <!-- contenido del dashboard -->
   <router-outlet> </router-outlet>
 </main>
-<!-- Modal -->
-<div class="modal fade" id="sesionModal" tabindex="-1" aria-labelledby="sesionModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h1 class="modal-title fs-5" id="sesionModalLabel">Atención</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        ¿Realmente deseas cerrar sesión?
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-        <button type="button" class="btn btn-danger" (click)="logout()">Cerrar sesión</button>
-      </div>
-    </div>
-  </div>
-</div>
 
+<!-- Confirmación de logout eliminada: logout() se llama directamente -->

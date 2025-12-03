@@ -1,19 +1,42 @@
 <!-- src/app/dashboard/pages/rutas/rutas.html -->
-<div class="map-container">
+<h2>Gestión de Rutas</h2>
+
+<div class="controls-top">
+  <div class="route-info">
+    <span>Puntos: {{ routePoints.length }}</span>
+  </div>
+  <div class="route-buttons">
+    <button (click)="clearRoute()" class="btn-secondary">Limpiar</button>
+    <button (click)="saveRoute()" [disabled]="isSaving" class="btn-primary">{{ isSaving ? 'Guardando...' : 'Guardar Ruta' }}</button>
+  </div>
+  <div class="loading-section" *ngIf="isLoading">Cargando...</div>
+</div>
+
+<div class="map-and-table-container">
+  <div class="map-container">
     <div id="map"></div>
-    <div class="controls">
-      <button (click)="saveRoute()">Guardar Ruta</button>
-      <button (click)="clearRoute()">Limpiar Ruta</button>
-    </div>
   </div>
+
   <div class="saved-routes">
-    <h2>Rutas Guardadas</h2>
-    <ul>
-      <li *ngFor="let ruta of rutasGuardadas">
-        {{ ruta.nombre }}
-        <button (click)="verRuta(ruta)">Ver</button>
-        <!-- Botón de borrar eliminado -->
-      </li>
-    </ul>
+    <h3>Rutas Guardadas</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Puntos</th>
+          <th>Acción</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let ruta of rutasGuardadas">
+          <td>{{ ruta.nombre }}</td>
+          <td>{{ ruta.coordenadas.length || 0 }}</td>
+          <td>
+            <button (click)="verRuta(ruta)">Ver</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
   </div>
+</div>
   

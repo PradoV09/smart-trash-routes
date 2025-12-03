@@ -1,103 +1,253 @@
 /* src/app/dashboard/pages/rutas/rutas.css */
 
-.map-container {
-  height: 500px; 
+h2 {
+  margin: 0 0 20px 0;
+  color: #667eea;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+/* Top controls bar */
+.controls-top {
+  background: linear-gradient(135deg, rgba(15, 20, 40, 0.95) 0%, rgba(26, 30, 50, 0.95) 100%);
+  padding: 16px 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.2);
+  border: 1px solid rgba(102, 126, 234, 0.3);
   margin-bottom: 20px;
-  display: flex;        
-  flex-direction: column;
-}
-
-#map {
-  width: 100%;
-  flex-grow: 1; 
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-}
-
-.controls {
-  padding-top: 15px;
   display: flex;
-  gap: 12px; /* Espacio entre los botones */
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
 }
 
-/* Estilo general y unificado para los botones */
+.route-info {
+  color: #b0b8d4;
+  font-weight: 600;
+  font-size: 14px;
+  min-width: 120px;
+}
+
+.route-buttons {
+  display: flex;
+  gap: 10px;
+  flex: 1;
+  min-width: 200px;
+}
+
+.loading-section {
+  text-align: center;
+  font-size: 12px;
+  color: #b0b8d4;
+  padding: 0;
+  flex: 1;
+}
+
 button {
   border: none;
-  padding: 10px 18px;
+  padding: 10px 16px;
   border-radius: 8px;
   cursor: pointer;
   font-size: 14px;
   font-weight: 500;
-  transition: all 0.2s ease-in-out;
+  transition: all 0.3s ease;
   outline: none;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-button:hover {
-  transform: translateY(-2px); /* Efecto de elevación al pasar el mouse */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
 }
 
-/* Botón primario: "Guardar Ruta" */
-.controls button:first-child {
-  background-color: #0d6efd; /* Azul Bootstrap */
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
 }
 
-.controls button:first-child:hover {
-  background-color: #0b5ed7;
+.btn-primary:hover:not(:disabled) {
+  background: linear-gradient(135deg, #5568d3 0%, #6a3d92 100%);
 }
 
-/* Botón secundario: "Limpiar Ruta" */
-.controls button:last-child {
-  background-color: #6c757d; /* Gris secundario */
+.btn-secondary {
+  background: linear-gradient(135deg, #4a5f7f 0%, #3d4f6b 100%);
   color: white;
 }
 
-.controls button:last-child:hover {
-  background-color: #5c636a;
+.btn-secondary:hover:not(:disabled) {
+  background: linear-gradient(135deg, #3d525a 0%, #2e3f52 100%);
 }
 
-/* --- Estilos para la lista de rutas guardadas --- */
-
-.saved-routes h2 {
-  color: #343a40;
-  margin-bottom: 15px;
-  border-bottom: 2px solid #f0f0f0;
-  padding-bottom: 10px;
+/* Map and table container */
+.map-and-table-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  height: calc(100vh - 240px);
 }
 
-.saved-routes ul {
-  list-style-type: none;
-  padding: 0;
+.map-container {
+  height: 100%;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.2);
+  border: 1px solid rgba(102, 126, 234, 0.3);
 }
 
-.saved-routes li {
+#map {
+  width: 100%;
+  height: 100%;
+}
+
+.loading-section {
+  text-align: center;
+  font-size: 12px;
+  color: #b0b8d4;
+  padding: 10px;
+}
+
+.route-actions {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 12px 15px;
-  background-color: #ffffff;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.route-actions p {
+  margin: 0;
+  font-size: 14px;
+  color: #b0b8d4;
+  font-weight: 600;
+}
+
+button {
+  border: none;
+  padding: 10px 16px;
   border-radius: 8px;
-  margin-bottom: 10px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-  transition: box-shadow 0.2s, transform 0.2s;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  outline: none;
 }
 
-.saved-routes li:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
 }
 
-/* Botón "Ver" en la lista */
-.saved-routes button {
-  background-color: #198754; /* Verde Bootstrap */
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.controls button {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
-  padding: 6px 14px;
-  font-size: 13px;
+}
+
+.controls button:hover:not(:disabled) {
+  background: linear-gradient(135deg, #5568d3 0%, #6a3d92 100%);
+}
+
+/* Saved routes table */
+.saved-routes {
+  background: linear-gradient(135deg, rgba(15, 20, 40, 0.95) 0%, rgba(26, 30, 50, 0.95) 100%);
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.2);
+  border: 1px solid rgba(102, 126, 234, 0.3);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  height: 100%;
+}
+
+.saved-routes h3 {
+  margin: 0 0 15px 0;
+  color: #667eea;
+  font-size: 18px;
+  font-weight: 700;
+  text-shadow: 0 0 10px rgba(102, 126, 234, 0.3);
+}
+
+.saved-routes table {
+  width: 100%;
+  border-collapse: collapse;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.saved-routes thead {
+  background: rgba(102, 126, 234, 0.1);
+  border-bottom: 2px solid rgba(102, 126, 234, 0.3);
+}
+
+.saved-routes th {
+  padding: 12px;
+  text-align: left;
+  font-weight: 600;
+  color: #667eea;
+  font-size: 14px;
+}
+
+.saved-routes td {
+  padding: 12px;
+  border-bottom: 1px solid rgba(102, 126, 234, 0.2);
+  color: #b0b8d4;
+  font-size: 14px;
+}
+
+.saved-routes tbody tr:hover {
+  background: rgba(102, 126, 234, 0.1);
+}
+
+.saved-routes button {
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  color: white;
+  padding: 6px 12px;
+  font-size: 12px;
 }
 
 .saved-routes button:hover {
-  background-color: #157347;
+  background: linear-gradient(135deg, #3d9cef 0%, #00e0f0 100%);
 }
+
+@media (max-width: 1024px) {
+  .map-and-controls {
+    grid-template-columns: 1fr;
+  }
+
+  .controls {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    height: fit-content;
+  }
+
+  .route-actions {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 768px) {
+  .map-container {
+    height: 400px;
+  }
+
+  .controls {
+    grid-template-columns: 1fr;
+  }
+
+  .saved-routes table {
+    font-size: 12px;
+  }
+
+  .saved-routes th,
+  .saved-routes td {
+    padding: 8px;
+  }
+}
+

@@ -30,7 +30,7 @@ export class AuthService {
   }
 
   login(email: string, password: string): Observable<boolean> {
-    return this.http.post<any>('http://smartroutes.eleueleo.com/api/auth/login', { nameuser: email, password }).pipe(
+    return this.http.post<any>('http://10.241.138.224:3005/api/auth/login', { nameuser: email, password }).pipe(
       tap(response => {
         console.log('Raw login response:', response);
       }),
@@ -98,6 +98,54 @@ export class AuthService {
   }
 
   logout(): void {
+    const token = typeof window !== 'undefined' ? localStorage.getItem('accessToken') : null;
+    const email = typeof window !== 'undefined' ? localStorage.getItem('user_email') : null;
+
+    console.log('Iniciando logout - Token:', token ? 'EXISTS' : 'MISSING', 'Email:', email);
+
+    // Limpiar sesión local inmediatamente para que la UI no espere al backend
+    this.clearLocalSession();
+
+    // Intentar notificar al backend de forma segura (no bloqueante)
+    if (token) {
+      this.sendLogoutNotification(token, email);
+    }
+  }
+
+  private sendLogoutNotification(token: string | null, email: string | null): void {
+    try {
+      const url = 'http://10.241.138.224:3005/api/auth/logout';
+      const body = JSON.stringify({ email });
+
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 2000);
+
+      fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body,
+        keepalive: true,
+        signal: controller.signal
+      }).then(response => {
+        clearTimeout(timeoutId);
+        if (!response.ok) {
+          console.warn('Logout notification returned non-OK status:', response.status);
+        } else {
+          console.log('Logout notification sent to backend');
+        }
+      }).catch(err => {
+        clearTimeout(timeoutId);
+        console.warn('Error sending logout notification (background):', err);
+      });
+    } catch (err) {
+      console.warn('sendLogoutNotification error:', err);
+    }
+  }
+
+  private clearLocalSession(): void {
     this.isAuthenticated = false;
     this.currentUser = null;
 
@@ -106,6 +154,9 @@ export class AuthService {
       localStorage.removeItem('user_authenticated');
       localStorage.removeItem('user_email');
       localStorage.removeItem('user_rol');
+      localStorage.removeItem('user_id');
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('refreshToken');
     }
 
     this.router.navigate(['/login']);

@@ -14,9 +14,11 @@ import { CommonModule } from '@angular/common';
 })
 export class Rutas implements AfterViewInit {
   private map: any;
-  private routePoints: L.LatLng[] = [];
+  public routePoints: L.LatLng[] = [];
   private polyline: L.Polyline | null = null;
   public rutasGuardadas: Ruta[] = [];
+  public isLoading = false;
+  public isSaving = false;
   private rutasService = inject(RutasService);
   private http = inject(HttpClient);
 
