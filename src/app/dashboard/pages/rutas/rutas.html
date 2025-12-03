@@ -1,1 +1,60 @@
-<h1>Gestión de Rutas</h1>
+<!-- src/app/dashboard/pages/rutas/rutas.html -->
+<h2>Gestión de Rutas</h2>
+
+<div class="controls-top">
+  <div class="route-info">
+    <span>Puntos: {{ routePoints.length }}</span>
+  </div>
+  <div class="route-buttons">
+    <button (click)="saveRoute()" [disabled]="isSaving" class="btn-primary">{{ isSaving ? 'Guardando...' : 'Guardar Ruta' }}</button>
+    <button (click)="verTodasRutas()" class="btn-secondary" [disabled]="isLoading || rutasGuardadas.length === 0">Ver Todas</button>
+    <button (click)="clearAllDisplayed()" class="btn-secondary" [disabled]="isLoading">Limpiar Vistas</button>
+  </div>
+  @if (isLoading) {
+    <div class="loading-section">⏳ Cargando rutas...</div>
+  }
+  @if (successMessage) {
+    <div class="success-message">{{ successMessage }}</div>
+  }
+  @if (errorMessage) {
+    <div class="error-message">{{ errorMessage }}</div>
+  }
+</div>
+
+<div class="map-and-table-container">
+  <div class="map-container">
+    <div id="map"></div>
+    <div class="map-hint">Haz clic en el mapa para crear puntos de ruta</div>
+  </div>
+
+  <div class="saved-routes">
+    <h3>Rutas Guardadas</h3>
+    @if (rutasGuardadas.length === 0) {
+      <div class="no-routes-message">No hay rutas guardadas. Crea una nueva ruta.</div>
+    } @else {
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Puntos</th>
+              <th>Acción</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (ruta of rutasGuardadas; track ruta.id) {
+              <tr>
+                <td>{{ ruta.nombre_ruta }}</td>
+                <td>{{ ruta.calles_ids.length || 0 }}</td>
+                <td>
+                  <button (click)="verRuta(ruta)" class="btn-view">Ver</button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>
+</div>
+  

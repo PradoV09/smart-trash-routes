@@ -24,31 +24,53 @@ jobs:
       - name: 💡 Instalar Angular CLI
         run: npm install -g @angular/cli
 
-      - name: 📦 Instalar dependencias
+      - name: 📦 Instalar dependencias frontend
         run: npm install
 
       # ----------------- BUILD FRONTEND -----------------
       - name: 🏗 Build frontend
-        run: ng build --configuration production --base-href /jose_site/
-
-      # ----------------- AJUSTAR BASE HREF -----------------
-      - name: 🔧 Reemplazar base href
-        run: sed -i 's|<base href="/jose_site/">|<base href="/jose_site/deploy-frontend/">|' dist/front-end/browser/index.html
+        run: ng build --configuration production --base-href /
 
       # ----------------- PREPARAR FRONTEND -----------------
-      - name: 📁 Preparar archivos frontend
+      - name: 🧩 Preparar archivos frontend
         run: |
-          mkdir -p deploy-frontend
+          rm -rf deploy-frontend
+          mkdir deploy-frontend
+          # copiar solo el contenido de la build, no la carpeta entera
           cp -r dist/front-end/browser/* deploy-frontend/
           cp dist/front-end/3rdpartylicenses.txt deploy-frontend/ || true
           cp dist/front-end/prerendered-routes.json deploy-frontend/ || true
 
       # ----------------- DEBUG -----------------
       - name: 🧾 Ver contenido listo para deploy
-        run: |
-          echo "=== FRONTEND ==="
-          ls -R deploy-frontend || true
+        run: ls -R deploy-frontend
 
+      # ----------------- LIMPIAR CARPETA DEL FRONTEND -----------------
+      - name: 🧹 Limpiar solo deploy-frontend en el servidor
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          port: ${{ secrets.SERVER_PORT || '22' }}
+          script: |
+            rm -rf /var/www/jose_site/deploy-frontend/*
+            mkdir -p /var/www/jose_site/deploy-frontend
+            echo "✔ Solo deploy-frontend fue limpiado"
+
+      # ----------------- SUBIR ARCHIVOS -----------------
+      - name: 📤 Subir frontend al servidor
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          port: ${{ secrets.SERVER_PORT || '22' }}
+          source: "deploy-frontend/*"   
+          target: "/var/www/jose_site/deploy-frontend/"  
+          overwrite: true
+
+      # ----------------- SSH TASKS -----------------
       - name: ⚙ Configurar permisos finales
         uses: appleboy/ssh-action@v1
         with:
@@ -57,4 +79,4 @@ jobs:
           key: ${{ secrets.SERVER_SSH_KEY }}
           port: ${{ secrets.SERVER_PORT || '22' }}
           script: |
-            echo "✅ Frontend desplegado correctamente"
+            echo "✔ Deploy completado"

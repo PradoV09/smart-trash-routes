@@ -1,17 +1,19 @@
-import { Component } from '@angular/core';
-import { Router, RouterOutlet, RouterLink } from '@angular/router';
+import { Component, inject } from '@angular/core';
+import { Router, RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.html',
   styleUrls: ['./dashboard.css'],
-  imports: [RouterOutlet, CommonModule, RouterLink],
+  imports: [RouterOutlet, CommonModule, RouterLink, RouterLinkActive],
   standalone: true
 })
 export class Dashboard {
 
-  constructor (private router: Router) {}
+  private router = inject(Router);
+  private authService = inject(AuthService);
 
   isCollapsed = false;
   isMenuOpen = false;
@@ -33,8 +35,7 @@ export class Dashboard {
   }
 
   logout(): void {
-    localStorage.removeItem('user_authenticated');
-    window.location.href = '/login';
+    this.authService.logout();
   }
 
 }
