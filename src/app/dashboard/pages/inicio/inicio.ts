@@ -38,8 +38,8 @@ export class Inicio implements OnInit {
       headers = headers.set('Authorization', `Bearer ${token}`);
     }
 
-    // Cargar rutas
-    this.http.get<any>('http://10.241.138.224:3005/api/rutas', { headers }).subscribe({
+    // Cargar rutas (usar endpoint /all)
+    this.http.get<any>('http://192.168.1.3:3005/api/rutas/all', { headers }).subscribe({
       next: (res) => {
         let rutas: any[] = [];
         if (Array.isArray(res)) {
@@ -60,7 +60,7 @@ export class Inicio implements OnInit {
     });
 
     // Cargar vehículos
-    this.http.get<any>('http://10.241.138.224:3005/api/vehiculos/all', { headers }).subscribe({
+    this.http.get<any>('http://192.168.1.3:3005/api/vehiculos/all', { headers }).subscribe({
       next: (res) => {
         let vehiculos: any[] = [];
         if (Array.isArray(res)) {

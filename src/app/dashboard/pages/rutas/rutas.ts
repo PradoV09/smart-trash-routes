@@ -1,4 +1,4 @@
-import { Component, AfterViewInit, inject } from '@angular/core';
+import { Component, AfterViewInit, OnInit, inject } from '@angular/core';
 import * as L from 'leaflet';
 import { RutasService, Ruta } from '../../../services/rutas.service';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
@@ -12,7 +12,7 @@ import { CommonModule } from '@angular/common';
   styleUrls: ['./rutas.css'],
   providers: [RutasService]
 })
-export class Rutas implements AfterViewInit {
+export class Rutas implements AfterViewInit, OnInit {
   private map: any;
   public routePoints: L.LatLng[] = [];
   private polyline: L.Polyline | null = null;
@@ -26,6 +26,11 @@ export class Rutas implements AfterViewInit {
     this.initMap();
     this.map.on('click', (e: L.LeafletMouseEvent) => this.onMapClick(e));
     this.cargarRutasGuardadas();
+  }
+
+  ngOnInit(): void {
+    // Set loading before change detection runs to avoid ExpressionChangedAfterItHasBeenCheckedError
+    this.isLoading = true;
   }
 
   private initMap(): void {
@@ -50,22 +55,34 @@ export class Rutas implements AfterViewInit {
 
   saveRoute(): void {
     const nombre = prompt('Introduce el nombre de la ruta:');
-    if (nombre && this.routePoints.length > 0) {
-      const nuevaRuta: Ruta = {
-        nombre: nombre,
-        coordenadas: this.routePoints.map(p => ({ lat: p.lat, lng: p.lng }))
-      };
-      this.rutasService.crearRuta(nuevaRuta).subscribe({
-        next: () => {
-          console.log('Ruta guardada exitosamente');
-          this.cargarRutasGuardadas();
-          this.clearRoute();
-        },
-        error: (err) => {
-          console.error('Error saving ruta:', err);
-        }
-      });
+    if (!nombre || this.routePoints.length < 2) {
+      console.warn("Se necesitan al menos 2 puntos para una ruta");
+      return;
     }
+
+    // CONSTRUIMOS EL GEOJSON 🔥🔥
+    const shapeGeoJSON = {
+      type: "LineString",
+      coordinates: this.routePoints.map(p => [p.lng, p.lat])  // IMPORTANTE: lng primero!
+    };
+
+    const payload = {
+      nombre_ruta: nombre,
+      shape: shapeGeoJSON
+    };
+
+    console.log("Payload enviado:", payload);
+
+    this.rutasService.crearRuta(payload).subscribe({
+      next: () => {
+        console.log('Ruta guardada exitosamente');
+        this.cargarRutasGuardadas();
+        this.clearRoute();
+      },
+      error: (err) => {
+        console.error('Error saving ruta:', err);
+      }
+    });
   }
 
   clearRoute(): void {
@@ -77,25 +94,21 @@ export class Rutas implements AfterViewInit {
   }
 
   cargarRutasGuardadas(): void {
-    const token = typeof window !== 'undefined' ? localStorage.getItem('accessToken') : null;
-    let headers = new HttpHeaders();
-    if (token) {
-      headers = headers.set('Authorization', `Bearer ${token}`);
-    }
-
     this.rutasService.obtenerRutas().subscribe({
       next: (rutas: Ruta[]) => {
         console.log('Rutas recibidas desde el backend:', rutas);
         this.rutasGuardadas = rutas;
+        this.isLoading = false;
       },
       error: (err) => {
         console.error('Error loading rutas:', err);
+        this.isLoading = false;
       }
     });
   }
 
   verRuta(ruta: Ruta): void {
-    // El método obtenerRutaPorId no se usa directamente aquí, 
+    // El método obtenerRutaPorId no se usa directamente aquí,
     // pero está disponible en el servicio para futuras ampliaciones.
     this.clearRoute();
     this.routePoints = ruta.coordenadas.map((c: { lat: number; lng: number }) => L.latLng(c.lat, c.lng));

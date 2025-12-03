@@ -30,7 +30,7 @@ export class AuthService {
   }
 
   login(email: string, password: string): Observable<boolean> {
-    return this.http.post<any>('http://10.241.138.224:3005/api/auth/login', { nameuser: email, password }).pipe(
+    return this.http.post<any>('http://192.168.1.3:3005/api/auth/login', { nameuser: email, password }).pipe(
       tap(response => {
         console.log('Raw login response:', response);
       }),
@@ -114,7 +114,7 @@ export class AuthService {
 
   private sendLogoutNotification(token: string | null, email: string | null): void {
     try {
-      const url = 'http://10.241.138.224:3005/api/auth/logout';
+      const url = 'http://192.168.1.3:3005/api/auth/logout';
       const body = JSON.stringify({ email });
 
       const controller = new AbortController();

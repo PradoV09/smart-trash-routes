@@ -177,8 +177,12 @@ button:disabled {
 .saved-routes table {
   width: 100%;
   border-collapse: collapse;
-  flex: 1;
+}
+
+.saved-routes .table-wrapper {
+  flex: 1 1 auto;
   overflow-y: auto;
+  /* allow the table wrapper to grow and show a scrollbar when needed */
 }
 
 .saved-routes thead {
@@ -250,4 +254,3 @@ button:disabled {
     padding: 8px;
   }
 }
-

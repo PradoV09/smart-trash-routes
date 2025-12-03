@@ -17,7 +17,7 @@
           "--port"
           "$PORT"
           "--host"
-          "10.241.138.224"
+          "192.168.1.3"
           "--disable-host-check"
         ];
         manager = "web";

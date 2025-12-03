@@ -7,11 +7,11 @@
   </div>
   <div class="route-buttons">
     <button (click)="clearRoute()" class="btn-secondary">Limpiar</button>
-    <button (click)="saveRoute()" [disabled]="isSaving" class="btn-primary">{{ isSaving ? 'Guardando...' : 'Guardar Ruta' }}</button>
+    <button (click)="saveRoute()" [disabled]="isSaving" class="btn-primary">
+      {{ isSaving ? 'Guardando...' : 'Guardar Ruta' }}
+    </button>
   </div>
-  @if (isLoading) {
-    <div class="loading-section">Cargando...</div>
-  }
+  <div *ngIf="isLoading" class="loading-section">Cargando...</div>
 </div>
 
 <div class="map-and-table-container">
@@ -21,26 +21,25 @@
 
   <div class="saved-routes">
     <h3>Rutas Guardadas</h3>
-    <table>
-      <thead>
-        <tr>
-          <th>Nombre</th>
-          <th>Puntos</th>
-          <th>Acción</th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (ruta of rutasGuardadas; track ruta.id) {
+    <div class="table-wrapper">
+      <table>
+        <thead>
           <tr>
+            <th>Nombre</th>
+            <th>Puntos</th>
+            <th>Acción</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let ruta of rutasGuardadas">
             <td>{{ ruta.nombre }}</td>
             <td>{{ ruta.coordenadas.length || 0 }}</td>
             <td>
               <button (click)="verRuta(ruta)">Ver</button>
             </td>
           </tr>
-        }
-      </tbody>
-    </table>
+        </tbody>
+      </table>
+    </div>
   </div>
 </div>
-  
