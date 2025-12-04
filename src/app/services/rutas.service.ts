@@ -1,3 +1,10 @@
+/*
+  Servicio que encapsula llamadas al backend relacionadas con rutas.
+
+  - Provee métodos para obtener todas las rutas, obtener una ruta por ID y crear rutas.
+  - Traduce la respuesta del backend al tipo `Ruta` local, parseando `shape` (GeoJSON)
+    y convirtiendo coordenadas a objetos `{ lat, lng }`.
+*/
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
@@ -18,6 +25,7 @@ export class RutasService {
 
   constructor(private http: HttpClient) { }
 
+  // Construye headers con token si está presente en localStorage
   private getHeaders(): HttpHeaders {
     let headers = new HttpHeaders();
     if (typeof window !== 'undefined') {
@@ -29,15 +37,15 @@ export class RutasService {
     return headers;
   }
 
-  // Dev helper: obtiene la respuesta cruda del endpoint /all (sin mappear)
+  // Ayuda de desarrollo: obtiene la respuesta cruda del endpoint /all (sin mappear)
   obtenerRutasRaw(): Observable<any> {
     const url = `${this.backendBase}/all`;
     const token = typeof window !== 'undefined' ? localStorage.getItem('accessToken') : null;
-    console.debug('[RutasService] obtenerRutasRaw - token present?', !!token, 'url:', url);
+    console.debug('[RutasService] obtenerRutasRaw - ¿token presente?', !!token, 'url:', url);
     return this.http.get<any>(url, { headers: this.getHeaders() }).pipe(
-      tap(resp => console.debug('[RutasService] raw response (obtenerRutasRaw):', resp)),
+      tap(resp => console.debug('[RutasService] respuesta cruda (obtenerRutasRaw):', resp)),
       catchError(err => {
-        console.error('[RutasService] obtenerRutasRaw error:', err);
+        console.error('[RutasService] error en obtenerRutasRaw:', err);
         return throwError(() => err);
       })
     );
@@ -48,12 +56,12 @@ export class RutasService {
     return this.http.post(`${this.backendBase}/register`, data, { headers: this.getHeaders() });
   }
 
-  // GET /rutas - Leer todas las rutas
+  // GET /rutas - Leer todas las rutas y mapear al tipo local `Ruta`.
   obtenerRutas(): Observable<Ruta[]> {
     // The backend returns a wrapped response: { msg, data: { data: [ ... ] } }
     // and each item has `shape` as a JSON string with GeoJSON MultiLineString coordinates
     return this.http.get<any>(`${this.backendBase}/all`, { headers: this.getHeaders() }).pipe(
-      tap(response => console.debug('[RutasService] raw /all response:', response)),
+      tap(response => console.debug('[RutasService] respuesta cruda /all:', response)),
       map(response => {
         const items = response?.data?.data || [];
         return items.map((it: any) => {
@@ -92,7 +100,7 @@ export class RutasService {
         });
       }),
       catchError(err => {
-        console.error('[RutasService] obtenerRutas error:', err);
+        console.error('[RutasService] error en obtenerRutas:', err);
         return throwError(() => err);
       })
     );

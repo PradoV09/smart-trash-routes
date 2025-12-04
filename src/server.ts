@@ -1,3 +1,13 @@
+/*
+  Servidor Express para servir la aplicación Angular en entorno Node (SSR).
+
+  - `AngularNodeAppEngine` se encarga de renderizar la app Angular en el servidor.
+  - Sirve archivos estáticos desde la carpeta `../browser`.
+  - Para todas las demás rutas, delega a `angularApp.handle()` para renderizado.
+  - Si este archivo se ejecuta como módulo principal, arranca el servidor en el puerto
+    indicado por `PORT` o en el 4000 por defecto.
+  - Exporta `reqHandler` para integrar con entornos que esperan un handler (Cloud Functions, dev-server).
+*/
 import {
   AngularNodeAppEngine,
   createNodeRequestHandler,
@@ -12,21 +22,7 @@ const browserDistFolder = join(import.meta.dirname, '../browser');
 const app = express();
 const angularApp = new AngularNodeAppEngine();
 
-/**
- * Example Express Rest API endpoints can be defined here.
- * Uncomment and define endpoints as necessary.
- *
- * Example:
- * ```ts
- * app.get('/api/{*splat}', (req, res) => {
- *   // Handle API request
- * });
- * ```
- */
-
-/**
- * Serve static files from /browser
- */
+// Serve static files from /browser
 app.use(
   express.static(browserDistFolder, {
     maxAge: '1y',
@@ -35,9 +31,7 @@ app.use(
   }),
 );
 
-/**
- * Handle all other requests by rendering the Angular application.
- */
+// Handle all other requests by rendering the Angular application.
 app.use((req, res, next) => {
   angularApp
     .handle(req)
@@ -47,10 +41,7 @@ app.use((req, res, next) => {
     .catch(next);
 });
 
-/**
- * Start the server if this module is the main entry point.
- * The server listens on the port defined by the `PORT` environment variable, or defaults to 4000.
- */
+// Start the server if this module is the main entry point.
 if (isMainModule(import.meta.url)) {
   const port = process.env['PORT'] || 4000;
   app.listen(port, (error) => {
@@ -58,11 +49,9 @@ if (isMainModule(import.meta.url)) {
       throw error;
     }
 
-    console.log(`Node Express server listening on http://localhost:${port}`);
+    console.log(`Servidor Node/Express escuchando en http://localhost:${port}`);
   });
 }
 
-/**
- * Request handler used by the Angular CLI (for dev-server and during build) or Firebase Cloud Functions.
- */
+// Request handler used by the Angular CLI (for dev-server and during build) or Firebase Cloud Functions.
 export const reqHandler = createNodeRequestHandler(app);

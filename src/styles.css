@@ -10,3 +10,13 @@ html, body {
     padding: 0;
     font-family: Roboto, "Helvetica Neue", sans-serif;
 }
+
+/* Variables globales de paleta (usadas por dashboard y login) */
+:root {
+    --primary-1: #667eea; /* azul violeta */
+    --primary-2: #764ba2; /* morado */
+    --primary-1-rgb: 102,126,234;
+    --primary-2-rgb: 118,75,162;
+    --muted: #7f8c8d;
+    --text-dark: #2c3e50;
+}

@@ -1,3 +1,10 @@
+/*
+  Página "Inicio" del dashboard.
+
+  - Muestra estadísticas básicas: total de rutas y vehículos.
+  - Obtiene datos desde endpoints `/api/rutas/all` y `/api/vehiculos/all`.
+  - Extrae el nombre del usuario desde `localStorage` o `AuthService`.
+*/
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
@@ -26,11 +33,13 @@ export class Inicio implements OnInit {
     this.loadStatistics();
   }
 
+  // Carga el nombre/usuario desde localStorage o AuthService
   private loadUserData(): void {
     const email = localStorage.getItem('user_email') || this.authService.getEmail();
     this.userName = email ? email.split('@')[0].toUpperCase() : 'Usuario';
   }
 
+  // Llama a los endpoints del backend para obtener estadísticas
   private loadStatistics(): void {
     const token = typeof window !== 'undefined' ? localStorage.getItem('accessToken') : null;
     let headers = new HttpHeaders();

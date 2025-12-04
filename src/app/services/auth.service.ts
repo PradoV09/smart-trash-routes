@@ -1,3 +1,11 @@
+/*
+  Servicio de autenticación central.
+
+  Responsabilidades:
+  - Gestionar el estado de autenticación en memoria y en `localStorage`.
+  - Proveer métodos `login`, `logout` y utilidades para obtener el usuario actual.
+  - Manejar distintos formatos de respuesta del backend (tokens, objeto usuario o listas).
+*/
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
@@ -9,13 +17,16 @@ import { of } from 'rxjs';
   providedIn: 'root'
 })
 export class AuthService {
+  // Estado en memoria (rápido) y copia del usuario actual
   private isAuthenticated = false;
   private currentUser: any = null;
 
   constructor(private router: Router, private http: HttpClient) {
+    // Al construir el servicio intentamos restaurar la sesión desde localStorage
     this.checkExistingSession();
   }
 
+  // Comprueba si existe una sesión persistida en localStorage (SSR-safe)
   private checkExistingSession(): void {
     if (typeof window === 'undefined') return; // SSR check
 
@@ -29,10 +40,11 @@ export class AuthService {
     }
   }
 
+  // Intenta autenticar contra el backend. Adapta distintos formatos de respuesta.
   login(email: string, password: string): Observable<boolean> {
     return this.http.post<any>('http://192.168.1.3:3005/api/auth/login', { nameuser: email, password }).pipe(
       tap(response => {
-        console.log('Raw login response:', response);
+        console.log('Respuesta cruda login:', response);
       }),
       map(response => {
         // Manejar distintos formatos de respuesta: tokens + username, objeto único o arreglo de usuarios
@@ -57,7 +69,7 @@ export class AuthService {
         } else {
           const usuarios = response?.usuarios || response?.data || [];
           console.log('Usuarios cargados:', usuarios);
-          console.log('Buscando:', { email, password });
+          console.log('Buscando credenciales:', { email });
 
           usuario = usuarios.find((u: any) => {
             const uEmail = (u.email || u.correo || u.username || '').toString().trim().toLowerCase();
@@ -91,17 +103,18 @@ export class AuthService {
         }
       }),
       catchError(error => {
-        console.error('Error during login:', error);
+        console.error('Error durante login:', error);
         return of(false);
       })
     );
   }
 
+  // Cierra la sesión localmente e intenta notificar al backend de forma segura
   logout(): void {
     const token = typeof window !== 'undefined' ? localStorage.getItem('accessToken') : null;
     const email = typeof window !== 'undefined' ? localStorage.getItem('user_email') : null;
 
-    console.log('Iniciando logout - Token:', token ? 'EXISTS' : 'MISSING', 'Email:', email);
+    console.log('Iniciando logout - Token:', token ? 'EXISTE' : 'FALTA', 'Email:', email);
 
     // Limpiar sesión local inmediatamente para que la UI no espere al backend
     this.clearLocalSession();
@@ -112,6 +125,7 @@ export class AuthService {
     }
   }
 
+  // Envía una petición de logout al backend con timeout/abort para que no bloquee la UI
   private sendLogoutNotification(token: string | null, email: string | null): void {
     try {
       const url = 'http://192.168.1.3:3005/api/auth/logout';
@@ -132,19 +146,20 @@ export class AuthService {
       }).then(response => {
         clearTimeout(timeoutId);
         if (!response.ok) {
-          console.warn('Logout notification returned non-OK status:', response.status);
+          console.warn('La notificación de logout devolvió estado no OK:', response.status);
         } else {
-          console.log('Logout notification sent to backend');
+          console.log('Notificación de logout enviada al backend');
         }
       }).catch(err => {
         clearTimeout(timeoutId);
-        console.warn('Error sending logout notification (background):', err);
+        console.warn('Error al enviar notificación de logout (en segundo plano):', err);
       });
     } catch (err) {
-      console.warn('sendLogoutNotification error:', err);
+      console.warn('Error en sendLogoutNotification:', err);
     }
   }
 
+  // Limpia la sesión almacenada y redirige al login
   private clearLocalSession(): void {
     this.isAuthenticated = false;
     this.currentUser = null;
@@ -162,10 +177,28 @@ export class AuthService {
     this.router.navigate(['/login']);
   }
 
+  // Comprueba si el usuario está autenticado: usa memoria y fallback a localStorage
   isLoggedIn(): boolean {
-    return this.isAuthenticated;
+    // Verificación dinámica: además del flag en memoria, comprobar localStorage
+    if (this.isAuthenticated) return true;
+
+    if (typeof window !== 'undefined') {
+      const userAuth = localStorage.getItem('user_authenticated');
+      if (userAuth === 'true') {
+        // Restaurar estado en memoria por seguridad
+        this.isAuthenticated = true;
+        this.currentUser = {
+          email: localStorage.getItem('user_email'),
+          rol: localStorage.getItem('user_rol')
+        };
+        return true;
+      }
+    }
+
+    return false;
   }
 
+  // Accesores del usuario actual
   getCurrentUser(): any {
     return this.currentUser;
   }

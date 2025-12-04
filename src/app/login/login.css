@@ -27,7 +27,7 @@ body, html {
     overflow: hidden;
 }
 
-/* Fondo animado con tema ecológico */
+/* Fondo animado alineado al dashboard */
 .scene {
     margin: 0;
     padding: 0;
@@ -39,7 +39,7 @@ body, html {
     display: flex;
     justify-content: center;
     align-items: center;
-    background: linear-gradient(135deg, #2ecc71, #27ae60, #16a085, #1abc9c);
+    background: linear-gradient(135deg, var(--primary-1), var(--primary-2), #5a6fb8, var(--primary-1));
     background-size: 400% 400%;
     animation: gradientMove 15s ease infinite;
 }
@@ -89,7 +89,7 @@ body, html {
     backdrop-filter: blur(20px);
     background: rgba(255, 255, 255, 0.95);
     box-shadow: 0 15px 50px rgba(0, 0, 0, 0.2),
-                0 0 30px rgba(46, 204, 113, 0.3);
+                0 0 30px rgba(var(--primary-1-rgb), 0.18);
     border: 2px solid rgba(255, 255, 255, 0.5);
     text-align: center;
     animation: slideIn 0.6s ease-out;
@@ -116,7 +116,7 @@ body, html {
     left: 0;
     right: 0;
     height: 4px;
-    background: linear-gradient(90deg, #2ecc71, #1abc9c, #16a085);
+    background: linear-gradient(90deg, var(--primary-1), var(--primary-2));
     animation: shimmer 3s ease infinite;
 }
 
@@ -140,12 +140,12 @@ body, html {
     width: 70px;
     height: 70px;
     margin: 0 auto;
-    background: linear-gradient(135deg, #2ecc71, #27ae60);
+    background: linear-gradient(135deg, var(--primary-1), var(--primary-2));
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 6px 15px rgba(46, 204, 113, 0.4);
+    box-shadow: 0 6px 15px rgba(var(--primary-1-rgb), 0.32);
 }
 
 .recycle-icon svg {
@@ -156,15 +156,15 @@ body, html {
 
 /* Título - MÁS PEQUEÑO */
 h2 {
-    color: #27ae60;
+    color: var(--primary-1);
     font-size: 1.6rem;
     margin-bottom: 6px;
     font-weight: 700;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    text-shadow: 0 2px 6px rgba(0,0,0,0.12);
 }
 
 .subtitle {
-    color: #7f8c8d;
+    color: var(--muted);
     font-size: 0.85rem;
     margin-bottom: 22px;
     font-weight: 400;
@@ -205,9 +205,9 @@ form {
 }
 
 .field input:focus {
-    border-color: #2ecc71;
+    border-color: var(--primary-1);
     background: #fff;
-    box-shadow: 0 0 0 4px rgba(46, 204, 113, 0.1);
+    box-shadow: 0 0 0 4px rgba(var(--primary-1-rgb), 0.08);
     transform: translateY(-2px);
 }
 
@@ -234,14 +234,14 @@ form {
     left: 13px;
     top: 50%;
     transform: translateY(-50%);
-    color: #7f8c8d;
+    color: var(--muted);
     font-size: 1.1rem;
     transition: color 0.3s ease;
     pointer-events: none;
 }
 
 .field input:focus ~ .input-icon {
-    color: #2ecc71;
+    color: var(--primary-1);
 }
 
 .field input.error ~ .input-icon {
@@ -267,7 +267,7 @@ form {
 /* Botón principal - MÁS PEQUEÑO */
 .btn {
     width: 100%;
-    background: linear-gradient(135deg, #2ecc71, #27ae60);
+    background: linear-gradient(135deg, var(--primary-1), var(--primary-2));
     padding: 13px;
     border-radius: 12px;
     font-weight: 700;
@@ -276,7 +276,7 @@ form {
     color: #fff;
     font-size: 1rem;
     transition: all 0.3s ease;
-    box-shadow: 0 6px 20px rgba(46, 204, 113, 0.4);
+    box-shadow: 0 6px 20px rgba(var(--primary-1-rgb), 0.28);
     margin-top: 8px;
     text-transform: uppercase;
     letter-spacing: 1px;
@@ -285,8 +285,8 @@ form {
 
 .btn:hover {
     transform: translateY(-3px);
-    box-shadow: 0 10px 30px rgba(46, 204, 113, 0.6);
-    background: linear-gradient(135deg, #27ae60, #2ecc71);
+    box-shadow: 0 10px 30px rgba(var(--primary-1-rgb), 0.42);
+    background: linear-gradient(135deg, var(--primary-2), var(--primary-1));
 }
 
 .btn:active {
@@ -301,18 +301,18 @@ form {
 }
 
 .btn.success {
-    background: linear-gradient(135deg, #2ecc71, #27ae60);
+    background: linear-gradient(135deg, var(--primary-1), var(--primary-2));
 }
 
 /* Enlace adicional */
 .extra-link {
     margin-top: 15px;
     font-size: 0.85rem;
-    color: #7f8c8d;
+    color: var(--muted);
 }
 
 .extra-link a {
-    color: #2ecc71;
+    color: var(--primary-1);
     text-decoration: none;
     font-weight: 600;
     transition: color 0.3s ease;
@@ -320,20 +320,20 @@ form {
 }
 
 .extra-link a:hover {
-    color: #27ae60;
+    color: var(--primary-2);
     text-decoration: underline;
 }
 
 /* Mensaje de información - MÁS PEQUEÑO */
 .info-badge {
     display: inline-block;
-    background: rgba(46, 204, 113, 0.1);
-    color: #27ae60;
+    background: rgba(var(--primary-1-rgb), 0.06);
+    color: var(--primary-1);
     padding: 6px 14px;
     border-radius: 18px;
     font-size: 0.8rem;
     margin-top: 15px;
-    border: 1px solid rgba(46, 204, 113, 0.3);
+    border: 1px solid rgba(var(--primary-1-rgb), 0.12);
 }
 
 /* Responsivo */

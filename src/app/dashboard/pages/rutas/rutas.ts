@@ -1,3 +1,10 @@
+/*
+  Componente de gestión de rutas con mapa (Leaflet).
+
+  - Permite dibujar una ruta haciendo clic en el mapa, guardarla en el backend
+    y listar/visualizar rutas almacenadas.
+  - Convierte los puntos del mapa a GeoJSON y delega la persistencia a `RutasService`.
+*/
 import { Component, AfterViewInit, OnInit, inject } from '@angular/core';
 import * as L from 'leaflet';
 import { RutasService, Ruta } from '../../../services/rutas.service';
@@ -33,6 +40,7 @@ export class Rutas implements AfterViewInit, OnInit {
     this.isLoading = true;
   }
 
+  // Inicializa el mapa Leaflet y la capa de tiles
   private initMap(): void {
     this.map = L.map('map').setView([3.883, -77.067], 13);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -40,11 +48,13 @@ export class Rutas implements AfterViewInit, OnInit {
     }).addTo(this.map);
   }
 
+  // Al hacer click en el mapa añadimos un punto a la ruta en construcción
   private onMapClick(e: L.LeafletMouseEvent): void {
     this.routePoints.push(e.latlng);
     this.drawPolyline();
   }
 
+  // Dibuja o actualiza la polyline temporal en el mapa
   private drawPolyline(): void {
     if (this.polyline) {
       this.polyline.setLatLngs(this.routePoints);
@@ -53,6 +63,7 @@ export class Rutas implements AfterViewInit, OnInit {
     }
   }
 
+  // Guarda la ruta construida en el backend transformándola a GeoJSON
   saveRoute(): void {
     const nombre = prompt('Introduce el nombre de la ruta:');
     if (!nombre || this.routePoints.length < 2) {
@@ -60,7 +71,7 @@ export class Rutas implements AfterViewInit, OnInit {
       return;
     }
 
-    // CONSTRUIMOS EL GEOJSON 🔥🔥
+    // CONSTRUIMOS EL GEOJSON
     const shapeGeoJSON = {
       type: "LineString",
       coordinates: this.routePoints.map(p => [p.lng, p.lat])  // IMPORTANTE: lng primero!
@@ -85,6 +96,7 @@ export class Rutas implements AfterViewInit, OnInit {
     });
   }
 
+  // Limpia la ruta en construcción
   clearRoute(): void {
     this.routePoints = [];
     if (this.polyline) {
@@ -93,6 +105,7 @@ export class Rutas implements AfterViewInit, OnInit {
     }
   }
 
+  // Carga las rutas guardadas desde el servicio
   cargarRutasGuardadas(): void {
     this.rutasService.obtenerRutas().subscribe({
       next: (rutas: Ruta[]) => {
@@ -107,6 +120,7 @@ export class Rutas implements AfterViewInit, OnInit {
     });
   }
 
+  // Visualiza una ruta existente en el mapa
   verRuta(ruta: Ruta): void {
     // El método obtenerRutaPorId no se usa directamente aquí,
     // pero está disponible en el servicio para futuras ampliaciones.

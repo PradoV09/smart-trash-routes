@@ -1,4 +1,11 @@
 
+/*
+  Componente de Login (vista pública).
+
+  - Implementado como `standalone` con su propio template y estilos.
+  - Controla los eventos DOM del formulario (botón, toggle de contraseña).
+  - Al hacer login delega en `AuthService.login()` y, si es válido, navega al `/dashboard`.
+*/
 import { Component, AfterViewInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
@@ -26,6 +33,7 @@ export class Login implements AfterViewInit {
     const pass = document.getElementById('password') as HTMLInputElement;
     const toggle = document.getElementById('togglePass');
 
+    // Manejo del click en el botón de login: validaciones simples y llamada a AuthService
     btn?.addEventListener('click', async () => {
       if (!email.value) {
         email.classList.add('error');
@@ -69,11 +77,13 @@ export class Login implements AfterViewInit {
       }
     });
 
+    // Toggle mostrar/ocultar contraseña
     toggle?.addEventListener('click', () => {
       pass.type = pass.type === 'password' ? 'text' : 'password';
       toggle.textContent = pass.type === 'password' ? '👁️' : '🙈';
     });
 
+    // Limpiar estado de error cuando el usuario escribe
     [email, pass].forEach(input => {
       input.addEventListener('input', () => input.classList.remove('error'));
     });

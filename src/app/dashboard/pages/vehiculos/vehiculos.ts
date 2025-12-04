@@ -49,7 +49,7 @@ export class Vehiculos implements OnInit {
 
         this.vehiculos = items.map(v => ({ ...v, id: v.id || v._id }));
       },
-      error: (err) => console.error('Error fetching vehicles:', err)
+      error: (err) => console.error('Error al obtener vehículos:', err)
     });
   }
 
@@ -74,7 +74,7 @@ export class Vehiculos implements OnInit {
 
         this.form.reset();
       },
-      error: (err) => console.error('Error creating vehicle:', err)
+      error: (err) => console.error('Error al crear vehículo:', err)
     });
   }
 
@@ -98,7 +98,7 @@ export class Vehiculos implements OnInit {
         }
         this.resetForm();
       },
-      error: (err) => console.error('Error updating vehicle:', err)
+      error: (err) => console.error('Error al actualizar vehículo:', err)
     });
   }
 
@@ -110,7 +110,7 @@ export class Vehiculos implements OnInit {
       next: () => {
         this.vehiculos = this.vehiculos.filter(v => v.id !== id);
       },
-      error: (err) => console.error('Error deleting vehicle:', err)
+      error: (err) => console.error('Error al eliminar vehículo:', err)
     });
   }
 
