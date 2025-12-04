@@ -41,8 +41,8 @@ export class AuthService {
   }
 
   // Intenta autenticar contra el backend. Adapta distintos formatos de respuesta.
-  login(email: string, password: string): Observable<boolean> {
-    return this.http.post<any>('http://192.168.1.3:3005/api/auth/login', { nameuser: email, password }).pipe(
+  login(email: string, password: string): Observable<any> {
+    return this.http.post<any>('http://smartroutes.eleueleo.com/api/auth/login', { nameuser: email, password }).pipe(
       tap(response => {
         console.log('Respuesta cruda login:', response);
       }),
@@ -128,7 +128,7 @@ export class AuthService {
   // Envía una petición de logout al backend con timeout/abort para que no bloquee la UI
   private sendLogoutNotification(token: string | null, email: string | null): void {
     try {
-      const url = 'http://192.168.1.3:3005/api/auth/logout';
+      const url = 'http://smartroutes.eleueleo.com/api/auth/logout';
       const body = JSON.stringify({ email });
 
       const controller = new AbortController();

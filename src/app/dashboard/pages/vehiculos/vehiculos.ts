@@ -30,7 +30,7 @@ export class Vehiculos implements OnInit {
   }
 
   listarVehiculos() {
-    const url = 'http://192.168.1.3:3005/api/vehiculos/all';
+    const url = 'http://smartroutes.eleueleo.com/api/vehiculos/all';
     let headers = this.getHeaders();
 
     this.http.get<any>(url, { headers }).subscribe({
@@ -56,7 +56,7 @@ export class Vehiculos implements OnInit {
   crearVehiculo() {
     if (this.form.invalid) return;
 
-    const url = 'http://192.168.1.3:3005/api/vehiculos/register';
+    const url = 'http://smartroutes.eleueleo.com/api/vehiculos/register';
     let headers = this.getHeaders();
 
     const perfil_id = parseInt(localStorage.getItem('user_id') || '1', 10);
@@ -87,7 +87,7 @@ export class Vehiculos implements OnInit {
   guardarEdicion() {
     if (this.form.invalid || !this.selectedId) return;
 
-    const url = `http://192.168.1.3:3005/api/vehiculos/${this.selectedId}`;
+    const url = `http://smartroutes.eleueleo.com/api/vehiculos/${this.selectedId}`;
     let headers = this.getHeaders();
 
     this.http.put<any>(url, this.form.value, { headers }).subscribe({
@@ -103,7 +103,7 @@ export class Vehiculos implements OnInit {
   }
 
   eliminarVehiculo(id: number) {
-    const url = `http://192.168.1.3:3005/api/vehiculos/${id}`;
+    const url = `http://smartroutes.eleueleo.com/api/vehiculos/${id}`;
     let headers = this.getHeaders();
 
     this.http.delete(url, { headers }).subscribe({

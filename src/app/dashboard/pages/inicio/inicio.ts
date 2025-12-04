@@ -48,7 +48,7 @@ export class Inicio implements OnInit {
     }
 
     // Cargar rutas (usar endpoint /all)
-    this.http.get<any>('http://192.168.1.3:3005/api/rutas/all', { headers }).subscribe({
+    this.http.get<any>('http://smartroutes.eleueleo.com/api/rutas/all', { headers }).subscribe({
       next: (res) => {
         let rutas: any[] = [];
         if (Array.isArray(res)) {
@@ -69,7 +69,7 @@ export class Inicio implements OnInit {
     });
 
     // Cargar vehículos
-    this.http.get<any>('http://192.168.1.3:3005/api/vehiculos/all', { headers }).subscribe({
+    this.http.get<any>('http://smartroutes.eleueleo.com/api/vehiculos/all', { headers }).subscribe({
       next: (res) => {
         let vehiculos: any[] = [];
         if (Array.isArray(res)) {

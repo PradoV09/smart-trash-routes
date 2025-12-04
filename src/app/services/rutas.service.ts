@@ -21,7 +21,7 @@ export interface Ruta {
 })
 export class RutasService {
   // Base API for rutas (endpoint /all will be used to fetch all routes)
-  private backendBase = 'http://192.168.1.3:3005/api/rutas';
+  private backendBase = 'http://smartroutes.eleueleo.com/api/rutas';
 
   constructor(private http: HttpClient) { }
 
