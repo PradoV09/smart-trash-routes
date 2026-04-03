@@ -96,3 +96,9 @@ app-footer {
   margin-top: auto;
   margin-bottom: 20px;
 }
+
+.error-msg {
+  margin-top: 10px;
+  color: #ff6b6b;
+  font-size: 13px;
+}
