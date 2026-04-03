@@ -1,49 +1,61 @@
 [
   {
+    "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
     "username": "user_alpha_developer_01",
     "password": "pass1234"
   },
   {
+    "id": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
     "username": "backend_engineer_master02",
     "password": "secure987"
   },
   {
+    "id": "c3d4e5f6-a7b8-9012-cdef-123456789012",
     "username": "fullstack_dev_expert_user03",
     "password": "abc12345"
   },
   {
+    "id": "d4e5f6a7-b8c9-0123-defa-234567890123",
     "username": "nodejs_architect_pro_user04",
     "password": "nodejs2024"
   },
   {
+    "id": "e5f6a7b8-c9d0-1234-efab-345678901234",
     "username": "software_engineer_advanced05",
     "password": "reactpass"
   },
   {
+    "id": "f6a7b8c9-d0e1-2345-fabc-456789012345",
     "username": "admin_root_superuser_access06",
     "password": "rootaccess"
   },
   {
+    "id": "a7b8c9d0-e1f2-3456-abcd-567890123456",
     "username": "testing_environment_user_dev07",
     "password": "testpass07"
   },
   {
+    "id": "b8c9d0e1-f2a3-4567-bcde-678901234567",
     "username": "api_developer_microservices08",
     "password": "api123456"
   },
   {
+    "id": "c9d0e1f2-a3b4-5678-cdef-789012345678",
     "username": "database_sql_master_expert09",
     "password": "mysqlpass"
   },
   {
+    "id": "d0e1f2a3-b4c5-6789-defa-890123456789",
     "username": "debugging_specialist_user10",
     "password": "debug123"
   },
   {
+    "id": "e1f2a3b4-c5d6-7890-efab-901234567890",
     "username": "cloud_computing_engineer_user11",
     "password": "cloudpass"
   },
   {
+    "id": "f2a3b4c5-d6e7-8901-fabc-012345678901",
     "username": "cybersecurity_specialist_user12",
     "password": "securedev"
   }

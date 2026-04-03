@@ -1,0 +1,98 @@
+body {
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+  background: linear-gradient(135deg, #001D39, #0A4174);
+}
+
+/* LAYOUT */
+.main-layout {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 20px;
+}
+
+/* CENTRADO */
+.login-container {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* CARD */
+.login-card {
+  background: rgba(0, 29, 57, 0.9);
+  padding: 40px;
+  border-radius: 18px;
+  width: 360px;
+  box-shadow: 0 15px 40px rgba(0,0,0,0.5);
+  color: #ffffff;
+}
+
+/* HEADER */
+.login-header {
+  margin-bottom: 25px;
+}
+
+.login-header h2 {
+  font-size: 26px;
+  margin: 0;
+}
+
+.subtitle {
+  font-size: 14px;
+  color: #BDD8E9;
+}
+
+/* INPUTS */
+.input-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 18px;
+}
+
+.input-group label {
+  font-size: 14px;
+  margin-bottom: 6px;
+  color: #BDD8E9;
+}
+
+.input-group input {
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.2);
+  background: rgba(255,255,255,0.08);
+  color: #fff;
+  font-size: 15px;
+}
+
+.input-group input:focus {
+  outline: none;
+  border-color: #7BBDE8;
+  box-shadow: 0 0 0 2px #7BBDE8;
+}
+
+/* BOTÓN */
+button {
+  width: 100%;
+  padding: 14px;
+  border-radius: 10px;
+  border: none;
+  background: #7BBDE8;
+  color: #001D39;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+button:hover {
+  background: #9ed4f5;
+  transform: translateY(-2px);
+}
+
+app-footer {
+  margin-top: auto;
+  margin-bottom: 20px;
+}

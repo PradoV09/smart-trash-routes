@@ -1,4 +1,28 @@
-footer {
-  background-color: blue;
-  margin-top: 48%;
+.footer {
+  background: rgba(0, 29, 57, 0.9);
+  color: #BDD8E9;
+  text-align: center;
+  padding: 16px 10px;
+  font-family: 'Inter', sans-serif;
+  backdrop-filter: blur(6px);
+  border-top: 1px solid rgba(255,255,255,0.1);
+}
+
+.footer-content p {
+  margin: 0;
+  font-size: 14px;
+}
+
+.footer-content small {
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+.heart {
+  display: inline-block;
+  transition: 0.3s;
+}
+
+.heart:hover {
+  transform: scale(1.3);
 }

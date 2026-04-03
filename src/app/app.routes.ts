@@ -4,5 +4,10 @@ import { Dashboard } from './pages/dashboard/dashboard';
 
 export const routes: Routes = [
   {path : '', component : Login},
-  {path : 'dashboard', component : Dashboard}
+  {path : 'dashboard',
+   component : Dashboard,
+  //  children: [
+  // debería de ir las rutas protegidas
+  //  ]
+  }
 ];
