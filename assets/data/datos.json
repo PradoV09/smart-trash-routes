@@ -1,0 +1,50 @@
+[
+  {
+    "username": "user_alpha_developer_01",
+    "password": "pass1234"
+  },
+  {
+    "username": "backend_engineer_master02",
+    "password": "secure987"
+  },
+  {
+    "username": "fullstack_dev_expert_user03",
+    "password": "abc12345"
+  },
+  {
+    "username": "nodejs_architect_pro_user04",
+    "password": "nodejs2024"
+  },
+  {
+    "username": "software_engineer_advanced05",
+    "password": "reactpass"
+  },
+  {
+    "username": "admin_root_superuser_access06",
+    "password": "rootaccess"
+  },
+  {
+    "username": "testing_environment_user_dev07",
+    "password": "testpass07"
+  },
+  {
+    "username": "api_developer_microservices08",
+    "password": "api123456"
+  },
+  {
+    "username": "database_sql_master_expert09",
+    "password": "mysqlpass"
+  },
+  {
+    "username": "debugging_specialist_user10",
+    "password": "debug123"
+  },
+  {
+    "username": "cloud_computing_engineer_user11",
+    "password": "cloudpass"
+  },
+  {
+    "username": "cybersecurity_specialist_user12",
+    "password": "securedev"
+  }
+]
