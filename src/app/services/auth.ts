@@ -23,4 +23,11 @@ export class AuthService {
       })
     );
   }
+
+  createToken(username: string) {
+    const header = btoa(JSON.stringify({ alg: 'HS256', typ: 'JWT' }));
+    const payload = btoa(JSON.stringify({ sub: username, iat: Date.now() }));
+    const signature = btoa('fake-signature');
+    return `fake-jwt.${header}.${payload}.${signature}`;
+  }
 }

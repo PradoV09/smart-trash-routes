@@ -4,9 +4,9 @@ import { Navbar } from '../../components/navbar/navbar';
 import { Footer } from '../../components/footer/footer';
 
 @Component({
-  selector: 'app-dashboard',
+  selector: 'app-vehiculos',
   imports: [RouterModule, Navbar, Footer],
-  templateUrl: './dashboard.html',
-  styleUrl: './dashboard.css',
+  templateUrl: './vehiculos.html',
+  styleUrl: './vehiculos.css',
 })
-export class Dashboard {}
+export class Vehiculos { }

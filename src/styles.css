@@ -3,7 +3,7 @@
 /* Ocultar la barra de scroll */
 html,
 body {
-  overflow: auto;
+  overflow: hidden;
   scrollbar-width: none;
 }
 

@@ -1,0 +1,69 @@
+.sidebar {
+  width: 240px;
+  height: 90.22dvh;
+  background: rgba(0, 29, 57, 0.85);
+  backdrop-filter: blur(12px);
+  padding: 25px 15px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border-right: 1px solid rgba(255,255,255,0.1);
+}
+
+/* LOGO */
+.logo {
+  color: #7BBDE8;
+  font-size: 22px;
+  margin-bottom: 30px;
+}
+
+/* LINKS */
+.nav-links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.nav-links li a {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: #BDD8E9;
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-size: 14px;
+  transition: 0.2s;
+}
+
+/* Hover suave tipo glass */
+.nav-links li a:hover {
+  background: rgba(255,255,255,0.08);
+  color: #ffffff;
+}
+
+/* Activo (muy importante visualmente) */
+.nav-links li a.active {
+  background: #7BBDE8;
+  color: #001D39;
+  font-weight: 600;
+}
+
+/* BOTÓN LOGOUT */
+.logout-btn {
+  background: rgba(123, 189, 232, 0.15);
+  border: 1px solid #7BBDE8;
+  padding: 10px;
+  border-radius: 10px;
+  color: #7BBDE8;
+  font-weight: 500;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.logout-btn:hover {
+  background: #7BBDE8;
+  color: #001D39;
+}

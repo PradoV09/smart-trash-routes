@@ -4,14 +4,11 @@ import { CanActivateFn, Router } from '@angular/router';
 export const authGuard: CanActivateFn = (route, state) => {
     const router = inject(Router);
 
-    // Verificar si hay un usuario autenticado en localStorage
-    const user = localStorage.getItem('user');
+    const token = localStorage.getItem('token');
 
-    if (user) {
-        // Usuario autenticado
+    if (token && token.startsWith('fake-jwt.')) {
         return true;
-    } else {
-        // Usuario no autenticado, redirigir a login
-        return router.createUrlTree(['/']);
     }
+
+    return router.createUrlTree(['/']);
 };

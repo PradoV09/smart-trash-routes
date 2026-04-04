@@ -26,8 +26,9 @@ export class LoginComponent {
     this.authService.login(this.username, this.password)
       .subscribe(user => {
         if (user) {
-          console.log('Login correcto', user);
+          const token = this.authService.createToken(user.username);
           localStorage.setItem('user', JSON.stringify(user));
+          localStorage.setItem('token', token);
           this.router.navigate(['/dashboard']);
         } else {
           this.error = true;

@@ -1,0 +1,23 @@
+<nav class="sidebar">
+  <div class="sidebar-top">
+    <h1 class="logo">SmartTrash</h1>
+
+    <ul class="nav-links">
+      <li>
+        <a
+          routerLink="/dashboard"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: true }"
+          >Dashboard</a
+        >
+      </li>
+      <li><a routerLink="/users" routerLinkActive="active">Usuarios</a></li>
+      <li><a routerLink="/vehicles" routerLinkActive="active">Vehículos</a></li>
+      <li><a routerLink="/routes" routerLinkActive="active">Rutas</a></li>
+      <li><a routerLink="/tours" routerLinkActive="active">Recorridos</a></li>
+      <li><a routerLink="/positions" routerLinkActive="active">Posiciones</a></li>
+    </ul>
+  </div>
+
+  <button class="logout-btn" (click)="logout()">Cerrar sesión</button>
+</nav>

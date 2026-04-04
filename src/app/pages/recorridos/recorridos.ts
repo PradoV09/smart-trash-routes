@@ -1,12 +1,12 @@
 import { Component } from '@angular/core';
+import { Footer } from '../../components/footer/footer';
 import { RouterModule } from '@angular/router';
 import { Navbar } from '../../components/navbar/navbar';
-import { Footer } from '../../components/footer/footer';
 
 @Component({
-  selector: 'app-dashboard',
+  selector: 'app-recorridos',
   imports: [RouterModule, Navbar, Footer],
-  templateUrl: './dashboard.html',
-  styleUrl: './dashboard.css',
+  templateUrl: './recorridos.html',
+  styleUrl: './recorridos.css',
 })
-export class Dashboard {}
+export class Recorridos { }
