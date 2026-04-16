@@ -1,0 +1,19 @@
+.admin-layout {
+  display: flex;
+  height: 100vh; /* Ocupa toda la altura de la ventana */
+  width: 100vw;
+  overflow: hidden; /* Evita scroll doble */
+}
+
+.main-container {
+  display: flex;
+  flex-direction: column;
+  flex: 1; /* Ocupa el resto del ancho disponible */
+  background-color: #ffffff;
+  overflow-y: auto; /* Permite scroll solo en el contenido */
+}
+
+.content-area {
+  flex: 1; /* Empuja al footer hacia abajo */
+  padding: 2rem; /* Espacio para el contenido de las páginas */
+}

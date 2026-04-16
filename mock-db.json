@@ -1,0 +1,37 @@
+{
+  "usuarios": [
+    { "id_usuario": 1, "nombre": "Carlos Martinez", "username": "cmartinez", "correo": "cmartinez@empresa.com", "rol": "Admin", "telefono": "+1234567890" },
+    { "id_usuario": 2, "nombre": "Lucia Gomez", "username": "lgomez", "correo": "lgomez@empresa.com", "rol": "Driver", "telefono": "+1234567891" },
+    { "id_usuario": 3, "nombre": "Miguel Torres", "username": "mtorres", "correo": "mtorres@empresa.com", "rol": "Driver", "telefono": "+1234567892" },
+    { "id_usuario": 4, "nombre": "Ana Salas", "username": "asalas", "correo": "asalas@empresa.com", "rol": "Recolector", "telefono": "+1234567893" },
+    { "id_usuario": 5, "nombre": "Jorge Luna", "username": "jluna", "correo": "jluna@empresa.com", "rol": "Recolector", "telefono": "+1234567894" }
+  ],
+  "vehiculos": [
+    { "id_vehiculo": 1, "placa": "ABC-123", "modelo": "Volvo FMX", "capacidad_m3": 15, "estado": "disponible" },
+    { "id_vehiculo": 2, "placa": "DEF-456", "modelo": "Scania P320", "capacidad_m3": 18, "estado": "en_ruta" },
+    { "id_vehiculo": 3, "placa": "GHI-789", "modelo": "Mercedes-Benz Atego", "capacidad_m3": 10, "estado": "mantenimiento" },
+    { "id_vehiculo": 4, "placa": "JKL-012", "modelo": "Volvo FMX", "capacidad_m3": 15, "estado": "disponible" },
+    { "id_vehiculo": 5, "placa": "MNO-345", "modelo": "Scania P320", "capacidad_m3": 18, "estado": "en_ruta" }
+  ],
+  "rutas": [
+    { "id_ruta": 1, "nombre_sector": "Centro Histórico", "puntos_geograficos": "[{-12.04318, -77.02824}, {-12.04518, -77.02924}]", "horario_estimado": "06:00 - 10:00" },
+    { "id_ruta": 2, "nombre_sector": "Zona Norte Residencial", "puntos_geograficos": "[{-11.99318, -77.06824}, {-11.99518, -77.06924}]", "horario_estimado": "10:00 - 14:00" },
+    { "id_ruta": 3, "nombre_sector": "Zona Este Comercial", "puntos_geograficos": "[{-12.02318, -76.99824}, {-12.02518, -76.99924}]", "horario_estimado": "14:00 - 18:00" },
+    { "id_ruta": 4, "nombre_sector": "Zona Sur Industrial", "puntos_geograficos": "[{-12.14318, -77.00824}, {-12.14518, -77.00924}]", "horario_estimado": "18:00 - 22:00" },
+    { "id_ruta": 5, "nombre_sector": "Circuito Playas", "puntos_geograficos": "[{-12.11318, -77.04824}, {-12.11518, -77.04924}]", "horario_estimado": "22:00 - 02:00" }
+  ],
+  "reportes": [
+    { "id_reporte": 1, "asunto": "falla", "comentario": "Motor perdiendo potencia en subidas", "severidad": "alta", "fecha_creacion": "2023-10-25T08:30:00Z" },
+    { "id_reporte": 2, "asunto": "incidencia", "comentario": "Calle cerrada por obras en la ruta 3", "severidad": "media", "fecha_creacion": "2023-10-25T14:45:00Z" },
+    { "id_reporte": 3, "asunto": "falla", "comentario": "Sistema hidráulico compactador lento", "severidad": "media", "fecha_creacion": "2023-10-26T09:15:00Z" },
+    { "id_reporte": 4, "asunto": "incidencia", "comentario": "Contenedor desbordado en punto 4", "severidad": "baja", "fecha_creacion": "2023-10-26T19:20:00Z" },
+    { "id_reporte": 5, "asunto": "falla", "comentario": "Neumático pinchado", "severidad": "alta", "fecha_creacion": "2023-10-27T06:10:00Z" }
+  ],
+  "asignaciones": [
+    { "id_asignacion": 1, "id_ruta": 1, "id_vehiculo": 1, "estado": "Finalizada", "tripulacion": [ { "id_usuario": 2, "nombre": "Lucia Gomez", "username": "lgomez", "correo": "lgomez@empresa.com", "rol": "Driver", "telefono": "+1234567891" }, { "id_usuario": 4, "nombre": "Ana Salas", "username": "asalas", "correo": "asalas@empresa.com", "rol": "Recolector", "telefono": "+1234567893" } ] },
+    { "id_asignacion": 2, "id_ruta": 2, "id_vehiculo": 2, "estado": "En Curso", "tripulacion": [ { "id_usuario": 3, "nombre": "Miguel Torres", "username": "mtorres", "correo": "mtorres@empresa.com", "rol": "Driver", "telefono": "+1234567892" }, { "id_usuario": 5, "nombre": "Jorge Luna", "username": "jluna", "correo": "jluna@empresa.com", "rol": "Recolector", "telefono": "+1234567894" } ] },
+    { "id_asignacion": 3, "id_ruta": 3, "id_vehiculo": 4, "estado": "Pendiente", "tripulacion": [ { "id_usuario": 2, "nombre": "Lucia Gomez", "username": "lgomez", "correo": "lgomez@empresa.com", "rol": "Driver", "telefono": "+1234567891" } ] },
+    { "id_asignacion": 4, "id_ruta": 4, "id_vehiculo": 5, "estado": "En Curso", "tripulacion": [ { "id_usuario": 3, "nombre": "Miguel Torres", "username": "mtorres", "correo": "mtorres@empresa.com", "rol": "Driver", "telefono": "+1234567892" }, { "id_usuario": 4, "nombre": "Ana Salas", "username": "asalas", "correo": "asalas@empresa.com", "rol": "Recolector", "telefono": "+1234567893" } ] },
+    { "id_asignacion": 5, "id_ruta": 5, "id_vehiculo": 1, "estado": "Pendiente", "tripulacion": [] }
+  ]
+}

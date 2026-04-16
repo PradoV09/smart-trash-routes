@@ -1,0 +1,27 @@
+.reports-grid {
+  grid-template-columns: 2fr 3fr 1.5fr 1.5fr 1fr;
+  gap: 16px;
+}
+
+.report-asunto {
+  font-weight: 600;
+  color: var(--primary-dark);
+}
+
+.report-comentario {
+  color: var(--text-muted);
+  font-size: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 300px;
+}
+
+.report-fecha {
+  color: var(--text-main);
+  font-size: 13px;
+}
+
+.view-btn:hover {
+  background-color: var(--status-blue-bg);
+}

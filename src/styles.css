@@ -1,1 +1,178 @@
 /* You can add global styles to this file, and also import other style files */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+  --primary-dark: #001D39;
+  --secondary-teal: #4E8EA2;
+  --bg-color: #F8F9FA;
+  --card-bg: #FFFFFF;
+  --text-main: #333333;
+  --text-muted: #666666;
+  --gray-light: #F0F2F5;
+  --border-color: #E2E8F0;
+  
+  --status-green: #10B981;
+  --status-green-bg: #D1FAE5;
+  --status-blue: #3B82F6;
+  --status-blue-bg: #DBEAFE;
+  --status-orange: #F59E0B;
+  --status-orange-bg: #FEF3C7;
+  --status-red: #EF4444;
+  --status-red-bg: #FEE2E2;
+}
+
+body {
+  margin: 0;
+  overflow-x: hidden;
+  font-family: 'Inter', sans-serif;
+  background-color: var(--bg-color);
+  color: var(--text-main);
+}
+
+/* Base Card Style */
+.admin-card {
+  background-color: var(--card-bg);
+  border-radius: 20px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+  padding: 24px;
+  margin: 20px;
+}
+
+/* View Header */
+.view-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.view-header h1 {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--primary-dark);
+  margin: 0;
+}
+
+/* Buttons */
+.btn {
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-primary {
+  background-color: var(--primary-dark);
+  color: white;
+}
+
+.btn-primary:hover {
+  background-color: #002b54;
+}
+
+.btn-secondary {
+  background-color: var(--secondary-teal);
+  color: white;
+}
+
+.btn-secondary:hover {
+  background-color: #3b7488;
+}
+
+/* Data Tables using Flexbox/Grid */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.data-table-header {
+  display: grid;
+  background-color: var(--gray-light);
+  border-radius: 10px 10px 0 0;
+  padding: 16px;
+  font-weight: 600;
+  color: var(--primary-dark);
+  border-bottom: 2px solid var(--border-color);
+}
+
+.data-table-row {
+  display: grid;
+  padding: 16px;
+  border-bottom: 1px solid var(--border-color);
+  align-items: center;
+  transition: background-color 0.2s;
+}
+
+.data-table-row:hover {
+  background-color: #FAFAFA;
+}
+
+.data-table-row:last-child {
+  border-bottom: none;
+}
+
+/* Action Buttons in tables */
+.actions {
+  display: flex;
+  gap: 12px;
+}
+
+.btn-icon {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  padding: 4px;
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+
+.btn-icon.edit-btn {
+  color: var(--status-blue);
+}
+.btn-icon.edit-btn:hover {
+  background-color: var(--status-blue-bg);
+}
+
+.btn-icon.delete-btn {
+  color: var(--status-red);
+}
+.btn-icon.delete-btn:hover {
+  background-color: var(--status-red-bg);
+}
+
+/* Badges */
+.badge {
+  padding: 6px 12px;
+  border-radius: 9999px;
+  font-size: 12px;
+  font-weight: 600;
+  display: inline-block;
+  text-align: center;
+}
+
+.badge-disponible, .badge-success, .badge-baja {
+  background-color: var(--status-green-bg);
+  color: var(--status-green);
+}
+
+.badge-en_ruta, .badge-info {
+  background-color: var(--status-blue-bg);
+  color: var(--status-blue);
+}
+
+.badge-mantenimiento, .badge-warning, .badge-media {
+  background-color: var(--status-orange-bg);
+  color: var(--status-orange);
+}
+
+.badge-alta, .badge-error {
+  background-color: var(--status-red-bg);
+  color: var(--status-red);
+}

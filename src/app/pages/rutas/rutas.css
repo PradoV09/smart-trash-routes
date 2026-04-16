@@ -1,0 +1,24 @@
+.routes-grid {
+  grid-template-columns: 2fr 2.5fr 1.5fr 1fr;
+  gap: 16px;
+}
+
+.route-sector {
+  font-weight: 600;
+  color: var(--primary-dark);
+}
+
+.route-points {
+  color: var(--text-muted);
+  font-family: monospace;
+  font-size: 13px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 250px;
+}
+
+.route-time {
+  color: var(--text-main);
+  font-size: 14px;
+}

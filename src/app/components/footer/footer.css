@@ -1,0 +1,54 @@
+.footer-container {
+  background-color: #0a4174;
+  color: #ffffff;
+  font-family: 'Inter', sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin: 0;
+  box-sizing: border-box;
+
+  /* --- AQUÍ DEFINES EL TAMAÑO --- */
+  /* Usa height para una altura fija, por ejemplo 80px */
+  /* O usa un padding muy pequeño para que sea ajustado al texto */
+  padding: 10px 0;
+  min-height: 60px; /* Esto asegura un mínimo, pero deja que sea delgado */
+}
+
+.footer-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* Reducimos el gap (espacio entre las dos líneas) */
+  gap: 2px;
+  width: 100%;
+}
+
+.text-row {
+  /* Reducimos el line-height para que el texto no ocupe espacio extra arriba/abajo */
+  line-height: 1.1;
+  font-size: clamp(14px, 1.2vw, 20px); /* Bajamos un poco el tamaño máximo */
+  margin: 0;
+  text-align: center;
+  font-weight: 400;
+  white-space: normal;
+}
+
+.text-row strong {
+  font-weight: 700;
+}
+
+/* --- AJUSTES DE ADAPTABILIDAD --- */
+
+@media (max-width: 600px) {
+  .footer-container {
+    /* OJO: Aquí tenías 1.5rem, lo que lo hacía MUY alto en móviles.
+       Cambiémoslo a algo pequeño para que sea coherente. */
+    padding: 10px 1rem;
+  }
+
+  .text-row {
+    font-size: 16px;
+  }
+}

@@ -1,0 +1,140 @@
+/* Layout Principal para empujar el footer al fondo */
+.page-wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  width: 100%;
+}
+
+.login-container {
+  display: flex;
+  flex: 1; /* Esto hace que el login crezca y el footer baje */
+  width: 100%;
+}
+
+/* PANEL IZQUIERDO */
+.left-panel {
+  flex: 1;
+  background: linear-gradient(180deg, #001D39 0%, #0A4174 50%, #4E8EA2 100%);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5% 10%;
+}
+
+.left-panel .content {
+  max-width: 450px;
+}
+
+.left-panel h1 {
+  font-size: clamp(32px, 4vw, 48px);
+  font-weight: 700;
+  margin-bottom: 24px;
+  line-height: 1.2;
+}
+
+.left-panel p {
+  font-size: 18px;
+  line-height: 1.5;
+  opacity: 0.9;
+}
+
+/* PANEL DERECHO */
+.right-panel {
+  flex: 1.2;
+  background-color: #BDD8E9; /* Color exacto de la imagen */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+.form-box {
+  background: white;
+  padding: 50px 40px;
+  border-radius: 40px; /* Bordes muy redondeados como en la imagen */
+  width: 100%;
+  max-width: 450px;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.05);
+}
+
+.form-header h2 {
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: #000;
+}
+
+.form-header h3 {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 30px;
+}
+
+.input-group {
+  margin-bottom: 20px;
+}
+
+label {
+  display: block;
+  font-size: 18px;
+  margin-bottom: 8px;
+  color: #333;
+}
+
+input {
+  width: 100%;
+  padding: 14px;
+  border: 1px solid #BDC3C7;
+  border-radius: 8px;
+  font-size: 16px;
+  background-color: #fff;
+}
+
+.forgot-password {
+  font-size: 13px;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.forgot-password a {
+  color: #000;
+  font-weight: 700;
+  text-decoration: underline;
+}
+
+.btn-login {
+  width: 80%; /* Botón centrado y no tan ancho */
+  display: block;
+  margin: 0 auto;
+  padding: 14px;
+  background-color: #5D93A4; /* Tono de la imagen */
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 18px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.btn-login:hover {
+  background-color: #4E8EA2;
+}
+
+/* --- RESPONSIVE --- */
+@media (max-width: 900px) {
+  .login-container {
+    flex-direction: column;
+  }
+
+  .left-panel {
+    padding: 40px 20px;
+    text-align: center;
+  }
+
+  .right-panel {
+    padding: 40px 10px;
+  }
+}

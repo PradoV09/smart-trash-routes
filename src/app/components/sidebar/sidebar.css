@@ -1,0 +1,71 @@
+:host {
+  display: block;
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sidebar {
+  width: 280px; /* Ancho abierto */
+  height: 100vh;
+  background: linear-gradient(180deg, #001D39 0%, #0A4174 50%, #4E8EA2 100%);
+  color: white;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  transition: width 0.3s ease;
+  overflow: hidden;
+}
+
+/* ESTADO COLAPSADO */
+.sidebar.collapsed {
+  width: 80px; /* Ancho cerrado (solo para el icono) */
+  padding: 20px 10px;
+}
+
+.sidebar.collapsed .sidebar-header {
+  justify-content: center;
+}
+
+.sidebar.collapsed .menu-item {
+  justify-content: center;
+  padding: 12px 0;
+}
+
+/* BOTÓN DE TOGGLE */
+.toggle-btn {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 12px 15px;
+  text-decoration: none;
+  color: white;
+  border-radius: 8px;
+  white-space: nowrap; /* Evita que el texto se amontone al cerrar */
+}
+
+.icon {
+  font-size: 1.2rem;
+  min-width: 30px;
+  text-align: center;
+}
+
+.text {
+  transition: opacity 0.2s ease;
+}
+
+/* Ajuste del botón logout en modo colapsado */
+.sidebar.collapsed .btn-logout {
+  border: none; /* Quitamos el borde negro si está colapsado para que quepa bien */
+  background: rgba(255, 255, 255, 0.1);
+}
