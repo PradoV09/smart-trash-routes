@@ -1,6 +1,8 @@
 /* You can add global styles to this file, and also import other style files */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
+@import "leaflet/dist/leaflet.css";
+
 :root {
   --primary-dark: #001D39;
   --secondary-teal: #4E8EA2;
@@ -10,7 +12,7 @@
   --text-muted: #666666;
   --gray-light: #F0F2F5;
   --border-color: #E2E8F0;
-  
+
   --status-green: #10B981;
   --status-green-bg: #D1FAE5;
   --status-blue: #3B82F6;
