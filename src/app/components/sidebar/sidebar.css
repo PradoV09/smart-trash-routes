@@ -4,15 +4,15 @@
 }
 
 .sidebar {
-  width: 280px; /* Ancho abierto */
-  height: 100vh;
-  background: linear-gradient(180deg, #001D39 0%, #0A4174 50%, #4E8EA2 100%);
+  width: 280px;
+  height: 100vh; /* Ocupa el alto de la pantalla */
+  background: linear-gradient(180deg, #001d39 0%, #0a4174 50%, #4e8ea2 100%);
   color: white;
   display: flex;
   flex-direction: column;
   padding: 20px;
   transition: width 0.3s ease;
-  overflow: hidden;
+  box-sizing: border-box; /* Asegura que el padding no añada tamaño extra */
 }
 
 /* ESTADO COLAPSADO */
@@ -25,7 +25,8 @@
   justify-content: center;
 }
 
-.sidebar.collapsed .menu-item {
+.sidebar.collapsed .menu-item,
+.sidebar.collapsed .btn-logout {
   justify-content: center;
   padding: 12px 0;
 }
@@ -43,7 +44,8 @@
   justify-content: center;
 }
 
-.menu-item {
+.menu-item,
+.btn-logout {
   display: flex;
   align-items: center;
   gap: 15px;
@@ -52,20 +54,32 @@
   color: white;
   border-radius: 8px;
   white-space: nowrap; /* Evita que el texto se amontone al cerrar */
+  transition: background 0.3s ease;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: inherit;
+  width: 100%;
+  text-align: left;
+}
+
+.menu-item:hover,
+.btn-logout:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.sidebar-footer {
+  margin-top: auto; /* Empuja el botón al final de la sidebar */
+  padding-top: 50px;
+  border-top: 1px solid rgba(255, 255, 255, 0.2); /* Línea divisora */
 }
 
 .icon {
-  font-size: 1.2rem;
   min-width: 30px;
   text-align: center;
 }
 
 .text {
   transition: opacity 0.2s ease;
-}
-
-/* Ajuste del botón logout en modo colapsado */
-.sidebar.collapsed .btn-logout {
-  border: none; /* Quitamos el borde negro si está colapsado para que quepa bien */
-  background: rgba(255, 255, 255, 0.1);
 }

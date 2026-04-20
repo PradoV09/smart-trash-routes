@@ -1,5 +1,5 @@
 .users-grid {
-  grid-template-columns: 2fr 1fr 2fr 1.5fr 1fr;
+  grid-template-columns: 2fr 1.5fr 1fr 2fr 1.2fr 1fr;
   gap: 16px;
 }
 
@@ -12,4 +12,32 @@
 .user-email, .user-phone {
   color: var(--text-muted);
   font-size: 14px;
+}
+
+.crud-form {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 1rem;
+}
+
+.button-group {
+  display: flex;
+  gap: 8px;
+}
+
+.table-message {
+  margin: 0.75rem 0;
+  color: var(--text-muted);
+}
+
+.table-message.error {
+  color: #f87171;
+}
+
+.form-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-light);
 }

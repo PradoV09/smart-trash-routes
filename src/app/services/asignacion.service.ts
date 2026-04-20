@@ -11,7 +11,7 @@ import { AuthService } from './auth.service';
 export class AsignacionService {
   private http = inject(HttpClient);
   private authService = inject(AuthService);
-  private apiUrl = `${environment.apiUrl}/asignaciones`;
+  private apiUrl = `${environment.apiUrl}/admin/asignaciones`;
 
   private getHeaders(): HttpHeaders {
     return new HttpHeaders({

@@ -3,6 +3,7 @@ import { isPlatformBrowser } from '@angular/common';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -10,14 +11,13 @@ import { map } from 'rxjs/operators';
 export class AuthService {
   private isBrowser: boolean;
   private http = inject(HttpClient);
+  private loginUrl = `${environment.apiUrl}/auth/login`;
 
   constructor(@Inject(PLATFORM_ID) platformId: Object) {
     this.isBrowser = isPlatformBrowser(platformId);
   }
 
-  // Simulación de la petición de Login con las directrices de la API
   login(identifier: string, contraseña: string): Observable<any> {
-    // La API pide application/x-www-form-urlencoded
     const body = new URLSearchParams();
     body.set('identifier', identifier);
     body.set('contraseña', contraseña);
@@ -26,13 +26,10 @@ export class AuthService {
       'Content-Type': 'application/x-www-form-urlencoded'
     });
 
-    // Como estamos usando public/.json simulamos un GET al json para recibir la estructura de respuesta
-    // En un entorno real cambiaríamos '/api/auth/login.json' por 'http://localhost:8000/auth/login'
-    // y usaríamos this.http.post(...)
-    return this.http.get<any>('/api/auth/login.json').pipe(
-      map(response => {
-        if (response.success && response.data.access_token) {
-          this.setToken(response.data.access_token);
+    return this.http.post<any>(this.loginUrl, body.toString(), { headers }).pipe(
+      map((response) => {
+        if (response.success && response.data?.access_token) {
+          this.setToken(response.data.access_token, response.data);
         }
         return response;
       })
@@ -47,15 +44,21 @@ export class AuthService {
     return null;
   }
 
-  setToken(token: string): void {
-    if (this.isBrowser) {
-      localStorage.setItem('access_token', token);
+  setToken(token: string, loginData?: Record<string, unknown>): void {
+    if (!this.isBrowser) {
+      return;
+    }
+    localStorage.setItem('access_token', token);
+    this.syncStoredUsername(token, loginData);
+    if (!environment.production) {
+      console.log('[Auth] JWT (access_token):', token);
     }
   }
 
   clearToken(): void {
     if (this.isBrowser) {
       localStorage.removeItem('access_token');
+      localStorage.removeItem('auth_username');
     }
   }
 
@@ -64,31 +67,118 @@ export class AuthService {
   }
 
   /**
-   * Extrae el nombre de usuario desde el payload del JWT de forma sencilla.
-   * Asume que el token tiene formato: header.payload.signature
-   * y que el payload contiene { "user": "nombre@correo.com", ... }
+   * Username para saludos (columna "Usuario"). Orden: caché del login, JWT (UTF-8),
+   * cuerpo `data` del login, identificadores tipo correo.
    */
   getUserName(): string {
-    const token = this.getToken();
-    if (!token) return 'Usuario';
-
-    try {
-      const payloadBase64 = token.split('.')[1];
-      if (!payloadBase64) return 'Usuario';
-
-      const payloadDecoded = atob(payloadBase64);
-      const payloadObj = JSON.parse(payloadDecoded);
-
-      // Intentar extraer nombre del email o usar un default
-      let userName = payloadObj.user || 'Usuario';
-      if (userName.includes('@')) {
-        userName = userName.split('@')[0];
-        // Capitalizamos la primera letra
-        userName = userName.charAt(0).toUpperCase() + userName.slice(1);
+    if (this.isBrowser) {
+      const cached = localStorage.getItem('auth_username');
+      if (cached?.trim()) {
+        return cached.trim();
       }
-      return userName;
-    } catch (e) {
+    }
+
+    const token = this.getToken();
+    if (!token) {
       return 'Usuario';
     }
+
+    const p = this.decodeJwtPayload(token);
+    if (p) {
+      const fromJwt = this.pickDisplayLogin(p);
+      if (fromJwt) {
+        return fromJwt;
+      }
+    }
+
+    return 'Usuario';
+  }
+
+  private syncStoredUsername(token: string, loginData?: Record<string, unknown>): void {
+    if (!this.isBrowser) {
+      return;
+    }
+    const fromLoginBody = loginData ? this.usernameFromLoginData(loginData) : null;
+    const p = this.decodeJwtPayload(token);
+    const fromJwt = p ? this.pickUsernameClaim(p) : null;
+    const chosen = fromLoginBody || fromJwt;
+    if (chosen) {
+      localStorage.setItem('auth_username', chosen);
+    } else {
+      localStorage.removeItem('auth_username');
+    }
+  }
+
+  private usernameFromLoginData(data: Record<string, unknown>): string | null {
+    const d = data as Record<string, unknown>;
+    return (
+      this.trimStr(d['username']) ||
+      this.trimStr((d['user'] as Record<string, unknown> | undefined)?.['username']) ||
+      this.trimStr((d['usuario'] as Record<string, unknown> | undefined)?.['username'])
+    );
+  }
+
+  /** Decodifica el payload del JWT en UTF-8 (atob solo sirve bien para Latin-1). */
+  private decodeJwtPayload(token: string): Record<string, unknown> | null {
+    try {
+      const segment = token.split('.')[1];
+      if (!segment) {
+        return null;
+      }
+      let base64 = segment.replace(/-/g, '+').replace(/_/g, '/');
+      const pad = base64.length % 4;
+      if (pad) {
+        base64 += '='.repeat(4 - pad);
+      }
+      const binary = atob(base64);
+      const bytes = new Uint8Array(binary.length);
+      for (let i = 0; i < binary.length; i++) {
+        bytes[i] = binary.charCodeAt(i);
+      }
+      const json = new TextDecoder('utf-8').decode(bytes);
+      return JSON.parse(json) as Record<string, unknown>;
+    } catch {
+      return null;
+    }
+  }
+
+  private trimStr(v: unknown): string | null {
+    return typeof v === 'string' && v.trim().length > 0 ? v.trim() : null;
+  }
+
+  private pickUsernameClaim(p: Record<string, unknown>): string | null {
+    const direct =
+      this.trimStr(p['username']) ||
+      this.trimStr(p['Username']) ||
+      this.trimStr(p['preferred_username']);
+    if (direct) {
+      return direct;
+    }
+    for (const key of Object.keys(p)) {
+      if (key.toLowerCase() === 'username') {
+        const v = this.trimStr(p[key]);
+        if (v) {
+          return v;
+        }
+      }
+    }
+    return null;
+  }
+
+  private pickDisplayLogin(p: Record<string, unknown>): string | null {
+    const u = this.pickUsernameClaim(p);
+    if (u) {
+      return u;
+    }
+    const ident =
+      this.trimStr(p['user']) || this.trimStr(p['email']) || this.trimStr(p['correo']);
+    if (ident) {
+      if (ident.includes('@')) {
+        const local = ident.split('@')[0];
+        return local.charAt(0).toUpperCase() + local.slice(1);
+      }
+      return ident;
+    }
+    return null;
   }
 }

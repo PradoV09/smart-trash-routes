@@ -1,8 +1,7 @@
 <aside class="sidebar" [class.collapsed]="!isExpanded()">
-
   <div class="sidebar-header">
     <button class="toggle-btn" (click)="toggleSidebar()">
-      <span class="icon">☰</span>
+      <mat-icon class="icon">menu</mat-icon>
     </button>
     @if (isExpanded()) {
       <h2 class="logo-text">Smart Trash Routes</h2>
@@ -11,40 +10,54 @@
 
   <nav class="sidebar-menu">
     <a routerLink="/dashboard" routerLinkActive="active" class="menu-item">
-      <span class="icon">👤</span>
-      @if (isExpanded()) { <span class="text">Panel de usuario</span> }
+      <mat-icon class="icon">person</mat-icon>
+      @if (isExpanded()) {
+        <span class="text">Panel de usuario</span>
+      }
     </a>
 
     <a routerLink="/users" routerLinkActive="active" class="menu-item">
-      <span class="icon">📇</span>
-      @if (isExpanded()) { <span class="text">Usuarios</span> }
+      <mat-icon class="icon">badge</mat-icon>
+      @if (isExpanded()) {
+        <span class="text">Usuarios</span>
+      }
     </a>
 
     <a routerLink="/vehiculos" routerLinkActive="active" class="menu-item">
-      <span class="icon">🚗</span>
-      @if (isExpanded()) { <span class="text">Vehículos</span> }
+      <mat-icon class="icon">directions_car</mat-icon>
+      @if (isExpanded()) {
+        <span class="text">Vehículos</span>
+      }
     </a>
 
     <a routerLink="/rutas" routerLinkActive="active" class="menu-item">
-      <span class="icon">📍</span>
-      @if (isExpanded()) { <span class="text">Rutas</span> }
+      <mat-icon class="icon">location_on</mat-icon>
+      @if (isExpanded()) {
+        <span class="text">Rutas</span>
+      }
     </a>
 
     <a routerLink="/reportes" routerLinkActive="active" class="menu-item">
-      <span class="icon">📊</span>
-      @if (isExpanded()) { <span class="text">Reportes</span> }
+      <mat-icon class="icon">bar_chart</mat-icon>
+      @if (isExpanded()) {
+        <span class="text">Reportes</span>
+      }
     </a>
 
     <a routerLink="/asignaciones" routerLinkActive="active" class="menu-item">
-      <span class="icon">🏠</span>
-      @if (isExpanded()) { <span class="text">Asignaciones</span> }
+      <mat-icon class="icon">assignment</mat-icon>
+      @if (isExpanded()) {
+        <span class="text">Asignaciones</span>
+      }
     </a>
   </nav>
 
   <div class="sidebar-footer">
     <button class="btn-logout" (click)="logout()">
-      <span class="icon">🚪</span>
-      @if (isExpanded()) { <span class="text">Cerrar sesión</span> }
+      <mat-icon class="icon">logout</mat-icon>
+      @if (isExpanded()) {
+        <span class="text">Cerrar sesión</span>
+      }
     </button>
   </div>
 </aside>

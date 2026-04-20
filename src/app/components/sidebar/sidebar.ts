@@ -1,16 +1,19 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, inject } from '@angular/core';
 import { RouterModule, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { MatIconModule } from '@angular/material/icon';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-sidebar',
   standalone: true,
-  imports: [RouterModule, CommonModule],
+  imports: [RouterModule, CommonModule, MatIconModule],
   templateUrl: './sidebar.html',
   styleUrl: './sidebar.css',
 })
 export class Sidebar {
-  constructor(private router: Router) {}
+  private router = inject(Router);
+  private authService = inject(AuthService);
 
   isExpanded = signal(true);
 
@@ -19,8 +22,7 @@ export class Sidebar {
   }
 
   logout() {
-    // Lógica para limpiar token/sesión
-    localStorage.removeItem('access_token');
+    this.authService.clearToken();
     this.router.navigate(['/login']);
   }
 }

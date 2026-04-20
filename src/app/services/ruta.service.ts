@@ -11,7 +11,7 @@ import { AuthService } from './auth.service';
 export class RutaService {
   private http = inject(HttpClient);
   private authService = inject(AuthService);
-  private apiUrl = `${environment.apiUrl}/rutas`;
+  private apiUrl = `${environment.apiUrl}/admin/rutas`;
 
   private getHeaders(): HttpHeaders {
     return new HttpHeaders({
@@ -30,14 +30,30 @@ export class RutaService {
     return params.toString();
   }
 
-  // Listado de rutas activas
-  getRutasActivas(): Observable<Ruta[]> {
-    return this.http.get<Ruta[]>(`${this.apiUrl}/activas`, { headers: this.getHeaders() });
+  // GET (listar todas)
+  getRutas(): Observable<Ruta[]> {
+    return this.http.get<Ruta[]>(this.apiUrl, { headers: this.getHeaders() });
   }
 
-  // Creación de tramos de recolección
+  // GET /{id} (detalle)
+  getRutaById(id: number): Observable<Ruta> {
+    return this.http.get<Ruta>(`${this.apiUrl}/${id}`, { headers: this.getHeaders() });
+  }
+
+  // POST (crear)
   crearRutaSector(rutaDto: Partial<Ruta>): Observable<Ruta> {
     const body = this.toUrlEncoded(rutaDto);
     return this.http.post<Ruta>(this.apiUrl, body, { headers: this.getHeaders() });
+  }
+
+  // PATCH (actualizar)
+  updateRuta(id: number, rutaDto: Partial<Ruta>): Observable<Ruta> {
+    const body = this.toUrlEncoded(rutaDto);
+    return this.http.patch<Ruta>(`${this.apiUrl}/${id}`, body, { headers: this.getHeaders() });
+  }
+
+  // DELETE
+  deleteRuta(id: number): Observable<any> {
+    return this.http.delete<any>(`${this.apiUrl}/${id}`, { headers: this.getHeaders() });
   }
 }

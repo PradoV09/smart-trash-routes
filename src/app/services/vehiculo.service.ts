@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
-import { Vehiculo, EstadoVehiculo } from '../models/interfaces';
+import { Vehiculo, EstadoVehiculo, VehiculoWritePayload } from '../models/interfaces';
 import { AuthService } from './auth.service';
 
 @Injectable({
@@ -11,7 +11,7 @@ import { AuthService } from './auth.service';
 export class VehiculoService {
   private http = inject(HttpClient);
   private authService = inject(AuthService);
-  private apiUrl = `${environment.apiUrl}/vehiculos`;
+  private apiUrl = `${environment.apiUrl}/admin/vehiculos`;
 
   private getHeaders(): HttpHeaders {
     return new HttpHeaders({
@@ -20,12 +20,13 @@ export class VehiculoService {
     });
   }
 
-  private toUrlEncoded(obj: any): string {
+  private toUrlEncoded(obj: VehiculoWritePayload): string {
     let params = new HttpParams();
-    for (const key in obj) {
-      if (obj.hasOwnProperty(key) && obj[key] !== null && obj[key] !== undefined) {
-        params = params.set(key, obj[key]);
-      }
+    const keys: (keyof VehiculoWritePayload)[] = ['placa', 'modelo', 'capacidad_m3', 'estado'];
+    for (const key of keys) {
+      const value = obj[key];
+      if (value === null || value === undefined || value === '') continue;
+      params = params.set(key, String(value));
     }
     return params.toString();
   }
@@ -41,13 +42,13 @@ export class VehiculoService {
   }
 
   // POST (crear)
-  createVehiculo(vehiculoDto: Partial<Vehiculo>): Observable<Vehiculo> {
+  createVehiculo(vehiculoDto: VehiculoWritePayload): Observable<Vehiculo> {
     const body = this.toUrlEncoded(vehiculoDto);
     return this.http.post<Vehiculo>(this.apiUrl, body, { headers: this.getHeaders() });
   }
 
   // PATCH (actualizar)
-  updateVehiculo(id: number, vehiculoDto: Partial<Vehiculo>): Observable<Vehiculo> {
+  updateVehiculo(id: number, vehiculoDto: VehiculoWritePayload): Observable<Vehiculo> {
     const body = this.toUrlEncoded(vehiculoDto);
     return this.http.patch<Vehiculo>(`${this.apiUrl}/${id}`, body, { headers: this.getHeaders() });
   }
@@ -59,7 +60,8 @@ export class VehiculoService {
 
   // PATCH /estado (cambios rápidos de disponibilidad)
   updateEstado(id: number, estado: EstadoVehiculo): Observable<Vehiculo> {
-    const body = this.toUrlEncoded({ estado });
-    return this.http.patch<Vehiculo>(`${this.apiUrl}/${id}/estado`, body, { headers: this.getHeaders() });
+    return this.http.patch<Vehiculo>(`${this.apiUrl}/${id}/estado?estado=${encodeURIComponent(estado)}`, null, {
+      headers: this.getHeaders()
+    });
   }
 }

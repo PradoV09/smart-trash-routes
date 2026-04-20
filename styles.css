@@ -1,0 +1,41 @@
+:root {
+  /* MODO CLARO (Default) */
+  --bg-primary: #f5f7fa;
+  --bg-sidebar: #ffffff;
+  --bg-container: #ffffff;
+  --bg-input: #edf2f7;
+  --border-color: #e2e8f0;
+  --text-primary: #1a1a1a;
+  --text-secondary: #4a5568;
+  --accent-color: #2dcecc;
+  --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  --sidebar-text: #4a5568;
+  --sidebar-hover: #f8fafc;
+}
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
+}
+
+.card {
+  background-color: var(--bg-container);
+  box-shadow: var(--card-shadow);
+  border: 1px solid var(--border-color);
+}
+
+mat-icon {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+  vertical-align: middle;
+  color: var(--text-secondary);
+}
+
+button:hover mat-icon,
+.menu-item:hover mat-icon {
+  color: var(--accent-color);
+}

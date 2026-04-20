@@ -11,7 +11,7 @@ import { AuthService } from './auth.service';
 export class ReporteService {
   private http = inject(HttpClient);
   private authService = inject(AuthService);
-  private apiUrl = `${environment.apiUrl}/reportes`;
+  private apiUrl = `${environment.apiUrl}/admin/reportes`;
 
   private getHeaders(): HttpHeaders {
     return new HttpHeaders({

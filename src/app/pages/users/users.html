@@ -1,38 +1,86 @@
 <div class="admin-card">
   <div class="view-header">
     <h1>Gestión de Usuarios</h1>
-    <button class="btn btn-primary">
+    <button class="btn btn-primary" (click)="openCreateForm()">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="M12 5v14"></path></svg>
       Agregar Nuevo
     </button>
   </div>
 
+  <div class="crud-form" *ngIf="showForm">
+    <input
+      class="form-input"
+      [(ngModel)]="formData.nombre"
+      placeholder="Nombre del perfil (obligatorio, máx. 255)"
+      maxlength="255"
+      required
+    />
+    <input class="form-input" [(ngModel)]="formData.username" placeholder="Username (3–50 caracteres)" maxlength="50" />
+    <input class="form-input" [(ngModel)]="formData.correo" placeholder="Correo" />
+    <input
+      class="form-input"
+      type="password"
+      [(ngModel)]="formData.contrasena"
+      [placeholder]="editingId ? 'Contraseña (opcional)' : 'Contraseña *'"
+    />
+    <select class="form-input" [(ngModel)]="formData.id_rol">
+      <option [ngValue]="0" disabled *ngIf="roles().length === 0">Sin roles disponibles</option>
+      <option *ngFor="let rol of roles()" [ngValue]="rol.id_rol">{{ rol.nombre }}</option>
+    </select>
+    <label class="form-checkbox">
+      <input type="checkbox" [(ngModel)]="formData.activo" />
+      Activo
+    </label>
+    <div class="button-group">
+      <button class="btn btn-primary" (click)="saveUsuario()" [disabled]="saving()">
+        {{ editingId ? 'Actualizar' : 'Crear' }}
+      </button>
+      <button class="btn btn-secondary" (click)="cancelForm()" [disabled]="saving()">Cancelar</button>
+    </div>
+  </div>
+
+  <p class="table-message error" *ngIf="error()">{{ error() }}</p>
+  <p class="table-message error" *ngIf="errorRoles()">{{ errorRoles() }}</p>
+  <p class="table-message" *ngIf="loadingRoles()">Cargando roles...</p>
+  <p class="table-message" *ngIf="loading()">Cargando usuarios...</p>
+
   <div class="data-table">
     <div class="data-table-header users-grid">
       <div>Nombre</div>
+      <div>Usuario</div>
       <div>Rol</div>
       <div>Correo</div>
-      <div>Teléfono</div>
+      <div>Estado</div>
       <div>Acciones</div>
     </div>
-    
-    <!-- Ejemplo de fila estática para previsualizar (El *ngFor iterará sobre esto) -->
-    <div class="data-table-row users-grid">
+
+    <div
+      class="data-table-row users-grid"
+      *ngFor="let usuario of usuarios(); trackBy: trackUsuarioId"
+    >
+      <div class="user-name">{{ usuario.nombre || '-' }}</div>
       <div class="user-name">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--secondary-teal); margin-right: 8px; vertical-align: middle;"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-        <span>Juan Pérez</span>
+        <span>{{ usuario.username }}</span>
       </div>
-      <div><span class="badge badge-info">Admin</span></div>
-      <div class="user-email">juan.perez@example.com</div>
-      <div class="user-phone">+52 555 123 4567</div>
+      <div><span class="badge badge-info">{{ getRolLabel(usuario.id_rol) }}</span></div>
+      <div class="user-email">{{ usuario.correo }}</div>
+      <div class="user-phone">{{ usuario.activo ? 'Activo' : 'Inactivo' }}</div>
       <div class="actions">
-        <button class="btn-icon edit-btn" title="Editar">
+        <button class="btn-icon edit-btn" title="Editar" (click)="openEditForm(usuario)">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
         </button>
-        <button class="btn-icon delete-btn" title="Eliminar">
+        <button
+          class="btn-icon delete-btn"
+          title="Eliminar"
+          (click)="deleteUsuario(usuario)"
+          [disabled]="deletingId() === usuario.id_usuario"
+        >
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
         </button>
       </div>
     </div>
+
+    <p class="table-message" *ngIf="!loading() && usuarios().length === 0">No hay usuarios registrados.</p>
   </div>
 </div>

@@ -35,3 +35,18 @@
 #map {
   border: 2px solid #2d3748;
 }
+
+.button-group {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.table-message {
+  margin: 0.75rem 0;
+  color: var(--text-muted);
+}
+
+.table-message.error {
+  color: #f87171;
+}
