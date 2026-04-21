@@ -1,10 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import * as L from 'leaflet';
 import { FormsModule } from '@angular/forms';
 import { RutaService } from '../../services/ruta.service';
 import { Ruta } from '../../models/interfaces';
 import { MatIconModule } from '@angular/material/icon';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-rutas',
@@ -18,21 +19,23 @@ export class Rutas implements OnInit {
   routeCoords: [number, number][] = [];
   polyline!: L.Polyline;
   markers: L.CircleMarker[] = []; // Nueva lista para rastrear los puntos visuales
+  selectedRouteLayer: L.GeoJSON | null = null;
 
   private rutaService = inject(RutaService);
+  private authService = inject(AuthService);
+  private cdr = inject(ChangeDetectorRef);
 
   rutas: Ruta[] = [];
   loading = false;
   saving = false;
-  deletingId: number | null = null;
   error = '';
-  editingId: number | null = null;
 
   // Datos para formulario
+  private perfilId = '';
   nombreRuta = '';
-  horarioEstimado = 'Mañana (08:00 - 12:00)';
 
   ngOnInit() {
+    this.perfilId = this.authService.getPerfilId()?.trim() ?? '';
     this.initMap();
     this.loadRutas();
   }
@@ -106,91 +109,76 @@ export class Rutas implements OnInit {
     this.markers.forEach(marker => this.map.removeLayer(marker));
     this.markers = [];
     this.nombreRuta = "";
+    this.clearSelectedRouteLayer();
   }
 
   guardarRuta() {
+    if (!this.perfilId.trim()) {
+      this.error = 'No se pudo obtener perfil_id desde la sesión del backend.';
+      return;
+    }
+
     if (!this.nombreRuta || this.routeCoords.length < 2) {
       alert("Por favor, ingresa un nombre y marca al menos 2 puntos para la ruta.");
       return;
     }
 
-    const payload: Partial<Ruta> = {
-      nombre_sector: this.nombreRuta,
-      puntos_geograficos: JSON.stringify(this.routeCoords),
-      horario_estimado: this.horarioEstimado
+    const payload = {
+      perfil_id: this.perfilId.trim(),
+      nombre_ruta: this.nombreRuta,
+      shape: {
+        type: 'LineString',
+        coordinates: this.routeCoords
+      } as Record<string, unknown>
     };
 
     this.saving = true;
     this.error = '';
-    const request$ = this.editingId
-      ? this.rutaService.updateRuta(this.editingId, payload)
-      : this.rutaService.crearRutaSector(payload);
+    const request$ = this.rutaService.crearRutaPorShape(payload);
 
     request$.subscribe({
       next: (res) => {
         this.saving = false;
-        alert(this.editingId ? 'Ruta actualizada con éxito.' : 'Ruta guardada con éxito.');
-        this.editingId = null;
+        alert('Ruta guardada con éxito.');
         this.limpiarMapa();
         this.loadRutas();
+        this.cdr.detectChanges();
       },
       error: () => {
         this.saving = false;
-        this.error = this.editingId
-          ? 'Error al actualizar la ruta.'
-          : 'Error al guardar la ruta.';
+        this.error = 'Error al guardar la ruta.';
+        this.cdr.detectChanges();
       }
     });
   }
 
   loadRutas(): void {
+    if (!this.perfilId.trim()) {
+      this.rutas = [];
+      this.error = 'No se pudo obtener perfil_id desde la sesión del backend.';
+      this.cdr.detectChanges();
+      return;
+    }
+
     this.loading = true;
     this.error = '';
-    this.rutaService.getRutas().subscribe({
+    this.cdr.detectChanges();
+    this.rutaService.listarRutas(this.perfilId.trim()).subscribe({
       next: (res) => {
-        this.rutas = this.extractArray<Ruta>(res);
+        this.rutas = Array.isArray(res) ? res : [];
         this.loading = false;
+        this.cdr.detectChanges();
       },
       error: () => {
         this.error = 'No se pudieron cargar las rutas.';
         this.loading = false;
+        this.cdr.detectChanges();
       }
     });
   }
 
-  editarRuta(ruta: Ruta): void {
-    this.editingId = ruta.id_ruta;
-    this.nombreRuta = ruta.nombre_sector;
-    this.horarioEstimado = ruta.horario_estimado;
-    this.routeCoords = this.parseCoords(ruta.puntos_geograficos);
-    this.polyline.setLatLngs(this.routeCoords.map((coord) => [coord[1], coord[0]]));
-
-    this.markers.forEach((marker) => this.map.removeLayer(marker));
-    this.markers = [];
-
-    this.routeCoords.forEach((coord) => {
-      const marker = L.circleMarker([coord[1], coord[0]], { radius: 5, color: '#1a1a2e' }).addTo(this.map);
-      this.markers.push(marker);
-    });
-  }
-
-  eliminarRuta(ruta: Ruta): void {
-    if (!confirm(`Eliminar ruta "${ruta.nombre_sector}"?`)) {
-      return;
-    }
-
-    this.deletingId = ruta.id_ruta;
-    this.error = '';
-    this.rutaService.deleteRuta(ruta.id_ruta).subscribe({
-      next: () => {
-        this.deletingId = null;
-        this.loadRutas();
-      },
-      error: () => {
-        this.error = 'No se pudo eliminar la ruta.';
-        this.deletingId = null;
-      }
-    });
+  verRutaEnMapa(ruta: Ruta): void {
+    this.drawRouteDetail(ruta);
   }
 
   private parseCoords(pointsRaw: string): [number, number][] {
@@ -207,17 +195,93 @@ export class Rutas implements OnInit {
     }
   }
 
-  getCantidadPuntos(pointsRaw: string): number {
-    return this.parseCoords(pointsRaw).length;
+  private getShapeObject(ruta: unknown): any {
+    const r = ruta as Record<string, unknown>;
+    let shapeObj = r['shape'] ?? r['geometry'] ?? r['geojson'];
+    if (typeof shapeObj === 'string') {
+      try {
+        shapeObj = JSON.parse(shapeObj);
+      } catch (e) {
+        shapeObj = null;
+      }
+    }
+    return shapeObj;
   }
 
-  private extractArray<T>(response: T[] | { data?: T[] }): T[] {
-    if (Array.isArray(response)) {
-      return response;
+  private drawRouteDetail(ruta: unknown): void {
+    this.clearSelectedRouteLayer();
+    const r = ruta as Record<string, unknown>;
+    const shapeObj = this.getShapeObject(ruta);
+
+    if (shapeObj) {
+      const color = r['color_hex'] ? String(r['color_hex']) : '#2dcecc';
+      this.selectedRouteLayer = L.geoJSON(shapeObj as GeoJSON.GeoJsonObject, {
+        style: {
+          color: color,
+          weight: 5
+        }
+      }).addTo(this.map);
+      
+      const bounds = this.selectedRouteLayer.getBounds();
+      if (bounds.isValid()) {
+        this.map.fitBounds(bounds, { padding: [20, 20] });
+      }
     }
-    if (Array.isArray(response?.data)) {
-      return response.data;
+
+    // Limpiar marcadores y polilínea anterior
+    this.routeCoords = [];
+    this.polyline.setLatLngs([]);
+    this.markers.forEach((marker) => this.map.removeLayer(marker));
+    this.markers = [];
+  }
+
+  private clearSelectedRouteLayer(): void {
+    if (this.selectedRouteLayer) {
+      this.map.removeLayer(this.selectedRouteLayer);
+      this.selectedRouteLayer = null;
     }
-    return [];
+  }
+
+  getCantidadPuntos(ruta: Ruta): number {
+    const shapeObj = this.getShapeObject(ruta);
+    if (shapeObj && typeof shapeObj === 'object') {
+      const type = shapeObj.type;
+      const coords = shapeObj.coordinates;
+      if (type === 'MultiLineString' && Array.isArray(coords)) {
+        let count = 0;
+        for (const line of coords) {
+          if (Array.isArray(line)) count += line.length;
+        }
+        return count;
+      } else if (type === 'LineString' && Array.isArray(coords)) {
+        return coords.length;
+      }
+    }
+    
+    const row = ruta as unknown as Record<string, unknown>;
+    const legacyPoints = row['puntos_geograficos'];
+    if (typeof legacyPoints === 'string') {
+      return this.parseCoords(legacyPoints).length;
+    }
+    return 0;
+  }
+
+  getRutaNombre(ruta: Ruta): string {
+    const row = ruta as unknown as Record<string, unknown>;
+    return String(row['nombre_ruta'] ?? row['nombre_sector'] ?? 'Ruta');
+  }
+
+  getRutaColor(ruta: Ruta): string {
+    const row = ruta as unknown as Record<string, unknown>;
+    return String(row['color_hex'] || '#2dcecc');
+  }
+
+  private getRutaId(ruta: Ruta): string | number | null {
+    const row = ruta as unknown as Record<string, unknown>;
+    const id = row['id_ruta'] ?? row['id'];
+    if (typeof id === 'string' || typeof id === 'number') {
+      return id;
+    }
+    return null;
   }
 }

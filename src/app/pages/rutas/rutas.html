@@ -6,13 +6,12 @@
   <div class="map-container-wrapper">
     <div class="map-controls">
       <input type="text" [(ngModel)]="nombreRuta" placeholder="Nombre de la nueva ruta" class="form-input">
-      <input type="text" [(ngModel)]="horarioEstimado" placeholder="Horario estimado" class="form-input">
       <div class="button-group">
         <button class="btn btn-secondary" (click)="deshacerUltimoPunto()" [disabled]="routeCoords.length === 0">Deshacer punto</button>
         <button class="btn btn-secondary" (click)="limpiarMapa()">Reiniciar</button>
         <button class="btn btn-primary" (click)="guardarRuta()" [disabled]="routeCoords.length < 2 || saving">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="M12 5v14"></path></svg>
-          {{ editingId ? 'Actualizar Ruta' : 'Guardar Ruta' }}
+          Guardar Ruta
         </button>
       </div>
     </div>
@@ -25,29 +24,22 @@
 
   <div class="data-table">
     <div class="data-table-header routes-grid">
-      <div>Sector</div>
+      <div>Ruta</div>
       <div>Puntos Geográficos (GeoJSON)</div>
-      <div>Horario Estimado</div>
-      <div>Acciones</div>
+      <div>Ver en mapa</div>
     </div>
 
     <div class="data-table-row routes-grid" *ngFor="let ruta of rutas">
       <div class="route-sector">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: #2dcecc; margin-right: 8px; vertical-align: sub;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-        {{ ruta.nombre_sector }}
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" [style.color]="getRutaColor(ruta)" style="margin-right: 8px; vertical-align: sub;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+        {{ getRutaNombre(ruta) }}
       </div>
       <div class="route-points">
-        LineString: {{ getCantidadPuntos(ruta.puntos_geograficos) }} puntos
-      </div>
-      <div class="route-time">
-        {{ ruta.horario_estimado }}
+        Shape: {{ getCantidadPuntos(ruta) }} puntos
       </div>
       <div class="actions">
-        <button class="btn-icon edit-btn" title="Editar" (click)="editarRuta(ruta)">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
-        </button>
-        <button class="btn-icon delete-btn" title="Eliminar" (click)="eliminarRuta(ruta)" [disabled]="deletingId === ruta.id_ruta">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+        <button class="btn btn-secondary" style="display: flex; align-items: center; gap: 4px;" title="Ver detalle en mapa" (click)="verRutaEnMapa(ruta)">
+          <mat-icon style="font-size: 18px; width: 18px; height: 18px;">map</mat-icon> Ver
         </button>
       </div>
     </div>

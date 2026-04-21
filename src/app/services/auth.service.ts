@@ -50,6 +50,7 @@ export class AuthService {
     }
     localStorage.setItem('access_token', token);
     this.syncStoredUsername(token, loginData);
+    this.syncStoredPerfilId(token, loginData);
     if (!environment.production) {
       console.log('[Auth] JWT (access_token):', token);
     }
@@ -59,6 +60,7 @@ export class AuthService {
     if (this.isBrowser) {
       localStorage.removeItem('access_token');
       localStorage.removeItem('auth_username');
+      localStorage.removeItem('perfil_id');
     }
   }
 
@@ -94,6 +96,21 @@ export class AuthService {
     return 'Usuario';
   }
 
+  getPerfilId(): string | null {
+    if (this.isBrowser) {
+      const cached = localStorage.getItem('perfil_id');
+      if (cached?.trim()) {
+        return cached.trim();
+      }
+    }
+    const token = this.getToken();
+    if (!token) {
+      return null;
+    }
+    const payload = this.decodeJwtPayload(token);
+    return payload ? this.pickPerfilId(payload) : null;
+  }
+
   private syncStoredUsername(token: string, loginData?: Record<string, unknown>): void {
     if (!this.isBrowser) {
       return;
@@ -109,12 +126,44 @@ export class AuthService {
     }
   }
 
+  private syncStoredPerfilId(token: string, loginData?: Record<string, unknown>): void {
+    if (!this.isBrowser) {
+      return;
+    }
+    const fromLoginBody = loginData ? this.perfilIdFromLoginData(loginData) : null;
+    const payload = this.decodeJwtPayload(token);
+    const fromJwt = payload ? this.pickPerfilId(payload) : null;
+    const chosen = fromLoginBody || fromJwt;
+    if (chosen) {
+      localStorage.setItem('perfil_id', chosen);
+    } else {
+      localStorage.removeItem('perfil_id');
+    }
+  }
+
   private usernameFromLoginData(data: Record<string, unknown>): string | null {
     const d = data as Record<string, unknown>;
     return (
       this.trimStr(d['username']) ||
       this.trimStr((d['user'] as Record<string, unknown> | undefined)?.['username']) ||
       this.trimStr((d['usuario'] as Record<string, unknown> | undefined)?.['username'])
+    );
+  }
+
+  private perfilIdFromLoginData(data: Record<string, unknown>): string | null {
+    const d = data as Record<string, unknown>;
+    const perfil = (d['perfil'] ?? d['profile']) as Record<string, unknown> | undefined;
+    const usuario = (d['usuario'] ?? d['user']) as Record<string, unknown> | undefined;
+    return (
+      this.trimStr(d['perfil_id']) ||
+      this.trimStr(d['id_perfil']) ||
+      this.trimStr(d['profile_id']) ||
+      this.trimStr(d['profileId']) ||
+      this.trimStr(perfil?.['id']) ||
+      this.trimStr(perfil?.['uuid']) ||
+      this.trimStr(perfil?.['perfil_id']) ||
+      this.trimStr(usuario?.['perfil_id']) ||
+      null
     );
   }
 
@@ -180,5 +229,19 @@ export class AuthService {
       return ident;
     }
     return null;
+  }
+
+  private pickPerfilId(p: Record<string, unknown>): string | null {
+    return (
+      this.trimStr(p['perfil_id']) ||
+      this.trimStr(p['id_perfil']) ||
+      this.trimStr(p['profile_id']) ||
+      this.trimStr(p['profileId']) ||
+      this.trimStr((p['perfil'] as Record<string, unknown> | undefined)?.['id']) ||
+      this.trimStr((p['perfil'] as Record<string, unknown> | undefined)?.['uuid']) ||
+      this.trimStr((p['profile'] as Record<string, unknown> | undefined)?.['id']) ||
+      this.trimStr((p['profile'] as Record<string, unknown> | undefined)?.['uuid']) ||
+      null
+    );
   }
 }

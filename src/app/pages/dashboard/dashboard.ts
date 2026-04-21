@@ -2,6 +2,7 @@ import { Component, inject, signal, OnInit } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { AuthService } from '../../services/auth.service';
 import { environment } from '../../../environments/environment';
+import { forkJoin } from 'rxjs';
 
 interface StatData {
   total: number;
@@ -38,30 +39,26 @@ export class Dashboard implements OnInit {
     this.isLoading.set(true);
     const token = this.authService.getToken() || '';
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-    this.http.get<any>(`${this.apiUrl}/admin/usuarios`, { headers }).subscribe({
-      next: (res) => this.usuarios.set(this.extractTotal(res)),
-      error: (err) => console.error('Error cargando usuarios', err)
-    });
 
-    this.http.get<any>(`${this.apiUrl}/admin/vehiculos`, { headers }).subscribe({
-      next: (res) => this.vehiculos.set(this.extractTotal(res)),
-      error: (err) => console.error('Error cargando vehiculos', err)
-    });
+    const requests = {
+      usuarios: this.http.get<any>(`${this.apiUrl}/admin/usuarios`, { headers }),
+      vehiculos: this.http.get<any>(`${this.apiUrl}/admin/vehiculos`, { headers }),
+      asignaciones: this.http.get<any>(`${this.apiUrl}/admin/asignaciones`, { headers }),
+      reportes: this.http.get<any>(`${this.apiUrl}/admin/reportes`, { headers })
+    };
 
-    this.http.get<any>(`${this.apiUrl}/admin/asignaciones`, { headers }).subscribe({
-      next: (res) => this.asignaciones.set(this.extractTotal(res)),
-      error: (err) => console.error('Error cargando asignaciones', err)
-    });
-
-    this.http.get<any>(`${this.apiUrl}/admin/reportes`, { headers }).subscribe({
+    forkJoin(requests).subscribe({
       next: (res) => {
-        this.reportes.set(this.extractTotal(res));
-        this.isLoading.set(false);
+        this.usuarios.set(this.extractTotal(res.usuarios));
+        this.vehiculos.set(this.extractTotal(res.vehiculos));
+        this.asignaciones.set(this.extractTotal(res.asignaciones));
+        this.reportes.set(this.extractTotal(res.reportes));
       },
       error: (err) => {
-        console.error('Error cargando reportes', err);
+        console.error('Error cargando estadísticas', err);
         this.isLoading.set(false);
-      }
+      },
+      complete: () => this.isLoading.set(false)
     });
   }
 
