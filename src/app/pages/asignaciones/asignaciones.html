@@ -1,58 +1,184 @@
-<div class="admin-card">
+<div class="admin-container">
   <div class="view-header">
-    <h1>Asignaciones de Servicio</h1>
-    <button class="btn btn-primary">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="M12 5v14"></path></svg>
+    <div class="header-title">
+      <h1>Asignaciones de Servicio</h1>
+      <p class="text-muted">Gestiona el despacho de vehículos y tripulaciones para las rutas de recolección.</p>
+    </div>
+    <button class="btn btn-primary" (click)="openCreateForm()">
+      <mat-icon>add</mat-icon>
       Nueva Asignación
     </button>
   </div>
 
-  <div class="assignments-list">
-    
-    <!-- Ejemplo de tarjeta de asignación estática -->
-    <div class="assignment-item">
-      <div class="assignment-header">
-        <div class="assignment-title">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--primary-dark); margin-right: 8px; vertical-align: bottom;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-          Sector Norte - Zona 1
-        </div>
-        <span class="badge badge-en_ruta">En Curso</span>
-      </div>
+  <!-- Loading State -->
+  <div class="admin-card" *ngIf="loading() && !showDetail() && !showForm()">
+    <div class="text-center py-5">
+      <div class="loader"></div>
+      <p>Cargando asignaciones...</p>
+    </div>
+  </div>
 
-      <div class="assignment-body">
-        <div class="vehicle-assigned">
-          <div class="label">Vehículo Asignado</div>
-          <div class="vehicle-display">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--secondary-teal);"><rect x="2" y="7" width="20" height="15" rx="2" ry="2"></rect><polyline points="17 22 17 7 12 2 7 7 7 22"></polyline></svg>
-            <div class="vehicle-details">
-              <strong>ABC-1234</strong>
-              <span>Volvo FMX</span>
-            </div>
-          </div>
-        </div>
+  <!-- List Table -->
+  <div class="admin-card" *ngIf="!loading() && !showDetail() && !showForm()">
+    <div class="table-responsive">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Vehículo</th>
+            <th>Ruta</th>
+            <th>Fecha Programada</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let a of asignaciones()">
+            <td>#{{ a.id_asignacion }}</td>
+            <td>
+              <div class="vehicle-info">
+                <strong>{{ a.vehiculo?.placa }}</strong>
+                <small>{{ a.vehiculo?.modelo }}</small>
+              </div>
+            </td>
+            <td>{{ a.id_ruta }}</td>
+            <td>{{ formatDate(a.fecha) }}</td>
+            <td>
+              <span class="badge" [ngClass]="getStatusClass(a.estado)">
+                {{ a.estado }}
+              </span>
+            </td>
+            <td>
+              <div class="action-buttons">
+                <button class="btn-icon" title="Ver Detalles" (click)="viewDetail(a.id_asignacion)">
+                  <mat-icon>visibility</mat-icon>
+                </button>
+                <button 
+                  class="btn-icon text-danger" 
+                  title="Cancelar" 
+                  *ngIf="a.estado === 'pendiente'"
+                  (click)="cancelAsignacion(a.id_asignacion)"
+                >
+                  <mat-icon>cancel</mat-icon>
+                </button>
+              </div>
+            </td>
+          </tr>
+          <tr *ngIf="asignaciones().length === 0">
+            <td colspan="6" class="text-center py-4">No hay asignaciones registradas.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
 
-        <div class="crew-assigned">
-          <div class="label">Tripulación</div>
-          <div class="crew-list">
-            <div class="crew-member">
-              <div class="avatar">JP</div>
-              <span>Juan Pérez (Driver)</span>
-            </div>
-            <div class="crew-member">
-              <div class="avatar">MR</div>
-              <span>María Ruiz (Recolector)</span>
-            </div>
-          </div>
-        </div>
+  <!-- Create Form Modal -->
+  <div class="modal-overlay" *ngIf="showForm()">
+    <div class="modal-content animate-in">
+      <div class="modal-header">
+        <h2>Nueva Asignación de Servicio</h2>
+        <button class="btn-icon" (click)="closeForm()"><mat-icon>close</mat-icon></button>
       </div>
       
-      <div class="assignment-footer">
-        <span class="text-muted">Asignación #1024</span>
-        <div class="actions">
-          <button class="btn btn-secondary" style="padding: 6px 12px; font-size: 13px;">Finalizar</button>
+      <form (submit)="saveAsignacion()" #form="ngForm" class="modal-body">
+        <div class="form-group">
+          <label>Vehículo Disponible</label>
+          <select name="id_vehiculo" [(ngModel)]="newAsignacion.id_vehiculo" required class="form-control">
+            <option [ngValue]="null" disabled>Seleccionar Vehículo</option>
+            <option *ngFor="let v of vehicles()" [ngValue]="v.id_vehiculo">
+              {{ v.placa }} - {{ v.modelo }}
+            </option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Ruta de Recolección</label>
+          <select name="id_ruta" [(ngModel)]="newAsignacion.id_ruta" required class="form-control">
+            <option [ngValue]="null" disabled>Seleccionar Ruta</option>
+            <option *ngFor="let r of routes()" [ngValue]="r.id_ruta">
+              {{ r.nombre_sector || r.nombre_ruta }} ({{ r.id_ruta }})
+            </option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Equipo de Tripulación</label>
+          <select name="id_tripulacion" [(ngModel)]="newAsignacion.id_tripulacion" required class="form-control">
+            <option [ngValue]="null" disabled>Seleccionar Equipo</option>
+            <option *ngFor="let t of availableTeams()" [ngValue]="t.id_tripulacion">
+              {{ t.nombre || 'Equipo #' + t.id_tripulacion }} ({{ t.miembros.length }} miembros)
+            </option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Fecha y Hora de Salida</label>
+          <input type="datetime-local" name="fecha" [(ngModel)]="newAsignacion.fecha" required class="form-control">
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-muted" (click)="closeForm()" [disabled]="saving()">Cancelar</button>
+          <button type="submit" class="btn btn-primary" [disabled]="!form.valid || saving()">
+            <span *ngIf="!saving()">Confirmar Asignación</span>
+            <span *ngIf="saving()" class="loader-white"></span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Detail View -->
+  <div class="detail-container" *ngIf="showDetail() && selectedAsignacion()">
+    <div class="detail-header">
+      <button class="btn-icon" (click)="closeDetail()"><mat-icon>arrow_back</mat-icon></button>
+      <h2>Detalle de Asignación #{{ selectedAsignacion()?.id_asignacion }}</h2>
+    </div>
+
+    <div class="detail-grid">
+      <!-- General Info -->
+      <div class="admin-card">
+        <h3>Información General</h3>
+        <div class="info-list">
+          <div class="info-item">
+            <span class="label">Estado:</span>
+            <span class="badge" [ngClass]="getStatusClass(selectedAsignacion()?.estado!)">
+              {{ selectedAsignacion()?.estado }}
+            </span>
+          </div>
+          <div class="info-item">
+            <span class="label">Vehículo:</span>
+            <span>{{ selectedAsignacion()?.vehiculo?.placa }} ({{ selectedAsignacion()?.vehiculo?.modelo }})</span>
+          </div>
+          <div class="info-item">
+            <span class="label">Ruta ID:</span>
+            <span>{{ selectedAsignacion()?.id_ruta }}</span>
+          </div>
+          <div class="info-item">
+            <span class="label">Fecha Programada:</span>
+            <span>{{ formatDate(selectedAsignacion()?.fecha!) }}</span>
+          </div>
+          <div class="info-item" *ngIf="selectedAsignacion()?.hora_salida">
+            <span class="label">Salida Real:</span>
+            <span>{{ formatDate(selectedAsignacion()?.hora_salida!) }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Crew Info -->
+      <div class="admin-card">
+        <h3>Equipo Asignado: {{ selectedAsignacion()?.tripulacion?.nombre || 'Sin nombre' }}</h3>
+        <div class="crew-list">
+          <div class="crew-member-card" *ngFor="let m of selectedAsignacion()?.tripulacion?.miembros">
+            <mat-icon [color]="m.rol_tripulacion === 'conductor' ? 'primary' : ''">
+              {{ m.rol_tripulacion === 'conductor' ? 'drive_eta' : 'person' }}
+            </mat-icon>
+            <div class="member-info">
+              <strong>{{ m.usuario.username }}</strong>
+              <small>{{ m.rol_tripulacion | titlecase }}</small>
+            </div>
+          </div>
         </div>
       </div>
     </div>
-
   </div>
 </div>

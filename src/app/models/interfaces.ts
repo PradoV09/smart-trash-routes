@@ -43,8 +43,10 @@ export type VehiculoWritePayload = Partial<
 
 export interface Ruta {
   id_ruta: number;
+  id?: number;
   nombre_sector: string;
-  puntos_geograficos: string; // Puede ser un JSON stringificado o coordenadas
+  nombre_ruta?: string;
+  puntos_geograficos: string;
   horario_estimado: string;
 }
 
@@ -59,12 +61,35 @@ export interface Reporte {
   fecha_creacion: string;
 }
 
-export type EstadoAsignacion = 'Pendiente' | 'En Curso' | 'Finalizada';
+export type EstadoAsignacion = 'pendiente' | 'en_curso' | 'completada' | 'cancelada';
 
 export interface Asignacion {
   id_asignacion: number;
-  id_ruta: number;
+  id_ruta: string;
   id_vehiculo: number;
+  id_tripulacion: number;
   estado: EstadoAsignacion;
-  tripulacion: Usuario[]; // o podría ser number[] con los ids de los usuarios
+  fecha: string;
+  hora_salida?: string;
+  tripulacion?: Tripulacion;
+  vehiculo?: Vehiculo;
 }
+
+export interface TripulacionMiembro {
+  id: number;
+  id_tripulacion: number;
+  id_asignacion?: number;
+  id_usuario: number;
+  rol_tripulacion: 'conductor' | 'recolector';
+  usuario: Usuario;
+  confirmado: boolean;
+  confirmado_at?: string | null;
+}
+
+export interface Tripulacion {
+  id_tripulacion: number;
+  nombre: string | null;
+  created_at: string;
+  miembros: TripulacionMiembro[];
+}
+

@@ -1,0 +1,140 @@
+<div class="container">
+  <div class="header">
+    <h1>Gestión de Tripulación</h1>
+    @if (loading()) {
+      <div class="spinner"></div>
+    }
+  </div>
+
+  <!-- Búsqueda de Asignación -->
+  <div class="search-card">
+    <div class="form-group">
+      <label for="id_asignacion">ID Asignación</label>
+      <input type="number" id="id_asignacion" [(ngModel)]="idAsignacion" placeholder="Ej: 123">
+    </div>
+    <button class="btn-primary" (click)="cargarTripulacion()" [disabled]="!idAsignacion() || loading()">
+      <mat-icon>search</mat-icon>
+      Cargar tripulación
+    </button>
+  </div>
+
+  @if (tripulacionLoaded()) {
+    <!-- Indicadores Visuales -->
+    <div class="indicators-grid">
+      <div class="indicator-card" [class.complete]="tripulacionCompleta()">
+        <span class="indicator-label">Total Miembros</span>
+        <span class="indicator-value">{{ totalMiembros() }} / 4</span>
+        <span class="status-badge" [class.complete]="tripulacionCompleta()" [class.incomplete]="!tripulacionCompleta()">
+          {{ tripulacionCompleta() ? '🟢 Completa' : '🟡 Incompleta' }}
+        </span>
+      </div>
+      <div class="indicator-card" [class.complete]="conductores() === 1">
+        <span class="indicator-label">Conductores</span>
+        <span class="indicator-value">{{ conductores() }} / 1</span>
+      </div>
+      <div class="indicator-card" [class.complete]="recolectores() === 3">
+        <span class="indicator-label">Recolectores</span>
+        <span class="indicator-value">{{ recolectores() }} / 3</span>
+      </div>
+    </div>
+
+    <div class="main-grid">
+      <!-- Listado -->
+      <div class="content-card">
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Usuario</th>
+                <th>Correo</th>
+                <th>Rol</th>
+                <th>Estado</th>
+                <th>Fecha</th>
+                <th>Acción</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (miembro of tripulacion(); track miembro.id) {
+                <tr>
+                  <td>
+                    <strong>{{ miembro.usuario.username }}</strong>
+                  </td>
+                  <td>{{ miembro.usuario.correo }}</td>
+                  <td>
+                    <span class="badge" [class.badge-green]="miembro.rol_tripulacion === 'conductor'" [class.badge-gray]="miembro.rol_tripulacion === 'recolector'">
+                      {{ miembro.rol_tripulacion | titlecase }}
+                    </span>
+                  </td>
+                  <td>
+                    <span class="badge" [class.badge-green]="miembro.confirmado" [class.badge-gray]="!miembro.confirmado">
+                      {{ miembro.confirmado ? 'Confirmado' : 'Pendiente' }}
+                    </span>
+                  </td>
+                  <td>{{ miembro.confirmado_at ? (miembro.confirmado_at | date:'short') : '-' }}</td>
+                  <td>
+                    <button class="btn-delete" (click)="eliminarMiembro(miembro)" [disabled]="loading()" title="Eliminar miembro">
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  </td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="6" style="text-align: center; padding: 2rem; color: #64748b;">
+                    No hay miembros asignados a esta tripulación.
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Formulario Agregar -->
+      <div class="form-card">
+        <h3>Agregar Miembro</h3>
+        
+        @if (tripulacionCompleta()) {
+          <div class="warning-msg">
+            <mat-icon>info</mat-icon>
+            La tripulación ya está completa
+          </div>
+        } @else {
+          <div class="form-group">
+            <label for="new_user_id">Usuario</label>
+            <select id="new_user_id" [(ngModel)]="selectedUserId">
+              <option [value]="0">Seleccione un usuario...</option>
+              @for (user of availableUsers(); track user.id_usuario) {
+                <option [value]="user.id_usuario">{{ user.username }} ({{ user.correo }})</option>
+              }
+            </select>
+          </div>
+
+          <div class="form-group" style="margin-top: 1rem;">
+            <label for="new_rol">Rol</label>
+            <select id="new_rol" [(ngModel)]="selectedRol">
+              <option value="">Seleccione rol...</option>
+              @if (puedeAgregarConductor()) {
+                <option value="conductor">Conductor</option>
+              }
+              @if (puedeAgregarRecolector()) {
+                <option value="recolector">Recolector</option>
+              }
+            </select>
+          </div>
+
+          <div class="form-actions">
+            <button class="btn-primary btn-full" (click)="agregarMiembro()" [disabled]="!selectedUserId() || !selectedRol() || loading()">
+              <mat-icon>person_add</mat-icon>
+              Agregar a la tripulación
+            </button>
+          </div>
+        }
+      </div>
+    </div>
+  } @else if (idAsignacion() && !loading()) {
+    <div style="text-align: center; padding: 4rem; color: #64748b;">
+      <mat-icon style="font-size: 3rem; width: 3rem; height: 3rem;">assignment_ind</mat-icon>
+      <p>Ingrese un ID de asignación válido para gestionar su tripulación.</p>
+    </div>
+  }
+</div>
