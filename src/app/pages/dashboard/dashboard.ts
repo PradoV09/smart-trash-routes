@@ -3,6 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { AuthService } from '../../services/auth.service';
 import { environment } from '../../../environments/environment';
 import { forkJoin } from 'rxjs';
+import { MatIconModule } from '@angular/material/icon';
 
 interface StatData {
   total: number;
@@ -13,7 +14,7 @@ interface StatData {
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [],
+  imports: [MatIconModule],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
 })
@@ -29,6 +30,8 @@ export class Dashboard implements OnInit {
   vehiculos = signal<number>(0);
   asignaciones = signal<number>(0);
   reportes = signal<number>(0);
+  rutas = signal<number>(0);
+  tripulaciones = signal<number>(0);
 
   ngOnInit() {
     this.userName.set(this.authService.getUserName());
@@ -37,14 +40,22 @@ export class Dashboard implements OnInit {
 
   loadStats() {
     this.isLoading.set(true);
-    const token = this.authService.getToken() || '';
+    const token = this.authService.getToken();
+    
+    if (!token) {
+      this.isLoading.set(false);
+      return;
+    }
+
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
 
     const requests = {
       usuarios: this.http.get<any>(`${this.apiUrl}/admin/usuarios`, { headers }),
       vehiculos: this.http.get<any>(`${this.apiUrl}/admin/vehiculos`, { headers }),
       asignaciones: this.http.get<any>(`${this.apiUrl}/admin/asignaciones`, { headers }),
-      reportes: this.http.get<any>(`${this.apiUrl}/admin/reportes`, { headers })
+      reportes: this.http.get<any>(`${this.apiUrl}/admin/reportes`, { headers }),
+      rutas: this.http.get<any>(`${this.apiUrl}/api/rutas`, { headers }),
+      tripulaciones: this.http.get<any>(`${this.apiUrl}/admin/tripulaciones`, { headers })
     };
 
     forkJoin(requests).subscribe({
@@ -53,6 +64,8 @@ export class Dashboard implements OnInit {
         this.vehiculos.set(this.extractTotal(res.vehiculos));
         this.asignaciones.set(this.extractTotal(res.asignaciones));
         this.reportes.set(this.extractTotal(res.reportes));
+        this.rutas.set(this.extractTotal(res.rutas));
+        this.tripulaciones.set(this.extractTotal(res.tripulaciones));
       },
       error: (err) => {
         console.error('Error cargando estadísticas', err);

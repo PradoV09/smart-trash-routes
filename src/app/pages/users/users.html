@@ -7,35 +7,57 @@
     </button>
   </div>
 
-  <div class="crud-form" *ngIf="showForm">
-    <input
-      class="form-input"
-      [(ngModel)]="formData.nombre"
-      placeholder="Nombre del perfil (obligatorio, máx. 255)"
-      maxlength="255"
-      required
-    />
-    <input class="form-input" [(ngModel)]="formData.username" placeholder="Username (3–50 caracteres)" maxlength="50" />
-    <input class="form-input" [(ngModel)]="formData.correo" placeholder="Correo" />
-    <input
-      class="form-input"
-      type="password"
-      [(ngModel)]="formData.contrasena"
-      [placeholder]="editingId ? 'Contraseña (opcional)' : 'Contraseña *'"
-    />
-    <select class="form-input" [(ngModel)]="formData.id_rol">
-      <option [ngValue]="0" disabled *ngIf="roles().length === 0">Sin roles disponibles</option>
-      <option *ngFor="let rol of roles()" [ngValue]="rol.id_rol">{{ rol.nombre }}</option>
-    </select>
-    <label class="form-checkbox">
-      <input type="checkbox" [(ngModel)]="formData.activo" />
-      Activo
-    </label>
-    <div class="button-group">
-      <button class="btn btn-primary" (click)="saveUsuario()" [disabled]="saving()">
-        {{ editingId ? 'Actualizar' : 'Crear' }}
-      </button>
-      <button class="btn btn-secondary" (click)="cancelForm()" [disabled]="saving()">Cancelar</button>
+  <!-- Create/Edit Modal -->
+  <div class="modal-overlay" *ngIf="showForm">
+    <div class="modal-content animate-in wide-modal">
+      <div class="modal-header">
+        <h2>{{ editingId ? 'Editar Usuario' : 'Crear Nuevo Usuario' }}</h2>
+        <button class="btn-icon" (click)="cancelForm()">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+      
+      <div class="modal-body">
+        <div class="form-group mb-4">
+          <label>Nombre del perfil (obligatorio)</label>
+          <input class="form-control" [(ngModel)]="formData.nombre" placeholder="Ej. Juan Pérez" maxlength="255" required />
+        </div>
+        <div class="form-group mb-4">
+          <label>Username</label>
+          <input class="form-control" [(ngModel)]="formData.username" placeholder="3–50 caracteres" maxlength="50" />
+        </div>
+        <div class="form-group mb-4">
+          <label>Correo</label>
+          <input class="form-control" [(ngModel)]="formData.correo" placeholder="correo@ejemplo.com" />
+        </div>
+        <div class="form-group mb-4">
+          <label>Contraseña</label>
+          <input class="form-control" type="password" [(ngModel)]="formData.contrasena" [placeholder]="editingId ? 'Contraseña (opcional)' : 'Contraseña *'" />
+        </div>
+        <div class="form-group mb-4">
+          <label>Rol</label>
+          <select class="form-control" [(ngModel)]="formData.id_rol">
+            <option [ngValue]="0" disabled *ngIf="roles().length === 0">Sin roles disponibles</option>
+            <option *ngFor="let rol of roles()" [ngValue]="rol.id_rol">{{ rol.nombre }}</option>
+          </select>
+        </div>
+        <div class="form-group mb-4">
+          <label class="form-checkbox">
+            <input type="checkbox" [(ngModel)]="formData.activo" />
+            Usuario Activo
+          </label>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-muted" (click)="cancelForm()" [disabled]="saving()">
+          Cancelar
+        </button>
+        <button type="button" class="btn btn-primary" (click)="saveUsuario()" [disabled]="saving()">
+          <span *ngIf="!saving()">{{ editingId ? 'Actualizar Usuario' : 'Crear Usuario' }}</span>
+          <span *ngIf="saving()" class="loader-white"></span>
+        </button>
+      </div>
     </div>
   </div>
 

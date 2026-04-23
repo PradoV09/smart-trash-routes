@@ -7,38 +7,49 @@
     </button>
   </div>
 
-  <div class="crud-form" *ngIf="showForm">
-    <input
-      class="form-input"
-      [ngModel]="formData.placa"
-      (ngModelChange)="onPlacaChange($event)"
-      placeholder="Placa (ABC123)"
-      maxlength="6"
-    />
-    <input
-      class="form-input"
-      [(ngModel)]="formData.modelo"
-      placeholder="Modelo (opcional, max 50)"
-      maxlength="50"
-    />
-    <input
-      class="form-input"
-      type="text"
-      inputmode="decimal"
-      [(ngModel)]="formData.capacidad_m3"
-      placeholder="Capacidad m³ (opcional, ej. 8.5)"
-    />
-    <select class="form-input" [(ngModel)]="formData.estado">
-      <option value="disponible">disponible</option>
-      <option value="en_ruta">en_ruta</option>
-      <option value="mantenimiento">mantenimiento</option>
-      <option value="inactivo">inactivo</option>
-    </select>
-    <div class="button-group">
-      <button class="btn btn-primary" (click)="saveVehiculo()" [disabled]="saving()">
-        {{ editingId ? 'Actualizar' : 'Crear' }}
-      </button>
-      <button class="btn btn-secondary" (click)="cancelForm()" [disabled]="saving()">Cancelar</button>
+  <!-- Create/Edit Modal -->
+  <div class="modal-overlay" *ngIf="showForm">
+    <div class="modal-content animate-in wide-modal">
+      <div class="modal-header">
+        <h2>{{ editingId ? 'Editar Vehículo' : 'Crear Nuevo Vehículo' }}</h2>
+        <button class="btn-icon" (click)="cancelForm()">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+      
+      <div class="modal-body">
+        <div class="form-group mb-4">
+          <label>Placa</label>
+          <input class="form-control" [ngModel]="formData.placa" (ngModelChange)="onPlacaChange($event)" placeholder="Ej. ABC123" maxlength="6" required />
+        </div>
+        <div class="form-group mb-4">
+          <label>Modelo</label>
+          <input class="form-control" [(ngModel)]="formData.modelo" placeholder="Modelo (opcional, máx. 50)" maxlength="50" />
+        </div>
+        <div class="form-group mb-4">
+          <label>Capacidad (m³)</label>
+          <input class="form-control" type="text" inputmode="decimal" [(ngModel)]="formData.capacidad_m3" placeholder="Ej. 8.5" />
+        </div>
+        <div class="form-group mb-4">
+          <label>Estado</label>
+          <select class="form-control" [(ngModel)]="formData.estado">
+            <option value="disponible">Disponible</option>
+            <option value="en_ruta">En ruta</option>
+            <option value="mantenimiento">Mantenimiento</option>
+            <option value="inactivo">Inactivo</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-muted" (click)="cancelForm()" [disabled]="saving()">
+          Cancelar
+        </button>
+        <button type="button" class="btn btn-primary" (click)="saveVehiculo()" [disabled]="saving()">
+          <span *ngIf="!saving()">{{ editingId ? 'Actualizar Vehículo' : 'Crear Vehículo' }}</span>
+          <span *ngIf="saving()" class="loader-white"></span>
+        </button>
+      </div>
     </div>
   </div>
 

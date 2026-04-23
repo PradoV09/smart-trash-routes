@@ -5,60 +5,82 @@
   </header>
 
   @if (isLoading()) {
-    <div class="stats-grid skeleton-grid">
-      @for (i of [1, 2, 3, 4]; track i) {
-        <div class="stat-card skeleton">
-          <div class="skeleton-icon"></div>
-          <div class="skeleton-line-small"></div>
-          <div class="skeleton-line-large"></div>
-        </div>
-      }
+  <div class="stats-grid skeleton-grid">
+    @for (i of [1, 2, 3, 4, 5, 6]; track i) {
+    <div class="stat-card skeleton">
+      <div class="skeleton-icon"></div>
+      <div class="skeleton-line-small"></div>
+      <div class="skeleton-line-large"></div>
     </div>
+    }
+  </div>
   } @else {
-    <div class="stats-grid">
-      <!-- Tarjeta Usuarios -->
-      <div class="stat-card">
-        <div class="card-icon">
-          <span class="icon">👥</span>
-        </div>
-        <div class="card-content">
-          <p class="card-label">Usuarios Registrados</p>
-          <h2 class="card-value">{{ usuarios() }}</h2>
-        </div>
+  <div class="stats-grid">
+    <!-- Tarjeta Usuarios -->
+    <div class="stat-card">
+      <div class="card-icon">
+        <mat-icon class="icon">badge</mat-icon>
       </div>
-
-      <!-- Tarjeta Vehiculos -->
-      <div class="stat-card">
-        <div class="card-icon">
-          <span class="icon">🚛</span>
-        </div>
-        <div class="card-content">
-          <p class="card-label">Flota Vehicular</p>
-          <h2 class="card-value">{{ vehiculos() }}</h2>
-        </div>
-      </div>
-
-      <!-- Tarjeta Asignaciones -->
-      <div class="stat-card">
-        <div class="card-icon">
-          <span class="icon">🛣️</span>
-        </div>
-        <div class="card-content">
-          <p class="card-label">Rutas Programadas</p>
-          <h2 class="card-value">{{ asignaciones() }}</h2>
-        </div>
-      </div>
-
-      <!-- Tarjeta Reportes -->
-      <div class="stat-card">
-        <div class="card-icon">
-          <span class="icon">⚠️</span>
-        </div>
-        <div class="card-content">
-          <p class="card-label">Incidencias</p>
-          <h2 class="card-value">{{ reportes() }}</h2>
-        </div>
+      <div class="card-content">
+        <p class="card-label">Usuarios Registrados</p>
+        <h2 class="card-value">{{ usuarios() }}</h2>
       </div>
     </div>
+
+    <!-- Tarjeta Vehiculos -->
+    <div class="stat-card">
+      <div class="card-icon">
+        <mat-icon class="icon">directions_car</mat-icon>
+      </div>
+      <div class="card-content">
+        <p class="card-label">Vehículos</p>
+        <h2 class="card-value">{{ vehiculos() }}</h2>
+      </div>
+    </div>
+
+    <!-- Tarjeta Rutas -->
+    <div class="stat-card">
+      <div class="card-icon">
+        <mat-icon class="icon">location_on</mat-icon>
+      </div>
+      <div class="card-content">
+        <p class="card-label">Rutas</p>
+        <h2 class="card-value">{{ rutas() }}</h2>
+      </div>
+    </div>
+
+    <!-- Tarjeta Reportes -->
+    <div class="stat-card">
+      <div class="card-icon">
+        <mat-icon class="icon">bar_chart</mat-icon>
+      </div>
+      <div class="card-content">
+        <p class="card-label">Reportes</p>
+        <h2 class="card-value">{{ reportes() }}</h2>
+      </div>
+    </div>
+
+    <!-- Tarjeta Tripulación -->
+    <div class="stat-card">
+      <div class="card-icon">
+        <mat-icon class="icon">group</mat-icon>
+      </div>
+      <div class="card-content">
+        <p class="card-label">Tripulaciones</p>
+        <h2 class="card-value">{{ tripulaciones() }}</h2>
+      </div>
+    </div>
+
+    <!-- Tarjeta Asignaciones -->
+    <div class="stat-card">
+      <div class="card-icon">
+        <mat-icon class="icon">assignment</mat-icon>
+      </div>
+      <div class="card-content">
+        <p class="card-label">Asignaciones</p>
+        <h2 class="card-value">{{ asignaciones() }}</h2>
+      </div>
+    </div>
+  </div>
   }
 </div>

@@ -34,7 +34,8 @@
   padding: 1.5rem;
   display: flex;
   align-items: center;
-  box-shadow: 0 10px 25px rgba(0, 29, 57, 0.08); /* Sombra suave corporativa */
+  box-shadow: 0 10px 25px rgba(0, 29, 57, 0.08);
+  /* Sombra suave corporativa */
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   border: 1px solid rgba(78, 142, 162, 0.1);
 }
