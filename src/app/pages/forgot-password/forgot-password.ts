@@ -16,6 +16,7 @@ export class ForgotPassword {
   correo = '';
   isLoading = signal(false);
   successMessage = signal(false);
+  errorMessage = signal('');
 
   private authService = inject(AuthService);
 
@@ -31,8 +32,14 @@ export class ForgotPassword {
         error: (err) => {
           this.isLoading.set(false);
           console.error("Error al solicitar recuperación", err);
-          // Mostrar éxito de todas formas para prevenir enumeración de usuarios
-          this.successMessage.set(true);
+          // Si es un error real de red, mostramos error
+          if (err.status === 0 || err.status >= 500) {
+            this.errorMessage.set('Tuvimos un problema al comunicarnos con el servidor. Inténtalo más tarde.');
+          } else {
+            // Mostrar éxito de todas formas para prevenir enumeración de usuarios
+            this.successMessage.set(true);
+            this.errorMessage.set('');
+          }
         }
       });
     }

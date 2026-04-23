@@ -3,6 +3,7 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import Swal from 'sweetalert2';
 import { Rol, Usuario } from '../../models/interfaces';
 import { UsuarioService } from '../../services/usuario.service';
 
@@ -200,6 +201,16 @@ export class Users implements OnInit {
       next: () => {
         this.saving.set(false);
         this.showForm = false;
+        
+        Swal.fire({
+          title: this.editingId ? '¡Usuario Actualizado!' : '¡Usuario Creado!',
+          text: `El usuario se guardó exitosamente en el sistema.`,
+          icon: 'success',
+          confirmButtonColor: '#5D93A4',
+          timer: 2500,
+          showConfirmButton: false
+        });
+
         this.editingId = null;
         this.loadUsuarios();
       },
@@ -213,28 +224,47 @@ export class Users implements OnInit {
   }
 
   deleteUsuario(usuario: Usuario): void {
-    if (!confirm(`Eliminar usuario "${usuario.username}"?`)) {
-      return;
-    }
+    Swal.fire({
+      title: '¿Eliminar usuario?',
+      text: `Estás a punto de eliminar al usuario "${usuario.username}". Esta acción no se puede deshacer.`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#E74C3C',
+      cancelButtonColor: '#BDC3C7',
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.deletingId.set(usuario.id_usuario);
+        this.error.set('');
+        const idEliminar = usuario.id_usuario;
+        if (!idEliminar) {
+          this.error.set('No se pudo identificar el usuario a eliminar.');
+          this.deletingId.set(null);
+          return;
+        }
 
-    this.deletingId.set(usuario.id_usuario);
-    this.error.set('');
-    const idEliminar = usuario.id_usuario;
-    if (!idEliminar) {
-      this.error.set('No se pudo identificar el usuario a eliminar.');
-      this.deletingId.set(null);
-      return;
-    }
-
-    this.usuarioService.deleteUsuario(idEliminar).subscribe({
-      next: () => {
-        this.usuarios.update((list) => list.filter((u) => u.id_usuario !== idEliminar));
-        this.deletingId.set(null);
-        this.loadUsuarios();
-      },
-      error: (err: HttpErrorResponse) => {
-        this.error.set(this.deleteErrorMessage(err));
-        this.deletingId.set(null);
+        this.usuarioService.deleteUsuario(idEliminar).subscribe({
+          next: () => {
+            this.usuarios.update((list) => list.filter((u) => u.id_usuario !== idEliminar));
+            this.deletingId.set(null);
+            this.loadUsuarios();
+            Swal.fire({
+              title: '¡Eliminado!',
+              text: 'El usuario ha sido eliminado exitosamente.',
+              icon: 'success',
+              confirmButtonColor: '#5D93A4',
+              timer: 2000,
+              showConfirmButton: false
+            });
+          },
+          error: (err: HttpErrorResponse) => {
+            const msg = this.deleteErrorMessage(err);
+            this.error.set(msg);
+            this.deletingId.set(null);
+            Swal.fire('Error', msg, 'error');
+          }
+        });
       }
     });
   }

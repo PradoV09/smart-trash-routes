@@ -6,6 +6,7 @@ import { RutaService } from '../../services/ruta.service';
 import { Ruta } from '../../models/interfaces';
 import { MatIconModule } from '@angular/material/icon';
 import { AuthService } from '../../services/auth.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-rutas',
@@ -119,7 +120,12 @@ export class Rutas implements OnInit {
     }
 
     if (!this.nombreRuta || this.routeCoords.length < 2) {
-      alert("Por favor, ingresa un nombre y marca al menos 2 puntos para la ruta.");
+      Swal.fire({
+        icon: 'warning',
+        title: 'Faltan datos',
+        text: 'Por favor, ingresa un nombre y marca al menos 2 puntos para la ruta en el mapa.',
+        confirmButtonColor: '#5D93A4'
+      });
       return;
     }
 
@@ -139,7 +145,14 @@ export class Rutas implements OnInit {
     request$.subscribe({
       next: (res) => {
         this.saving = false;
-        alert('Ruta guardada con éxito.');
+        Swal.fire({
+          title: '¡Ruta Guardada!',
+          text: 'La ruta se ha registrado exitosamente.',
+          icon: 'success',
+          confirmButtonColor: '#5D93A4',
+          timer: 2000,
+          showConfirmButton: false
+        });
         this.limpiarMapa();
         this.loadRutas();
         this.cdr.detectChanges();

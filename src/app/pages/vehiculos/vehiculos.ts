@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
+import Swal from 'sweetalert2';
 import { EstadoVehiculo, Vehiculo, VehiculoWritePayload } from '../../models/interfaces';
 import { VehiculoService } from '../../services/vehiculo.service';
 
@@ -128,6 +129,16 @@ export class Vehiculos implements OnInit {
       next: () => {
         this.saving.set(false);
         this.showForm = false;
+        
+        Swal.fire({
+          title: this.editingId ? '¡Vehículo Actualizado!' : '¡Vehículo Creado!',
+          text: `El vehículo se guardó exitosamente en el sistema.`,
+          icon: 'success',
+          confirmButtonColor: '#5D93A4',
+          timer: 2500,
+          showConfirmButton: false
+        });
+
         this.editingId = null;
         this.loadVehiculos();
       },
@@ -146,20 +157,39 @@ export class Vehiculos implements OnInit {
   }
 
   deleteVehiculo(vehiculo: Vehiculo): void {
-    if (!confirm(`Eliminar vehículo "${vehiculo.placa}"?`)) {
-      return;
-    }
-
-    this.deletingId.set(vehiculo.id_vehiculo);
-    this.error.set('');
-    this.vehiculoService.deleteVehiculo(vehiculo.id_vehiculo).subscribe({
-      next: () => {
-        this.deletingId.set(null);
-        this.loadVehiculos();
-      },
-      error: (err: HttpErrorResponse) => {
-        this.error.set(this.getApiErrorMessage(err, 'No se pudo eliminar el vehículo.'));
-        this.deletingId.set(null);
+    Swal.fire({
+      title: '¿Eliminar vehículo?',
+      text: `Estás a punto de eliminar el vehículo con placa "${vehiculo.placa}". Esta acción no se puede deshacer.`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#E74C3C',
+      cancelButtonColor: '#BDC3C7',
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.deletingId.set(vehiculo.id_vehiculo);
+        this.error.set('');
+        this.vehiculoService.deleteVehiculo(vehiculo.id_vehiculo).subscribe({
+          next: () => {
+            this.deletingId.set(null);
+            this.loadVehiculos();
+            Swal.fire({
+              title: '¡Eliminado!',
+              text: 'El vehículo ha sido eliminado exitosamente.',
+              icon: 'success',
+              confirmButtonColor: '#5D93A4',
+              timer: 2000,
+              showConfirmButton: false
+            });
+          },
+          error: (err: HttpErrorResponse) => {
+            const msg = this.getApiErrorMessage(err, 'No se pudo eliminar el vehículo.');
+            this.error.set(msg);
+            this.deletingId.set(null);
+            Swal.fire('Error', msg, 'error');
+          }
+        });
       }
     });
   }

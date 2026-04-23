@@ -1,3 +1,4 @@
+import { CommonModule } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -7,7 +8,7 @@ import { AuthService } from '../../services/auth.service';
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [Footer, FormsModule, RouterLink],
+  imports: [Footer, FormsModule, RouterLink, CommonModule],
   templateUrl: './login.html',
   styleUrl: './login.css',
 })
@@ -15,6 +16,7 @@ export class Login {
   identifier = '';
   password = '';
   isLoading = signal(false);
+  errorMessage = signal('');
 
   private router = inject(Router);
   private authService = inject(AuthService);
@@ -34,9 +36,9 @@ export class Login {
           console.error("Error validando credenciales", err);
           
           if (err.message === 'ACCESO_DENEGADO_NO_ADMIN') {
-            alert('Acceso denegado. Esta aplicación es solo para administradores.');
+            this.errorMessage.set('Acceso restringido: Esta zona administrativa es exclusiva para personal autorizado.');
           } else {
-            alert('Hubo un error al iniciar sesión. Verifica tus credenciales.');
+            this.errorMessage.set('No pudimos iniciar sesión. Por favor, verifica tu correo y contraseña e inténtalo de nuevo.');
           }
         }
       });

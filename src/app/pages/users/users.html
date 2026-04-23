@@ -33,6 +33,9 @@
         <div class="form-group mb-4">
           <label>Contraseña</label>
           <input class="form-control" type="password" [(ngModel)]="formData.contrasena" [placeholder]="editingId ? 'Contraseña (opcional)' : 'Contraseña *'" />
+          <small style="color: #666; font-size: 12px; display: block; margin-top: 4px; line-height: 1.4;">
+            Mín. 8 caracteres, 1 mayúscula, 1 minúscula, 1 número y 1 carácter especial (Ej: <strong>Prueba123!</strong>).
+          </small>
         </div>
         <div class="form-group mb-4">
           <label>Rol</label>
