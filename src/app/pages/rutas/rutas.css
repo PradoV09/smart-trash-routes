@@ -1,52 +1,167 @@
-.map-container-wrapper {
-  background: #1a1a2e;
-  padding: 1.5rem;
-  border-radius: 12px;
-  margin-bottom: 2rem;
-  border: 1px solid #2d3748;
+.rutas-layout {
+  display: flex;
+  height: calc(100vh - 80px); /* Aproximación restando header/nav */
+  background: var(--bg-color, #f8fafc);
+  margin: -1.5rem; /* Expande para quitar el padding del main-content si existe */
+  overflow: hidden;
 }
 
-.map-controls {
+/* Sidebar */
+.sidebar-panel {
+  width: 350px;
+  flex-shrink: 0;
+  z-index: 10;
+  box-shadow: 2px 0 10px rgba(0,0,0,0.2);
+}
+
+/* Map Area */
+.map-area {
+  flex: 1;
+  position: relative;
   display: flex;
-  justify-content: space-between;
-  margin-bottom: 1rem;
-  gap: 1rem;
+  flex-direction: column;
+}
+
+.map-container {
+  flex: 1;
+  width: 100%;
+  z-index: 1;
+}
+
+/* Floating Controls para creación de ruta */
+.floating-controls {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 400; /* Leaflet UI tiene z-index altos */
+}
+
+.control-card {
+  background: var(--card-bg, #ffffff);
+  border: 1px solid var(--border-color, #e2e8f0);
+  border-radius: 12px;
+  padding: 1.25rem;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  width: 320px;
+}
+
+.control-card h3 {
+  margin: 0 0 4px 0;
+  font-size: 1.1rem;
+  color: var(--text-color, #2d3748);
+}
+
+.help-text {
+  margin: 0 0 12px 0;
+  font-size: 0.8rem;
+  color: var(--text-muted, #718096);
+}
+
+.input-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
 }
 
 .form-input {
-  flex-grow: 1;
-  background: #161625;
-  border: 1px solid #2d3748;
-  color: white;
-  padding: 0.8rem;
-  border-radius: 8px;
+  flex: 1;
+  background: var(--input-bg, #f7fafc);
+  border: 1px solid var(--border-color, #e2e8f0);
+  color: var(--text-color, #2d3748);
+  padding: 0.6rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #2dcecc;
+}
+
+.btn-icon {
+  background: transparent;
+  border: 1px solid var(--border-color, #e2e8f0);
+  color: var(--text-muted, #718096);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-icon:hover:not(:disabled) {
+  color: var(--text-color, #2d3748);
+  border-color: #cbd5e0;
+}
+
+.btn-icon:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.action-row {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.btn {
+  padding: 0.6rem 1rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  border: none;
+  font-weight: 500;
+  transition: all 0.2s;
 }
 
 .btn-secondary {
   background: transparent;
-  border: 1px solid #2dcecc;
-  color: #2dcecc;
-  padding: 0.8rem 1.5rem;
-  border-radius: 8px;
-  cursor: pointer;
+  border: 1px solid #cbd5e0;
+  color: #4a5568;
 }
 
-/* Estilo para que el mapa no tape dropdowns si los hay */
-#map {
-  border: 2px solid #2d3748;
+.btn-secondary:hover {
+  background: rgba(0, 0, 0, 0.05);
 }
 
-.button-group {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
+.btn-primary {
+  background: #2dcecc;
+  color: #ffffff;
 }
 
-.table-message {
-  margin: 0.75rem 0;
-  color: var(--text-muted);
+.btn-primary:hover:not(:disabled) {
+  background: #25b8b6;
 }
 
-.table-message.error {
-  color: #f87171;
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Ajustes Responsive */
+@media (max-width: 768px) {
+  .rutas-layout {
+    flex-direction: column-reverse;
+  }
+  
+  .sidebar-panel {
+    width: 100%;
+    height: 50vh;
+  }
+  
+  .map-area {
+    height: 50vh;
+  }
+
+  .floating-controls {
+    top: 10px;
+    right: 10px;
+  }
+  
+  .control-card {
+    width: 280px;
+  }
 }

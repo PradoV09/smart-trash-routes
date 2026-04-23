@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef, effect } from '@angular/core';
 import * as L from 'leaflet';
 import { FormsModule } from '@angular/forms';
 import { RutaService } from '../../services/ruta.service';
@@ -7,11 +7,13 @@ import { Ruta } from '../../models/interfaces';
 import { MatIconModule } from '@angular/material/icon';
 import { AuthService } from '../../services/auth.service';
 import Swal from 'sweetalert2';
+import { SidebarRutasComponent } from './components/sidebar-rutas/sidebar-rutas';
+import { RutasStateService } from '../../services/rutas-state.service';
 
 @Component({
   selector: 'app-rutas',
   standalone: true,
-  imports: [CommonModule, FormsModule, MatIconModule],
+  imports: [CommonModule, FormsModule, MatIconModule, SidebarRutasComponent],
   templateUrl: './rutas.html',
   styleUrl: './rutas.css',
 })
@@ -19,12 +21,16 @@ export class Rutas implements OnInit {
   map!: L.Map;
   routeCoords: [number, number][] = [];
   polyline!: L.Polyline;
-  markers: L.CircleMarker[] = []; // Nueva lista para rastrear los puntos visuales
-  selectedRouteLayer: L.GeoJSON | null = null;
+  markers: L.CircleMarker[] = []; 
+  
+  // Capas para las rutas activas/hover
+  private selectedLayer: L.GeoJSON | null = null;
+  private hoverLayer: L.GeoJSON | null = null;
 
   private rutaService = inject(RutaService);
   private authService = inject(AuthService);
   private cdr = inject(ChangeDetectorRef);
+  public rutasState = inject(RutasStateService);
 
   rutas: Ruta[] = [];
   loading = false;
@@ -34,6 +40,18 @@ export class Rutas implements OnInit {
   // Datos para formulario
   private perfilId = '';
   nombreRuta = '';
+
+  constructor() {
+    effect(() => {
+      const hovered = this.rutasState.hoveredRuta();
+      this.renderHoveredRoute(hovered);
+    });
+
+    effect(() => {
+      const selected = this.rutasState.selectedRuta();
+      this.renderSelectedRoute(selected);
+    });
+  }
 
   ngOnInit() {
     this.perfilId = this.authService.getPerfilId()?.trim() ?? '';
@@ -110,7 +128,9 @@ export class Rutas implements OnInit {
     this.markers.forEach(marker => this.map.removeLayer(marker));
     this.markers = [];
     this.nombreRuta = "";
-    this.clearSelectedRouteLayer();
+    
+    // Deseleccionar rutas en el state si hay una activa
+    this.rutasState.selectRuta(null);
   }
 
   guardarRuta() {
@@ -179,6 +199,7 @@ export class Rutas implements OnInit {
     this.rutaService.listarRutas(this.perfilId.trim()).subscribe({
       next: (res) => {
         this.rutas = Array.isArray(res) ? res : [];
+        this.rutasState.setRutas(this.rutas);
         this.loading = false;
         this.cdr.detectChanges();
       },
@@ -190,9 +211,7 @@ export class Rutas implements OnInit {
     });
   }
 
-  verRutaEnMapa(ruta: Ruta): void {
-    this.drawRouteDetail(ruta);
-  }
+
 
   private parseCoords(pointsRaw: string): [number, number][] {
     try {
@@ -221,37 +240,67 @@ export class Rutas implements OnInit {
     return shapeObj;
   }
 
-  private drawRouteDetail(ruta: unknown): void {
-    this.clearSelectedRouteLayer();
-    const r = ruta as Record<string, unknown>;
-    const shapeObj = this.getShapeObject(ruta);
+  private renderHoveredRoute(ruta: Ruta | null): void {
+    if (this.hoverLayer) {
+      this.map.removeLayer(this.hoverLayer);
+      this.hoverLayer = null;
+    }
 
+    if (!ruta) return;
+    
+    // Si la ruta en hover es la misma que la seleccionada, no la dibujamos doble
+    const selected = this.rutasState.selectedRuta();
+    if (selected && this.getRutaId(selected) === this.getRutaId(ruta)) return;
+
+    const shapeObj = this.getShapeObject(ruta);
     if (shapeObj) {
-      const color = r['color_hex'] ? String(r['color_hex']) : '#2dcecc';
-      this.selectedRouteLayer = L.geoJSON(shapeObj as GeoJSON.GeoJsonObject, {
+      const color = this.getRutaColor(ruta);
+      this.hoverLayer = L.geoJSON(shapeObj as GeoJSON.GeoJsonObject, {
         style: {
           color: color,
-          weight: 5
+          weight: 7,
+          opacity: 0.4
+        }
+      }).addTo(this.map);
+    }
+  }
+
+  private renderSelectedRoute(ruta: Ruta | null): void {
+    if (this.selectedLayer) {
+      this.map.removeLayer(this.selectedLayer);
+      this.selectedLayer = null;
+    }
+
+    if (!ruta) {
+      // Si no hay seleccionada pero sí en proceso de creación, no hacemos fitBounds
+      if (this.routeCoords.length > 0) {
+        const bounds = this.polyline.getBounds();
+        if (bounds.isValid()) this.map.fitBounds(bounds, { padding: [50, 50] });
+      }
+      return;
+    }
+
+    const shapeObj = this.getShapeObject(ruta);
+    if (shapeObj) {
+      const color = this.getRutaColor(ruta);
+      this.selectedLayer = L.geoJSON(shapeObj as GeoJSON.GeoJsonObject, {
+        style: {
+          color: color,
+          weight: 6,
+          opacity: 1
         }
       }).addTo(this.map);
       
-      const bounds = this.selectedRouteLayer.getBounds();
+      const bounds = this.selectedLayer.getBounds();
       if (bounds.isValid()) {
-        this.map.fitBounds(bounds, { padding: [20, 20] });
+        this.map.fitBounds(bounds, { padding: [50, 50], animate: true, duration: 0.5 });
       }
-    }
 
-    // Limpiar marcadores y polilínea anterior
-    this.routeCoords = [];
-    this.polyline.setLatLngs([]);
-    this.markers.forEach((marker) => this.map.removeLayer(marker));
-    this.markers = [];
-  }
-
-  private clearSelectedRouteLayer(): void {
-    if (this.selectedRouteLayer) {
-      this.map.removeLayer(this.selectedRouteLayer);
-      this.selectedRouteLayer = null;
+      // Limpiar marcadores y polilínea de creación si se selecciona una ruta
+      this.routeCoords = [];
+      this.polyline.setLatLngs([]);
+      this.markers.forEach((marker) => this.map.removeLayer(marker));
+      this.markers = [];
     }
   }
 

@@ -1,0 +1,52 @@
+<div class="sidebar-container">
+  <div class="sidebar-header">
+    <h2>Rutas Guardadas</h2>
+    <p class="subtitle">{{ rutasState.rutasFiltradas().length }} rutas encontradas</p>
+    
+    <div class="search-box">
+      <mat-icon class="search-icon">search</mat-icon>
+      <input 
+        type="text" 
+        [value]="rutasState.searchQuery()"
+        (input)="onSearch($event)"
+        placeholder="Buscar ruta por nombre..." 
+        class="search-input"
+      />
+    </div>
+  </div>
+
+  <div class="sidebar-list">
+    <!-- Virtual Scroll Viewport for performance -->
+    <cdk-virtual-scroll-viewport itemSize="85" class="virtual-viewport">
+      <div *cdkVirtualFor="let ruta of rutasState.rutasFiltradas()" 
+           class="route-card" 
+           [class.active]="isSelected(ruta)"
+           (mouseenter)="onRutaHover(ruta)"
+           (mouseleave)="onRutaLeave()"
+           (click)="onRutaClick(ruta)">
+        
+        <div class="route-color-indicator" [style.backgroundColor]="getRutaColor(ruta)"></div>
+        
+        <div class="route-info">
+          <h3 class="route-name">{{ getRutaNombre(ruta) }}</h3>
+          <div class="route-meta">
+            <span class="badge" [style.color]="getRutaColor(ruta)" [style.borderColor]="getRutaColor(ruta)">
+              {{ getCantidadPuntos(ruta) }} puntos
+            </span>
+          </div>
+        </div>
+        
+        <div class="route-action">
+          <mat-icon *ngIf="isSelected(ruta)">check_circle</mat-icon>
+          <mat-icon *ngIf="!isSelected(ruta)" class="muted-icon">chevron_right</mat-icon>
+        </div>
+
+      </div>
+    </cdk-virtual-scroll-viewport>
+
+    <div class="empty-state" *ngIf="rutasState.rutasFiltradas().length === 0">
+      <mat-icon>map</mat-icon>
+      <p>No se encontraron rutas.</p>
+    </div>
+  </div>
+</div>
