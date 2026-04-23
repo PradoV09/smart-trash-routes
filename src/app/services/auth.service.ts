@@ -29,12 +29,44 @@ export class AuthService {
     return this.http.post<any>(this.loginUrl, body.toString(), { headers }).pipe(
       map((response) => {
         if (response.success && response.data?.access_token) {
-          this.setToken(response.data.access_token, response.data);
+          const token = response.data.access_token;
+          const payload = this.decodeJwtPayload(token) || {};
+          
+          // Buscar rol en el JWT
+          const rolJwt = String(payload['rol'] || payload['role'] || '').toLowerCase();
+          const idRolJwt = payload['id_rol'] || payload['rol_id'];
+          
+          // Buscar rol en los datos del login (response.data)
+          const userObj = response.data?.usuario || response.data?.user || response.data?.perfil || {};
+          const rolData = String(userObj['rol'] || userObj['role'] || response.data?.rol || response.data?.role || '').toLowerCase();
+          const idRolData = userObj['id_rol'] || userObj['rol_id'] || response.data?.id_rol || response.data?.rol_id;
+
+          const esAdmin = 
+            rolJwt === 'admin' || rolJwt === '1' || idRolJwt === 1 || String(idRolJwt) === '1' ||
+            rolData === 'admin' || rolData === '1' || idRolData === 1 || String(idRolData) === '1';
+
+          if (!esAdmin) {
+            console.error('Acceso denegado. Datos recibidos:', { payload, data: response.data });
+            throw new Error('ACCESO_DENEGADO_NO_ADMIN');
+          }
+
+          this.setToken(token, response.data);
         }
         return response;
       })
     );
   }
+  forgotPassword(correo: string): Observable<any> {
+    const url = `${environment.apiUrl}/auth/forgot-password`;
+    return this.http.post<any>(url, { correo });
+  }
+
+  resetPassword(token: string, new_password: string): Observable<any> {
+    const url = `${environment.apiUrl}/auth/reset-password`;
+    return this.http.post<any>(url, { token, new_password });
+  }
+
+
 
 
   getToken(): string | null {

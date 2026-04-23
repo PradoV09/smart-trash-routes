@@ -10,6 +10,14 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/login/login').then(m => m.Login)
   },
   {
+    path: 'forgot-password',
+    loadComponent: () => import('./pages/forgot-password/forgot-password').then(m => m.ForgotPassword)
+  },
+  {
+    path: 'reset-password',
+    loadComponent: () => import('./pages/reset-password/reset-password').then(m => m.ResetPassword)
+  },
+  {
     path: '',
     component: Layout, // Este componente tiene el Sidebar y el Footer
     canActivate: [authGuard], // Protege todas las rutas hijas
@@ -48,5 +56,5 @@ export const routes: Routes = [
       }
     ]
   },
-  // { path: '**', redirectTo: 'login' }
+  { path: '**', redirectTo: 'login' }
 ];
