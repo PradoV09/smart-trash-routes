@@ -53,12 +53,34 @@ export interface Ruta {
 export type AsuntoReporte = 'falla' | 'incidencia';
 export type SeveridadReporte = 'baja' | 'media' | 'alta';
 
+export interface ReporteFoto {
+  id_foto: number;
+  url: string;
+  tipo: 'evidencia' | 'incidente';
+  timestamp_captura: string;
+}
+
 export interface Reporte {
-  id_reporte: number;
-  asunto: AsuntoReporte;
-  comentario: string;
-  severidad: SeveridadReporte;
-  fecha_creacion: string;
+  id_registro: number;
+  asunto: string;
+  descripcion: string;
+  estado: 'baja' | 'media' | 'alta';
+  fecha: string;
+  id_usuario: number;
+  terminado: boolean;
+  evidencia_url?: string;
+  u_gmail_cache?: any;
+  u_rol_cache?: string;
+  notas_terminacion?: string;
+  fecha_terminacion?: string;
+  fotos?: ReporteFoto[];
+  created_at?: string;
+  updated_at?: string;
+}
+
+// Payload para marcar como terminado
+export interface ReporteTerminarPayload {
+  notas_terminacion?: string;
 }
 
 export type EstadoAsignacion = 'pendiente' | 'en_curso' | 'completada' | 'cancelada';

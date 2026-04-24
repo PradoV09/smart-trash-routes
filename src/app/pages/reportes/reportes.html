@@ -1,64 +1,327 @@
 <div class="admin-card">
+  <!-- Header -->
   <div class="view-header">
-    <h1>Reportes de Incidencias</h1>
-    <button class="btn btn-secondary">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-      Exportar PDF
+    <h1>Gestión de Reportes</h1>
+    <button class="btn btn-secondary" (click)="cargarReportes()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M23 4v6h-6"></path>
+        <path d="M1 20v-6h6"></path>
+        <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+      </svg>
+      Actualizar
     </button>
   </div>
 
-  <div class="data-table">
-    <div class="data-table-header reports-grid">
-      <div>Asunto</div>
-      <div>Comentario</div>
-      <div>Severidad</div>
-      <div>Fecha</div>
-      <div>Acciones</div>
+  <!-- Estadísticas -->
+  <div class="stats-container">
+    <div class="stat-card">
+      <div class="stat-number">{{ getEstadisticas().total }}</div>
+      <div class="stat-label">Total Reportes</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number">{{ getEstadisticas().pendientes }}</div>
+      <div class="stat-label">Pendientes</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number">{{ getEstadisticas().completados }}</div>
+      <div class="stat-label">Completados</div>
+    </div>
+    <div class="stat-card urgent">
+      <div class="stat-number">{{ getEstadisticas().altaPrioridad }}</div>
+      <div class="stat-label">Alta Prioridad</div>
+    </div>
+  </div>
+
+  <!-- Filtros -->
+  <div class="filters-container">
+    <div class="filter-group">
+      <label for="filtroEstado">Estado:</label>
+      <select id="filtroEstado" [(ngModel)]="filtroEstado" (change)="onFiltroEstadoChange()">
+        <option value="todos">Todos</option>
+        <option value="alta">Alta</option>
+        <option value="media">Media</option>
+        <option value="baja">Baja</option>
+      </select>
+    </div>
+
+    <div class="filter-group">
+      <label>
+        <input type="checkbox" [(ngModel)]="mostrarSoloPendientes" (change)="onMostrarSoloPendientesChange()">
+        Solo pendientes
+      </label>
+    </div>
+
+    <div class="filter-group">
+      <label for="busquedaAsunto">Buscar:</label>
+      <input 
+        id="busquedaAsunto" 
+        type="text" 
+        [(ngModel)]="busquedaAsunto" 
+        (input)="onBusquedaChange()"
+        placeholder="Buscar por asunto..."
+      >
+    </div>
+
+    <div class="filter-group">
+      <label for="ordenarFecha">Ordenar por fecha:</label>
+      <select id="ordenarFecha" [(ngModel)]="ordenarPorFecha" (change)="onOrdenarFechaChange()">
+        <option value="desc">Más recientes primero</option>
+        <option value="asc">Más antiguos primero</option>
+      </select>
+    </div>
+
+    <button class="btn btn-secondary btn-sm" (click)="limpiarFiltros()">
+      Limpiar filtros
+    </button>
+  </div>
+
+  <!-- Error message -->
+  <div *ngIf="error" class="alert alert-error">
+    <div class="alert-content">
+      <span>{{ error }}</span>
+      <button class="btn btn-secondary btn-sm" (click)="cargarReportes()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M23 4v6h-6"></path>
+          <path d="M1 20v-6h6"></path>
+          <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+        </svg>
+        Reintentar
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading state -->
+  <div *ngIf="loading" class="loading-container">
+    <div class="loading-spinner"></div>
+    <p>Cargando reportes...</p>
+  </div>
+
+  <!-- Lista de reportes -->
+  <div *ngIf="!loading && reportesFiltrados.length > 0" class="reportes-list">
+    <div *ngFor="let reporte of reportesFiltrados" class="reporte-card" [class.urgente]="reporte.estado === 'alta' && !reporte.terminado">
+      <!-- Header de la tarjeta -->
+      <div class="reporte-header">
+        <div class="reporte-id">#{{ reporte.id_registro }}</div>
+        <div class="reporte-estado-container">
+          <span class="badge" [ngClass]="getEstadoBadgeClass(reporte.estado)">
+            {{ reporte.estado.toUpperCase() }}
+          </span>
+          <span class="badge" [ngClass]="reporte.terminado ? 'badge-completado' : 'badge-pendiente'">
+            {{ reporte.terminado ? 'FINALIZADO' : 'PENDIENTE' }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Contenido principal -->
+      <div class="reporte-content">
+        <h3 class="reporte-asunto" [class.urgente-text]="reporte.estado === 'alta'">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+            <line x1="12" y1="9" x2="12" y2="13"></line>
+            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+          </svg>
+          {{ reporte.asunto }}
+        </h3>
+        
+        <p class="reporte-descripcion" [title]="reporte.descripcion">
+          {{ truncateText(reporte.descripcion, 100) }}
+        </p>
+        
+        <div class="reporte-meta">
+          <span class="reporte-fecha">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+              <line x1="16" y1="2" x2="16" y2="6"></line>
+              <line x1="8" y1="2" x2="8" y2="6"></line>
+              <line x1="3" y1="10" x2="21" y2="10"></line>
+            </svg>
+            {{ formatDate(reporte.fecha) }}
+          </span>
+          <span class="reporte-usuario">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+              <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+            Usuario #{{ reporte.id_usuario }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Acciones -->
+      <div class="reporte-actions">
+        <button class="btn btn-primary btn-sm" (click)="openDetallesModal(reporte)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+            <circle cx="12" cy="12" r="3"></circle>
+          </svg>
+          Ver detalles
+        </button>
+        
+        <button 
+          *ngIf="!reporte.terminado" 
+          class="btn btn-success btn-sm" 
+          (click)="openTerminarModal(reporte)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+          </svg>
+          Marcar como terminado
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Estado vacío -->
+  <div *ngIf="!loading && reportesFiltrados.length === 0" class="no-data">
+    <div class="no-data-content">
+      <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+        <polyline points="14 2 14 8 20 8"></polyline>
+        <line x1="16" y1="13" x2="8" y2="13"></line>
+        <line x1="16" y1="17" x2="8" y2="17"></line>
+        <polyline points="10 9 9 9 8 9"></polyline>
+      </svg>
+      <h3>No hay reportes disponibles</h3>
+      <p *ngIf="reportes.length === 0">No hay reportes registrados en el sistema.</p>
+      <p *ngIf="reportes.length > 0">No hay reportes que coincidan con los filtros aplicados.</p>
+      <button *ngIf="reportes.length > 0" class="btn btn-secondary" (click)="limpiarFiltros()">
+        Limpiar filtros
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de detalles -->
+<div *ngIf="showDetallesModal && selectedReporte" class="modal-overlay" (click)="closeDetallesModal()">
+  <div class="modal-content modal-large" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>Detalles del Reporte #{{ selectedReporte.id_registro }}</h3>
+      <button class="modal-close" (click)="closeDetallesModal()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
     </div>
     
-    <!-- Fila estática -->
-    <div class="data-table-row reports-grid">
-      <div class="report-asunto">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--status-orange); margin-right: 8px; vertical-align: sub;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
-        Falla de motor
-      </div>
-      <div class="report-comentario">
-        Ruido inusual en el vehículo Volvo FMX...
-      </div>
-      <div>
-        <span class="badge badge-alta">Alta</span>
-      </div>
-      <div class="report-fecha">
-        15 Abr 2026, 08:30
-      </div>
-      <div class="actions">
-        <button class="btn-icon view-btn" title="Ver Detalles">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--status-blue);"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-        </button>
+    <div class="modal-body">
+      <div class="reporte-detalles">
+        <div class="detalle-section">
+          <h4>Información General</h4>
+          <div class="detalle-grid">
+            <div class="detalle-item">
+              <strong>ID:</strong> #{{ selectedReporte.id_registro }}
+            </div>
+            <div class="detalle-item">
+              <strong>Asunto:</strong> {{ selectedReporte.asunto }}
+            </div>
+            <div class="detalle-item">
+              <strong>Estado:</strong> 
+              <span class="badge" [ngClass]="getEstadoBadgeClass(selectedReporte.estado)">
+                {{ selectedReporte.estado.toUpperCase() }}
+              </span>
+            </div>
+            <div class="detalle-item">
+              <strong>Estado del reporte:</strong> 
+              <span class="badge" [ngClass]="selectedReporte.terminado ? 'badge-completado' : 'badge-pendiente'">
+                {{ selectedReporte.terminado ? 'FINALIZADO' : 'PENDIENTE' }}
+              </span>
+            </div>
+            <div class="detalle-item">
+              <strong>Fecha:</strong> {{ formatDate(selectedReporte.fecha) }}
+            </div>
+            <div class="detalle-item">
+              <strong>Usuario:</strong> #{{ selectedReporte.id_usuario }}
+            </div>
+          </div>
+        </div>
+
+        <div class="detalle-section">
+          <h4>Descripción</h4>
+          <p class="descripcion-completa">{{ selectedReporte.descripcion }}</p>
+        </div>
+
+        <div *ngIf="selectedReporte.notas_terminacion" class="detalle-section">
+          <h4>Notas de Terminación</h4>
+          <p class="notas-terminacion">{{ selectedReporte.notas_terminacion }}</p>
+          <div *ngIf="selectedReporte.fecha_terminacion" class="fecha-terminacion">
+            <strong>Fecha de terminación:</strong> {{ formatDate(selectedReporte.fecha_terminacion) }}
+          </div>
+        </div>
+
+        <div *ngIf="selectedReporte.fotos && selectedReporte.fotos.length > 0" class="detalle-section">
+          <h4>Evidencia Fotográfica</h4>
+          <div class="fotos-grid">
+            <div *ngFor="let foto of selectedReporte.fotos" class="foto-item">
+              <img [src]="foto.url" [alt]="foto.tipo" (error)="$event.target.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJjdXJyZW50Q29sb3IiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cmVjdCB4PSIzIiB5PSIzIiB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIHJ4PSIyIiByeT0iMiI+PC9yZWN0PjxjaXJjbGUgY3g9IjguNSIgY3k9IjguNSIgcj0iMS41Ij48L2NpcmNsZT48cG9seWxpbmUgcG9pbnRzPSIyMSAxNSAxNiAxMCA1IDIxIj48L3BvbHlsaW5lPjwvc3ZnPg=='" />
+              <span class="foto-tipo">{{ foto.tipo }}</span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
+    
+    <div class="modal-footer">
+      <button class="btn btn-secondary" (click)="closeDetallesModal()">Cerrar</button>
+      <button 
+        *ngIf="!selectedReporte.terminado" 
+        class="btn btn-success" 
+        (click)="closeDetallesModal(); openTerminarModal(selectedReporte)">
+        Marcar como terminado
+      </button>
+    </div>
+  </div>
+</div>
 
-    <!-- Otra Fila estática -->
-    <div class="data-table-row reports-grid">
-      <div class="report-asunto">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--status-blue); margin-right: 8px; vertical-align: sub;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-        Incidencia Menor
+<!-- Modal de terminar reporte -->
+<div *ngIf="showTerminarModal && selectedReporte" class="modal-overlay" (click)="closeTerminarModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>Marcar Reporte como Terminado</h3>
+      <button class="modal-close" (click)="closeTerminarModal()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+    
+    <div class="modal-body">
+      <div class="reporte-resumen">
+        <div class="resumen-item">
+          <strong>ID:</strong> #{{ selectedReporte.id_registro }}
+        </div>
+        <div class="resumen-item">
+          <strong>Asunto:</strong> {{ selectedReporte.asunto }}
+        </div>
+        <div class="resumen-item">
+          <strong>Estado:</strong> 
+          <span class="badge" [ngClass]="getEstadoBadgeClass(selectedReporte.estado)">
+            {{ selectedReporte.estado.toUpperCase() }}
+          </span>
+        </div>
       </div>
-      <div class="report-comentario">
-        Retraso por tráfico pesado en la Zona 1.
-      </div>
-      <div>
-        <span class="badge badge-baja">Baja</span>
-      </div>
-      <div class="report-fecha">
-        16 Abr 2026, 14:10
-      </div>
-      <div class="actions">
-        <button class="btn-icon view-btn" title="Ver Detalles">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--status-blue);"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-        </button>
+      
+      <div class="form-group">
+        <label for="notasTerminacion">Notas de Terminación</label>
+        <textarea 
+          id="notasTerminacion" 
+          [(ngModel)]="notasTerminacion" 
+          placeholder="Describe las acciones realizadas para resolver el reporte..."
+          rows="4">
+        </textarea>
+        <small>Las notas son opcionales pero ayudan a mantener un registro de las acciones tomadas.</small>
       </div>
     </div>
-
+    
+    <div class="modal-footer">
+      <button class="btn btn-secondary" (click)="closeTerminarModal()">Cancelar</button>
+      <button 
+        class="btn btn-success" 
+        (click)="terminarReporte()" 
+        [disabled]="submitting">
+        {{ submitting ? 'Procesando...' : 'Marcar como Terminado' }}
+      </button>
+    </div>
   </div>
 </div>
