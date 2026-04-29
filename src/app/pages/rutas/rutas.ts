@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, inject, ChangeDetectorRef, effect, afterNextRender } from '@angular/core';
-import * as L from 'leaflet';
+import type * as L from 'leaflet';
 import { FormsModule } from '@angular/forms';
 import { isPlatformBrowser } from '@angular/common';
 import { PLATFORM_ID } from '@angular/core';
@@ -8,9 +8,12 @@ import { RutaService } from '../../services/ruta.service';
 import { Ruta } from '../../models/interfaces';
 import { MatIconModule } from '@angular/material/icon';
 import { AuthService } from '../../services/auth.service';
-import Swal from 'sweetalert2';
 import { SidebarRutasComponent } from './components/sidebar-rutas/sidebar-rutas';
 import { RutasStateService } from '../../services/rutas-state.service';
+
+// Lazy imports para objetos que requieren window
+let L_instance: typeof L;
+let Swal: any;
 
 @Component({
   selector: 'app-rutas',
@@ -69,6 +72,12 @@ export class Rutas implements OnInit {
   }
 
   private initMap() {
+    // Lazy load leaflet solo en navegador
+    if (!L_instance) {
+      L_instance = require('leaflet');
+    }
+    const L = L_instance;
+
     // Inicializamos el mapa con una vista por defecto
     this.map = L.map('map').setView([3.88124, -77.01103], 13);
 
@@ -96,7 +105,7 @@ export class Rutas implements OnInit {
     });
 
     // 3. Si falla (el usuario deniega el permiso), mostrar error
-    this.map.on('locationerror', (e) => {
+    this.map.on('locationerror', (e: any) => {
       console.warn("Acceso a la ubicación denegado o no disponible.");
       // El mapa se quedará en la posición por defecto [3.88, -77.01]
     });
@@ -110,6 +119,10 @@ export class Rutas implements OnInit {
   }
 
   addPoint(lat: number, lng: number) {
+    if (!this.map || !this.polyline || !L_instance) {
+      return; // Mapa no inicializado aún
+    }
+    const L = L_instance;
     // Nota: GeoJSON usa [longitud, latitud]
     this.routeCoords.push([lng, lat]);
     this.polyline.setLatLngs(this.routeCoords.map(c => [c[1], c[0]]));
@@ -121,15 +134,19 @@ export class Rutas implements OnInit {
 
   // Mejora: Función para borrar solo el último punto (Undo)
   deshacerUltimoPunto() {
-    if (this.routeCoords.length > 0) {
-      this.routeCoords.pop();
-      this.polyline.setLatLngs(this.routeCoords.map(c => [c[1], c[0]]));
-      const lastMarker = this.markers.pop();
-      if (lastMarker) this.map.removeLayer(lastMarker);
+    if (!this.map || !this.polyline || this.routeCoords.length === 0) {
+      return; // Mapa no inicializado o nada que deshacer
     }
+    this.routeCoords.pop();
+    this.polyline.setLatLngs(this.routeCoords.map(c => [c[1], c[0]]));
+    const lastMarker = this.markers.pop();
+    if (lastMarker) this.map.removeLayer(lastMarker);
   }
 
   limpiarMapa() {
+    if (!this.map || !this.polyline) {
+      return; // Mapa no inicializado aún
+    }
     this.routeCoords = [];
     this.polyline.setLatLngs([]);
 
@@ -250,6 +267,11 @@ export class Rutas implements OnInit {
   }
 
   private renderHoveredRoute(ruta: Ruta | null): void {
+    if (!this.map || !this.map.getContainer() || !L_instance) {
+      return; // Mapa no inicializado aún
+    }
+    const L = L_instance;
+
     if (this.hoverLayer) {
       this.map.removeLayer(this.hoverLayer);
       this.hoverLayer = null;
@@ -264,7 +286,7 @@ export class Rutas implements OnInit {
     const shapeObj = this.getShapeObject(ruta);
     if (shapeObj) {
       const color = this.getRutaColor(ruta);
-      this.hoverLayer = L.geoJSON(shapeObj as GeoJSON.GeoJsonObject, {
+      this.hoverLayer = L.geoJSON(shapeObj as any, {
         style: {
           color: color,
           weight: 7,
@@ -275,6 +297,11 @@ export class Rutas implements OnInit {
   }
 
   private renderSelectedRoute(ruta: Ruta | null): void {
+    if (!this.map || !this.map.getContainer() || !L_instance) {
+      return; // Mapa no inicializado aún
+    }
+    const L = L_instance;
+
     if (this.selectedLayer) {
       this.map.removeLayer(this.selectedLayer);
       this.selectedLayer = null;
@@ -282,7 +309,7 @@ export class Rutas implements OnInit {
 
     if (!ruta) {
       // Si no hay seleccionada pero sí en proceso de creación, no hacemos fitBounds
-      if (this.routeCoords.length > 0) {
+      if (this.routeCoords.length > 0 && this.polyline) {
         const bounds = this.polyline.getBounds();
         if (bounds.isValid()) this.map.fitBounds(bounds, { padding: [50, 50] });
       }
@@ -292,7 +319,7 @@ export class Rutas implements OnInit {
     const shapeObj = this.getShapeObject(ruta);
     if (shapeObj) {
       const color = this.getRutaColor(ruta);
-      this.selectedLayer = L.geoJSON(shapeObj as GeoJSON.GeoJsonObject, {
+      this.selectedLayer = L.geoJSON(shapeObj as any, {
         style: {
           color: color,
           weight: 6,
