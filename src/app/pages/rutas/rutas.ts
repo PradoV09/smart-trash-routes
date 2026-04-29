@@ -1,7 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, inject, ChangeDetectorRef, effect } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef, effect, afterNextRender } from '@angular/core';
 import * as L from 'leaflet';
 import { FormsModule } from '@angular/forms';
+import { isPlatformBrowser } from '@angular/common';
+import { PLATFORM_ID } from '@angular/core';
 import { RutaService } from '../../services/ruta.service';
 import { Ruta } from '../../models/interfaces';
 import { MatIconModule } from '@angular/material/icon';
@@ -21,8 +23,8 @@ export class Rutas implements OnInit {
   map!: L.Map;
   routeCoords: [number, number][] = [];
   polyline!: L.Polyline;
-  markers: L.CircleMarker[] = []; 
-  
+  markers: L.CircleMarker[] = [];
+
   // Capas para las rutas activas/hover
   private selectedLayer: L.GeoJSON | null = null;
   private hoverLayer: L.GeoJSON | null = null;
@@ -31,6 +33,7 @@ export class Rutas implements OnInit {
   private authService = inject(AuthService);
   private cdr = inject(ChangeDetectorRef);
   public rutasState = inject(RutasStateService);
+  private platformId = inject(PLATFORM_ID);
 
   rutas: Ruta[] = [];
   loading = false;
@@ -51,11 +54,17 @@ export class Rutas implements OnInit {
       const selected = this.rutasState.selectedRuta();
       this.renderSelectedRoute(selected);
     });
+
+    // Mover inicialización del mapa a afterNextRender para SSR
+    if (isPlatformBrowser(this.platformId)) {
+      afterNextRender(() => {
+        this.initMap();
+      });
+    }
   }
 
   ngOnInit() {
     this.perfilId = this.authService.getPerfilId()?.trim() ?? '';
-    this.initMap();
     this.loadRutas();
   }
 
@@ -128,7 +137,7 @@ export class Rutas implements OnInit {
     this.markers.forEach(marker => this.map.removeLayer(marker));
     this.markers = [];
     this.nombreRuta = "";
-    
+
     // Deseleccionar rutas en el state si hay una activa
     this.rutasState.selectRuta(null);
   }
@@ -247,7 +256,7 @@ export class Rutas implements OnInit {
     }
 
     if (!ruta) return;
-    
+
     // Si la ruta en hover es la misma que la seleccionada, no la dibujamos doble
     const selected = this.rutasState.selectedRuta();
     if (selected && this.getRutaId(selected) === this.getRutaId(ruta)) return;
@@ -290,7 +299,7 @@ export class Rutas implements OnInit {
           opacity: 1
         }
       }).addTo(this.map);
-      
+
       const bounds = this.selectedLayer.getBounds();
       if (bounds.isValid()) {
         this.map.fitBounds(bounds, { padding: [50, 50], animate: true, duration: 0.5 });
@@ -319,7 +328,7 @@ export class Rutas implements OnInit {
         return coords.length;
       }
     }
-    
+
     const row = ruta as unknown as Record<string, unknown>;
     const legacyPoints = row['puntos_geograficos'];
     if (typeof legacyPoints === 'string') {
