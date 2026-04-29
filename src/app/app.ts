@@ -14,11 +14,5 @@ export class App implements OnInit {
   protected readonly title = signal('smart-trash-routes');
 
   ngOnInit(): void {
-    if (!environment.production) {
-      const token = this.authService.getToken();
-      if (token) {
-        console.log('[Auth] JWT (sesión actual):', token);
-      }
-    }
   }
 }

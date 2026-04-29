@@ -1,19 +1,39 @@
 .admin-layout {
   display: flex;
-  height: 100vh; /* Ocupa toda la altura de la ventana */
-  width: 100vw;
-  overflow: hidden; /* Evita scroll doble */
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
 }
 
 .main-container {
   display: flex;
   flex-direction: column;
-  flex: 1; /* Ocupa el resto del ancho disponible */
-  background-color: #ffffff;
-  overflow-y: auto; /* Permite scroll solo en el contenido */
+  flex: 1;
+  min-width: 0;
+  background-color: var(--bg-color);
+  height: 100%;
+  overflow: hidden;
 }
 
 .content-area {
-  flex: 1; /* Empuja al footer hacia abajo */
-  padding: 2rem; /* Espacio para el contenido de las páginas */
+  flex: 1;
+  padding: 1.5rem;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+app-footer {
+  flex-shrink: 0;
+  /* Asegura que el footer no se encoja */
+}
+
+/* Asegura que el componente cargado por router-outlet ocupe todo el espacio */
+.content-area> :not(router-outlet) {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  width: 100%;
 }

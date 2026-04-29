@@ -141,10 +141,14 @@ import { Tripulacion, Usuario } from '../../models/interfaces';
     </div>
   `,
   styles: [`
-    .admin-container { padding: 2rem; background: #f8fafc; min-height: 100vh; }
-    .view-header { margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center; }
+    .admin-container { padding: 1.5rem; display: flex; flex-direction: column; height: 100%; overflow-y: auto; position: relative; }
+    .view-header { margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
     .header-actions { display: flex; gap: 1rem; }
-    .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; }
+    .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; flex: 1; padding: 0.5rem; }
+    .grid-container::-webkit-scrollbar { width: 8px; }
+    .grid-container::-webkit-scrollbar-track { background: transparent; }
+    .grid-container::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 4px; }
+    .grid-container::-webkit-scrollbar-thumb:hover { background: #64748b; }
     
     .team-card {
       background: white;
@@ -237,9 +241,9 @@ export class Tripulaciones implements OnInit {
   }
 
   isTeamValid() {
-    return this.newTeam.conductorId !== null && 
-           this.newTeam.recolectoresIds.every(id => id !== null) &&
-           !this.hasDuplicateUsers();
+    return this.newTeam.conductorId !== null &&
+      this.newTeam.recolectoresIds.every(id => id !== null) &&
+      !this.hasDuplicateUsers();
   }
 
   hasDuplicateUsers() {

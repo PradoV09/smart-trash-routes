@@ -3,7 +3,16 @@
   <div class="view-header">
     <h1>Gestión de Reportes</h1>
     <button class="btn btn-secondary" (click)="cargarReportes()">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <svg
+        width="18"
+        height="18"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
         <path d="M23 4v6h-6"></path>
         <path d="M1 20v-6h6"></path>
         <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
@@ -46,20 +55,24 @@
 
     <div class="filter-group">
       <label>
-        <input type="checkbox" [(ngModel)]="mostrarSoloPendientes" (change)="onMostrarSoloPendientesChange()">
+        <input
+          type="checkbox"
+          [(ngModel)]="mostrarSoloPendientes"
+          (change)="onMostrarSoloPendientesChange()"
+        />
         Solo pendientes
       </label>
     </div>
 
     <div class="filter-group">
       <label for="busquedaAsunto">Buscar:</label>
-      <input 
-        id="busquedaAsunto" 
-        type="text" 
-        [(ngModel)]="busquedaAsunto" 
+      <input
+        id="busquedaAsunto"
+        type="text"
+        [(ngModel)]="busquedaAsunto"
         (input)="onBusquedaChange()"
         placeholder="Buscar por asunto..."
-      >
+      />
     </div>
 
     <div class="filter-group">
@@ -70,9 +83,7 @@
       </select>
     </div>
 
-    <button class="btn btn-secondary btn-sm" (click)="limpiarFiltros()">
-      Limpiar filtros
-    </button>
+    <button class="btn btn-secondary btn-sm" (click)="limpiarFiltros()">Limpiar filtros</button>
   </div>
 
   <!-- Error message -->
@@ -80,7 +91,16 @@
     <div class="alert-content">
       <span>{{ error }}</span>
       <button class="btn btn-secondary btn-sm" (click)="cargarReportes()">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <svg
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
           <path d="M23 4v6h-6"></path>
           <path d="M1 20v-6h6"></path>
           <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
@@ -98,15 +118,22 @@
 
   <!-- Lista de reportes -->
   <div *ngIf="!loading && reportesFiltrados.length > 0" class="reportes-list">
-    <div *ngFor="let reporte of reportesFiltrados" class="reporte-card" [class.urgente]="reporte.estado === 'alta' && !reporte.terminado">
+    <div
+      *ngFor="let reporte of reportesFiltrados; trackBy: trackByReporteId"
+      class="reporte-card"
+      [class.urgente]="reporte.estado === 'alta' && !reporte.terminado"
+    >
       <!-- Header de la tarjeta -->
       <div class="reporte-header">
         <div class="reporte-id">#{{ reporte.id_registro }}</div>
         <div class="reporte-estado-container">
-          <span class="badge" [ngClass]="getEstadoBadgeClass(reporte.estado)">
-            {{ reporte.estado.toUpperCase() }}
+          <span class="badge" [ngClass]="getEstadoBadgeClass(reporte.estado || 'baja')">
+            {{ (reporte.estado || 'baja').toUpperCase() }}
           </span>
-          <span class="badge" [ngClass]="reporte.terminado ? 'badge-completado' : 'badge-pendiente'">
+          <span
+            class="badge"
+            [ngClass]="reporte.terminado ? 'badge-completado' : 'badge-pendiente'"
+          >
             {{ reporte.terminado ? 'FINALIZADO' : 'PENDIENTE' }}
           </span>
         </div>
@@ -115,21 +142,46 @@
       <!-- Contenido principal -->
       <div class="reporte-content">
         <h3 class="reporte-asunto" [class.urgente-text]="reporte.estado === 'alta'">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path
+              d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"
+            ></path>
             <line x1="12" y1="9" x2="12" y2="13"></line>
             <line x1="12" y1="17" x2="12.01" y2="17"></line>
           </svg>
           {{ reporte.asunto }}
         </h3>
-        
+
         <p class="reporte-descripcion" [title]="reporte.descripcion">
           {{ truncateText(reporte.descripcion, 100) }}
         </p>
-        
+
+        <!-- Imagen del reporte (si existe) -->
+        <div class="reporte-image-preview" *ngIf="reporte.evidencia_url">
+          <img [src]="baseUrl + reporte.evidencia_url" alt="Evidencia del reporte" />
+        </div>
+
         <div class="reporte-meta">
           <span class="reporte-fecha">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
               <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
               <line x1="16" y1="2" x2="16" y2="6"></line>
               <line x1="8" y1="2" x2="8" y2="6"></line>
@@ -138,11 +190,20 @@
             {{ formatDate(reporte.fecha) }}
           </span>
           <span class="reporte-usuario">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
               <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
               <circle cx="12" cy="7" r="4"></circle>
             </svg>
-            Usuario #{{ reporte.id_usuario }}
+            {{ reporte.u_gmail_cache || ('Usuario #' + reporte.id_usuario) }}
           </span>
         </div>
       </div>
@@ -150,18 +211,37 @@
       <!-- Acciones -->
       <div class="reporte-actions">
         <button class="btn btn-primary btn-sm" (click)="openDetallesModal(reporte)">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
             <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
             <circle cx="12" cy="12" r="3"></circle>
           </svg>
           Ver detalles
         </button>
-        
-        <button 
-          *ngIf="!reporte.terminado" 
-          class="btn btn-success btn-sm" 
-          (click)="openTerminarModal(reporte)">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+
+        <button
+          *ngIf="!reporte.terminado"
+          class="btn btn-success btn-sm"
+          (click)="openTerminarModal(reporte)"
+        >
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
             <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
             <polyline points="22 4 12 14.01 9 11.01"></polyline>
           </svg>
@@ -174,7 +254,16 @@
   <!-- Estado vacío -->
   <div *ngIf="!loading && reportesFiltrados.length === 0" class="no-data">
     <div class="no-data-content">
-      <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <svg
+        width="64"
+        height="64"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
         <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
         <polyline points="14 2 14 8 20 8"></polyline>
         <line x1="16" y1="13" x2="8" y2="13"></line>
@@ -192,38 +281,50 @@
 </div>
 
 <!-- Modal de detalles -->
-<div *ngIf="showDetallesModal && selectedReporte" class="modal-overlay" (click)="closeDetallesModal()">
+<div
+  *ngIf="showDetallesModal && selectedReporte"
+  class="modal-overlay"
+  (click)="closeDetallesModal()"
+>
   <div class="modal-content modal-large" (click)="$event.stopPropagation()">
     <div class="modal-header">
       <h3>Detalles del Reporte #{{ selectedReporte.id_registro }}</h3>
       <button class="modal-close" (click)="closeDetallesModal()">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <svg
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
           <line x1="18" y1="6" x2="6" y2="18"></line>
           <line x1="6" y1="6" x2="18" y2="18"></line>
         </svg>
       </button>
     </div>
-    
+
     <div class="modal-body">
       <div class="reporte-detalles">
         <div class="detalle-section">
           <h4>Información General</h4>
           <div class="detalle-grid">
+            <div class="detalle-item"><strong>ID:</strong> #{{ selectedReporte.id_registro }}</div>
+            <div class="detalle-item"><strong>Asunto:</strong> {{ selectedReporte.asunto }}</div>
             <div class="detalle-item">
-              <strong>ID:</strong> #{{ selectedReporte.id_registro }}
-            </div>
-            <div class="detalle-item">
-              <strong>Asunto:</strong> {{ selectedReporte.asunto }}
-            </div>
-            <div class="detalle-item">
-              <strong>Estado:</strong> 
-              <span class="badge" [ngClass]="getEstadoBadgeClass(selectedReporte.estado)">
-                {{ selectedReporte.estado.toUpperCase() }}
+              <strong>Estado:</strong>
+              <span class="badge" [ngClass]="getEstadoBadgeClass(selectedReporte.estado || 'baja')">
+                {{ (selectedReporte.estado || 'baja').toUpperCase() }}
               </span>
             </div>
             <div class="detalle-item">
-              <strong>Estado del reporte:</strong> 
-              <span class="badge" [ngClass]="selectedReporte.terminado ? 'badge-completado' : 'badge-pendiente'">
+              <strong>Estado del reporte:</strong>
+              <span
+                class="badge"
+                [ngClass]="selectedReporte.terminado ? 'badge-completado' : 'badge-pendiente'"
+              >
                 {{ selectedReporte.terminado ? 'FINALIZADO' : 'PENDIENTE' }}
               </span>
             </div>
@@ -231,7 +332,7 @@
               <strong>Fecha:</strong> {{ formatDate(selectedReporte.fecha) }}
             </div>
             <div class="detalle-item">
-              <strong>Usuario:</strong> #{{ selectedReporte.id_usuario }}
+              <strong>Creado por:</strong> {{ selectedReporte.u_gmail_cache || ('ID: #' + selectedReporte.id_usuario) }}
             </div>
           </div>
         </div>
@@ -245,28 +346,46 @@
           <h4>Notas de Terminación</h4>
           <p class="notas-terminacion">{{ selectedReporte.notas_terminacion }}</p>
           <div *ngIf="selectedReporte.fecha_terminacion" class="fecha-terminacion">
-            <strong>Fecha de terminación:</strong> {{ formatDate(selectedReporte.fecha_terminacion) }}
+            <strong>Fecha de terminación:</strong>
+            {{ formatDate(selectedReporte.fecha_terminacion) }}
           </div>
         </div>
 
-        <div *ngIf="selectedReporte.fotos && selectedReporte.fotos.length > 0" class="detalle-section">
+        <div
+          *ngIf="(selectedReporte.fotos && selectedReporte.fotos.length > 0) || selectedReporte.evidencia_url"
+          class="detalle-section"
+        >
           <h4>Evidencia Fotográfica</h4>
-          <div class="fotos-grid">
+          
+          <!-- Imagen principal (evidencia_url) -->
+          <div class="main-evidence" *ngIf="selectedReporte.evidencia_url">
+            <img [src]="baseUrl + selectedReporte.evidencia_url" alt="Evidencia principal" class="img-fluid rounded shadow-sm" />
+          </div>
+
+          <div class="fotos-grid" *ngIf="selectedReporte.fotos && selectedReporte.fotos.length > 0">
             <div *ngFor="let foto of selectedReporte.fotos" class="foto-item">
-              <img [src]="foto.url" [alt]="foto.tipo" (error)="$event.target.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJjdXJyZW50Q29sb3IiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cmVjdCB4PSIzIiB5PSIzIiB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIHJ4PSIyIiByeT0iMiI+PC9yZWN0PjxjaXJjbGUgY3g9IjguNSIgY3k9IjguNSIgcj0iMS41Ij48L2NpcmNsZT48cG9seWxpbmUgcG9pbnRzPSIyMSAxNSAxNiAxMCA1IDIxIj48L3BvbHlsaW5lPjwvc3ZnPg=='" />
+              <img
+                [src]="foto.url"
+                [alt]="foto.tipo"
+                (error)="
+                  $event.target.src =
+                    'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJjdXJyZW50Q29sb3IiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cmVjdCB4PSIzIiB5PSIzIiB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIHJ4PSIyIiByeT0iMiI+PC9yZWN0PjxjaXJjbGUgY3g9IjguNSIgY3k9IjguNSIgcj0iMS41Ij48L2NpcmNsZT48cG9seWxpbmUgcG9pbnRzPSIyMSAxNSAxNiAxMCA1IDIxIj48L3BvbHlsaW5lPjwvc3ZnPg=='
+                "
+              />
               <span class="foto-tipo">{{ foto.tipo }}</span>
             </div>
           </div>
         </div>
       </div>
     </div>
-    
+
     <div class="modal-footer">
       <button class="btn btn-secondary" (click)="closeDetallesModal()">Cerrar</button>
-      <button 
-        *ngIf="!selectedReporte.terminado" 
-        class="btn btn-success" 
-        (click)="closeDetallesModal(); openTerminarModal(selectedReporte)">
+      <button
+        *ngIf="!selectedReporte.terminado"
+        class="btn btn-success"
+        (click)="closeDetallesModal(); openTerminarModal(selectedReporte)"
+      >
         Marcar como terminado
       </button>
     </div>
@@ -274,52 +393,62 @@
 </div>
 
 <!-- Modal de terminar reporte -->
-<div *ngIf="showTerminarModal && selectedReporte" class="modal-overlay" (click)="closeTerminarModal()">
+<div
+  *ngIf="showTerminarModal && selectedReporte"
+  class="modal-overlay"
+  (click)="closeTerminarModal()"
+>
   <div class="modal-content" (click)="$event.stopPropagation()">
     <div class="modal-header">
       <h3>Marcar Reporte como Terminado</h3>
       <button class="modal-close" (click)="closeTerminarModal()">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <svg
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
           <line x1="18" y1="6" x2="6" y2="18"></line>
           <line x1="6" y1="6" x2="18" y2="18"></line>
         </svg>
       </button>
     </div>
-    
+
     <div class="modal-body">
       <div class="reporte-resumen">
+        <div class="resumen-item"><strong>ID:</strong> #{{ selectedReporte.id_registro }}</div>
+        <div class="resumen-item"><strong>Asunto:</strong> {{ selectedReporte.asunto }}</div>
         <div class="resumen-item">
-          <strong>ID:</strong> #{{ selectedReporte.id_registro }}
-        </div>
-        <div class="resumen-item">
-          <strong>Asunto:</strong> {{ selectedReporte.asunto }}
-        </div>
-        <div class="resumen-item">
-          <strong>Estado:</strong> 
+          <strong>Estado:</strong>
           <span class="badge" [ngClass]="getEstadoBadgeClass(selectedReporte.estado)">
             {{ selectedReporte.estado.toUpperCase() }}
           </span>
         </div>
       </div>
-      
+
       <div class="form-group">
         <label for="notasTerminacion">Notas de Terminación</label>
-        <textarea 
-          id="notasTerminacion" 
-          [(ngModel)]="notasTerminacion" 
+        <textarea
+          id="notasTerminacion"
+          [(ngModel)]="notasTerminacion"
           placeholder="Describe las acciones realizadas para resolver el reporte..."
-          rows="4">
+          rows="4"
+        >
         </textarea>
-        <small>Las notas son opcionales pero ayudan a mantener un registro de las acciones tomadas.</small>
+        <small
+          >Las notas son opcionales pero ayudan a mantener un registro de las acciones
+          tomadas.</small
+        >
       </div>
     </div>
-    
+
     <div class="modal-footer">
       <button class="btn btn-secondary" (click)="closeTerminarModal()">Cancelar</button>
-      <button 
-        class="btn btn-success" 
-        (click)="terminarReporte()" 
-        [disabled]="submitting">
+      <button class="btn btn-success" (click)="terminarReporte()" [disabled]="submitting">
         {{ submitting ? 'Procesando...' : 'Marcar como Terminado' }}
       </button>
     </div>

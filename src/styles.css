@@ -1,34 +1,53 @@
 /* You can add global styles to this file, and also import other style files */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import 'leaflet/dist/leaflet.css';
 
-@import "leaflet/dist/leaflet.css";
-
-:root {
-  --primary-dark: #001D39;
-  --secondary-teal: #4E8EA2;
-  --bg-color: #F8F9FA;
-  --card-bg: #FFFFFF;
-  --text-main: #333333;
-  --text-muted: #666666;
-  --gray-light: #F0F2F5;
-  --border-color: #E2E8F0;
-
-  --status-green: #10B981;
-  --status-green-bg: #D1FAE5;
-  --status-blue: #3B82F6;
-  --status-blue-bg: #DBEAFE;
-  --status-orange: #F59E0B;
-  --status-orange-bg: #FEF3C7;
-  --status-red: #EF4444;
-  --status-red-bg: #FEE2E2;
+* {
+  box-sizing: border-box;
 }
 
+:root {
+  --primary-dark: #001d39;
+  --secondary-teal: #4e8ea2;
+  --bg-color: #f8f9fa;
+  --card-bg: #ffffff;
+  --text-main: #333333;
+  --text-muted: #666666;
+  --gray-light: #f0f2f5;
+  --border-color: #e2e8f0;
+
+  --status-green: #10b981;
+  --status-green-bg: #d1fae5;
+  --status-blue: #3b82f6;
+  --status-blue-bg: #dbeafe;
+  --status-orange: #f59e0b;
+  --status-orange-bg: #fef3c7;
+  --status-red: #ef4444;
+  --status-red-bg: #fee2e2;
+}
+
+html,
 body {
   margin: 0;
-  overflow-x: hidden;
+  height: 100%;
+  overflow: hidden;
   font-family: 'Inter', sans-serif;
   background-color: var(--bg-color);
   color: var(--text-main);
+}
+
+app-root {
+  display: block;
+  height: 100%;
+}
+
+/* Auth pages wrapper */
+.page-wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  width: 100%;
+  overflow-y: auto;
 }
 
 /* Base Card Style */
@@ -37,7 +56,14 @@ body {
   border-radius: 20px;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
   padding: 24px;
-  margin: 20px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  /* Prohibido el scroll horizontal */
+  position: relative;
 }
 
 /* View Header */
@@ -46,6 +72,7 @@ body {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 24px;
+  flex-shrink: 0;
 }
 
 .view-header h1 {
@@ -90,7 +117,41 @@ body {
 /* Data Tables using Flexbox/Grid */
 .data-table {
   width: 100%;
-  border-collapse: collapse;
+  padding-right: 4px;
+  display: block;
+}
+
+/* Scrollbar global y moderno */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 10px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
+/* Forzar el scrollbar en elementos específicos si es necesario */
+.admin-card, 
+.data-table,
+.modal-body,
+.sidebar,
+.content-area {
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
 }
 
 .data-table-header {
@@ -101,6 +162,10 @@ body {
   font-weight: 600;
   color: var(--primary-dark);
   border-bottom: 2px solid var(--border-color);
+  position: sticky;
+  top: -24px;
+  /* Compensamos el padding de la tarjeta */
+  z-index: 10;
 }
 
 .data-table-row {
@@ -109,10 +174,11 @@ body {
   border-bottom: 1px solid var(--border-color);
   align-items: center;
   transition: background-color 0.2s;
+  flex-shrink: 0;
 }
 
 .data-table-row:hover {
-  background-color: #FAFAFA;
+  background-color: #fafafa;
 }
 
 .data-table-row:last-child {
@@ -138,6 +204,7 @@ body {
 .btn-icon.edit-btn {
   color: var(--status-blue);
 }
+
 .btn-icon.edit-btn:hover {
   background-color: var(--status-blue-bg);
 }
@@ -145,6 +212,7 @@ body {
 .btn-icon.delete-btn {
   color: var(--status-red);
 }
+
 .btn-icon.delete-btn:hover {
   background-color: var(--status-red-bg);
 }
@@ -159,22 +227,28 @@ body {
   text-align: center;
 }
 
-.badge-disponible, .badge-success, .badge-baja {
+.badge-disponible,
+.badge-success,
+.badge-baja {
   background-color: var(--status-green-bg);
   color: var(--status-green);
 }
 
-.badge-en_ruta, .badge-info {
+.badge-en_ruta,
+.badge-info {
   background-color: var(--status-blue-bg);
   color: var(--status-blue);
 }
 
-.badge-mantenimiento, .badge-warning, .badge-media {
+.badge-mantenimiento,
+.badge-warning,
+.badge-media {
   background-color: var(--status-orange-bg);
   color: var(--status-orange);
 }
 
-.badge-alta, .badge-error {
+.badge-alta,
+.badge-error {
   background-color: var(--status-red-bg);
   color: var(--status-red);
 }
@@ -186,7 +260,7 @@ body {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0,0,0,0.5);
+  background: rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
@@ -200,7 +274,7 @@ body {
   width: 90%;
   max-width: 500px;
   padding: 2rem;
-  box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
 }
 
 .wide-modal {
@@ -273,7 +347,9 @@ body {
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .mb-4 {
@@ -285,6 +361,7 @@ body {
   color: #64748b;
   border: 1px solid #cbd5e1;
 }
+
 .btn-muted:hover {
   background-color: #f1f5f9;
   color: #334155;

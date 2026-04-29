@@ -1,7 +1,19 @@
 .admin-container {
-  padding: 20px;
-  max-width: 1200px;
-  margin: 0 auto;
+  padding: 0;
+  max-width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  position: relative;
+}
+
+.view-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  flex-shrink: 0;
 }
 
 .header-title h1 {
@@ -39,13 +51,21 @@
   overflow-x: auto;
 }
 
+/* Scrollbar ya no es necesario aquí porque es global */
+.table-responsive {
+  flex: 1;
+  padding-right: 8px;
+  min-height: 0;
+  overflow-x: auto;
+}
+
 .clickable-row {
   cursor: pointer;
   transition: all 0.2s;
 }
 
 .clickable-row:hover {
-  background-color: #F1F5F9 !important;
+  background-color: #f1f5f9 !important;
   transform: scale(1.002);
 }
 
@@ -155,7 +175,7 @@
 
 .modal-footer {
   padding: 16px 24px;
-  background: #F8FAFC;
+  background: #f8fafc;
   border-top: 1px solid var(--border-color);
   display: flex;
   justify-content: flex-end;
@@ -255,7 +275,7 @@
 }
 
 .crew-table th {
-  background: #F8FAFC;
+  background: #f8fafc;
   text-align: left;
   font-size: 12px;
   padding: 8px 12px;
@@ -278,7 +298,7 @@
 
 /* Add Crew Form */
 .add-crew-form {
-  background: #F8FAFC;
+  background: #f8fafc;
   border-radius: 12px;
   padding: 12px;
 }
@@ -322,13 +342,25 @@
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 @keyframes animateIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .animate-in {

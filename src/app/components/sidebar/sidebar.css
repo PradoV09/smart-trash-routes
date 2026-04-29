@@ -13,6 +13,8 @@
   padding: 20px;
   transition: width 0.3s ease;
   box-sizing: border-box; /* Asegura que el padding no añada tamaño extra */
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 /* ESTADO COLAPSADO */

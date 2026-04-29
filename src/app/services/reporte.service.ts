@@ -23,18 +23,14 @@ export class ReporteService {
   // GET para visualización del administrador
   getReportes(): Observable<Reporte[]> {
     const token = this.authService.getToken();
-    console.log('[ReporteService] Token disponible:', !!token);
-    console.log('[ReporteService] URL:', this.apiUrl);
 
     if (!token) {
-      console.error('[ReporteService] No hay token de autenticación');
       return throwError(() => 'No hay token de autenticación. Por favor inicia sesión.');
     }
 
     return this.http.get<any>(this.apiUrl, { headers: this.getHeaders() })
       .pipe(
         map(response => {
-          console.log('[ReporteService] Respuesta de la API:', response);
           // Handle the response structure: {success, message, data}
           if (response && response.data && Array.isArray(response.data)) {
             return response.data;
@@ -64,15 +60,17 @@ export class ReporteService {
 
   // PATCH para marcar reporte como terminado
   terminarReporte(idRegistro: number, payload: ReporteTerminarPayload): Observable<Reporte> {
-    return this.http.patch<Reporte>(`${this.apiUrl}/${idRegistro}/terminar`, payload, { headers: this.getHeaders() })
+    return this.http.patch<any>(`${this.apiUrl}/${idRegistro}/terminar`, payload, { headers: this.getHeaders() })
       .pipe(
+        map(response => {
+          return response.data || response;
+        }),
         catchError(this.handleError)
       );
   }
 
   // Manejo centralizado de errores
   private handleError(error: any): Observable<never> {
-    console.error('Error en ReporteService:', error);
     let errorMessage = 'Ocurrió un error en la operación';
 
     if (error.error instanceof ErrorEvent) {

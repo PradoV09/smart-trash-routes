@@ -46,7 +46,6 @@ export class AuthService {
             rolData === 'admin' || rolData === '1' || idRolData === 1 || String(idRolData) === '1';
 
           if (!esAdmin) {
-            console.error('Acceso denegado. Datos recibidos:', { payload, data: response.data });
             throw new Error('ACCESO_DENEGADO_NO_ADMIN');
           }
 
@@ -83,9 +82,6 @@ export class AuthService {
     localStorage.setItem('access_token', token);
     this.syncStoredUsername(token, loginData);
     this.syncStoredPerfilId(token, loginData);
-    if (!environment.production) {
-      console.log('[Auth] JWT (access_token):', token);
-    }
   }
 
   clearToken(): void {

@@ -58,7 +58,7 @@ export class TripulacionPage implements OnInit {
   cargarUsuarios() {
     this.usuarioService.getUsuarios().subscribe({
       next: (users) => this.allUsers.set(users),
-      error: (err) => console.error('Error al cargar usuarios', err)
+      error: (err: any) => {}
     });
   }
 
@@ -77,8 +77,7 @@ export class TripulacionPage implements OnInit {
           this.tripulacion.set(data);
           this.tripulacionLoaded.set(true);
         },
-        error: (err) => {
-          console.error('Error al cargar tripulación', err);
+        error: (err: any) => {
           alert('No se pudo cargar la tripulación. Verifique el ID de asignación.');
           this.tripulacionLoaded.set(false);
         }
@@ -111,8 +110,7 @@ export class TripulacionPage implements OnInit {
           this.selectedUserId.set(0);
           this.selectedRol.set('');
         },
-        error: (err) => {
-          console.error('Error al agregar miembro', err);
+        error: (err: any) => {
           const errorMsg = err.error?.detail || 'Error al agregar miembro. Verifique las reglas de negocio.';
           alert(errorMsg);
         }
@@ -143,8 +141,7 @@ export class TripulacionPage implements OnInit {
       .pipe(finalize(() => this.loading.set(false)))
       .subscribe({
         next: () => this.cargarTripulacion(),
-        error: (err) => {
-          console.error('Error al eliminar miembro', err);
+        error: (err: any) => {
           alert('No se pudo eliminar el miembro.');
         }
       });
