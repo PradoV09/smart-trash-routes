@@ -74,7 +74,7 @@ export class ReportesComponent implements OnInit {
           ...r,
           estado: r.estado || r.u_rol_cache || 'baja'
         }));
-        
+
         this.invalidarCacheEstadisticas();
         this.aplicarFiltros();
         this.loading = false;

@@ -47,6 +47,6 @@ export class AsignacionesService {
   }
 
   getRutas(): Observable<any> {
-    return this.http.get<any>(`${environment.apiUrl}/api/rutas`, { headers: this.getAuthHeaders() });
+    return this.http.get<any>(`${environment.apiUrl}/rutas`, { headers: this.getAuthHeaders() });
   }
 }

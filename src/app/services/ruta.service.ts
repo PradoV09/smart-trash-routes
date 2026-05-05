@@ -11,7 +11,7 @@ import { AuthService } from './auth.service';
 export class RutaService {
   private http = inject(HttpClient);
   private authService = inject(AuthService);
-  private apiUrl = `${environment.apiUrl}/api/rutas`;
+  private apiUrl = `${environment.apiUrl}/rutas`;
 
   private getHeaders(): HttpHeaders {
     return new HttpHeaders({

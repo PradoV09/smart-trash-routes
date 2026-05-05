@@ -41,7 +41,7 @@ export class Dashboard implements OnInit {
   loadStats() {
     this.isLoading.set(true);
     const token = this.authService.getToken();
-    
+
     if (!token) {
       this.isLoading.set(false);
       return;
@@ -54,7 +54,7 @@ export class Dashboard implements OnInit {
       vehiculos: this.http.get<any>(`${this.apiUrl}/admin/vehiculos`, { headers }),
       asignaciones: this.http.get<any>(`${this.apiUrl}/admin/asignaciones`, { headers }),
       reportes: this.http.get<any>(`${this.apiUrl}/admin/reportes`, { headers }),
-      rutas: this.http.get<any>(`${this.apiUrl}/api/rutas`, { headers }),
+      rutas: this.http.get<any>(`${this.apiUrl}/rutas`, { headers }),
       tripulaciones: this.http.get<any>(`${this.apiUrl}/admin/tripulaciones`, { headers })
     };
 
