@@ -20,7 +20,7 @@ export class AuthService {
   login(identifier: string, contraseña: string): Observable<any> {
     const body = new URLSearchParams();
     body.set('identifier', identifier);
-    body.set('contraseña', contraseña);
+    body.set('contraseña', btoa(contraseña));
 
     const headers = new HttpHeaders({
       'Content-Type': 'application/x-www-form-urlencoded'
@@ -31,17 +31,17 @@ export class AuthService {
         if (response.success && response.data?.access_token) {
           const token = response.data.access_token;
           const payload = this.decodeJwtPayload(token) || {};
-          
+
           // Buscar rol en el JWT
           const rolJwt = String(payload['rol'] || payload['role'] || '').toLowerCase();
           const idRolJwt = payload['id_rol'] || payload['rol_id'];
-          
+
           // Buscar rol en los datos del login (response.data)
           const userObj = response.data?.usuario || response.data?.user || response.data?.perfil || {};
           const rolData = String(userObj['rol'] || userObj['role'] || response.data?.rol || response.data?.role || '').toLowerCase();
           const idRolData = userObj['id_rol'] || userObj['rol_id'] || response.data?.id_rol || response.data?.rol_id;
 
-          const esAdmin = 
+          const esAdmin =
             rolJwt === 'admin' || rolJwt === '1' || idRolJwt === 1 || String(idRolJwt) === '1' ||
             rolData === 'admin' || rolData === '1' || idRolData === 1 || String(idRolData) === '1';
 
@@ -62,7 +62,7 @@ export class AuthService {
 
   resetPassword(token: string, new_password: string): Observable<any> {
     const url = `${environment.apiUrl}/auth/reset-password`;
-    return this.http.post<any>(url, { token, new_password });
+    return this.http.post<any>(url, { token, new_password: btoa(new_password) });
   }
 
 

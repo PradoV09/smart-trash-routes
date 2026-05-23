@@ -42,13 +42,13 @@ export class Users implements OnInit {
     id_rol: number;
     activo: boolean;
   } = {
-    nombre: '',
-    username: '',
-    correo: '',
-    contrasena: '',
-    id_rol: 0,
-    activo: true
-  };
+      nombre: '',
+      username: '',
+      correo: '',
+      contrasena: '',
+      id_rol: 0,
+      activo: true
+    };
 
   ngOnInit(): void {
     this.loadRoles();
@@ -179,7 +179,7 @@ export class Users implements OnInit {
         nombre: nombreTrim,
         username: usernameTrim,
         correo: correoTrim,
-        contraseña: this.formData.contrasena,
+        contraseña: btoa(this.formData.contrasena),
         id_rol: Number(this.formData.id_rol),
         activo: this.formData.activo
       });
@@ -192,7 +192,7 @@ export class Users implements OnInit {
         activo: this.formData.activo
       };
       if (this.formData.contrasena) {
-        payload['contraseña'] = this.formData.contrasena;
+        payload['contraseña'] = btoa(this.formData.contrasena);
       }
       request$ = this.usuarioService.updateUsuario(this.editingId, payload);
     }
@@ -201,7 +201,7 @@ export class Users implements OnInit {
       next: () => {
         this.saving.set(false);
         this.showForm = false;
-        
+
         Swal.fire({
           title: this.editingId ? '¡Usuario Actualizado!' : '¡Usuario Creado!',
           text: `El usuario se guardó exitosamente en el sistema.`,
@@ -440,13 +440,13 @@ export class Users implements OnInit {
     const nested = (raw['usuario'] ?? raw['user']) as Record<string, unknown> | undefined;
     const id = Number(
       raw['id_usuario'] ??
-        raw['id'] ??
-        raw['usuario_id'] ??
-        raw['user_id'] ??
-        raw['pk'] ??
-        nested?.['id_usuario'] ??
-        nested?.['id'] ??
-        0
+      raw['id'] ??
+      raw['usuario_id'] ??
+      raw['user_id'] ??
+      raw['pk'] ??
+      nested?.['id_usuario'] ??
+      nested?.['id'] ??
+      0
     );
     const idRol = Number(raw['id_rol'] ?? raw['rol_id'] ?? 0);
     const activoVal = raw['activo'];
