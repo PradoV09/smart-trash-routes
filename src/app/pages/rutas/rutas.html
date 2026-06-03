@@ -1,39 +1,81 @@
-<div class="rutas-layout">
+<div class="rutas-layout" [class.sidebar-closed]="!sidebarOpen">
   <!-- Panel Lateral Izquierdo: Lista de Rutas -->
   <app-sidebar-rutas class="sidebar-panel"></app-sidebar-rutas>
 
   <!-- Área Derecha: Mapa -->
   <div class="map-area">
+    <!-- Botón para ocultar/mostrar sidebar -->
+    <button class="toggle-sidebar-btn" (click)="toggleSidebar()" title="Alternar panel de rutas">
+      <mat-icon>{{ sidebarOpen ? 'chevron_left' : 'chevron_right' }}</mat-icon>
+    </button>
     <!-- Panel Flotante para crear una ruta nueva -->
     <div class="floating-controls">
       <div class="control-card">
         <h3>Crear nueva ruta</h3>
         <p class="help-text">Haz clic en el mapa para marcar los puntos</p>
-        
+
         <div class="input-row">
-          <input type="text" [(ngModel)]="nombreRuta" placeholder="Nombre de la ruta..." class="form-input">
-          <button class="btn btn-icon" title="Deshacer último punto" (click)="deshacerUltimoPunto()" [disabled]="routeCoords.length === 0">
-            <mat-icon style="font-size: 20px; width: 20px; height: 20px;">undo</mat-icon>
+          <input
+            type="text"
+            [(ngModel)]="nombreRuta"
+            placeholder="Nombre de la ruta..."
+            class="form-input"
+          />
+          <button
+            class="btn btn-icon"
+            title="Deshacer último punto"
+            (click)="deshacerUltimoPunto()"
+            [disabled]="routeCoords.length === 0"
+          >
+            <mat-icon style="font-size: 20px; width: 20px; height: 20px">undo</mat-icon>
           </button>
         </div>
-        
-        <div class="action-row" style="align-items: center; justify-content: space-between;">
-          <span style="font-size: 0.8rem; color: var(--text-muted, #718096); font-weight: 500;">
-            {{ routeCoords.length }} puntos
+
+        <!-- Indicador de carga OSRM -->
+        <div
+          *ngIf="cargandoSegmento"
+          class="loading-indicator"
+          style="
+            margin-top: 8px;
+            padding: 8px;
+            background: #e8f4f8;
+            border-left: 3px solid #2dcecc;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            color: #1a1a2e;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+          "
+        >
+          <span class="loader-small"></span>
+          Ajustando a calles...
+        </div>
+
+        <div class="action-row" style="align-items: center; justify-content: space-between">
+          <span style="font-size: 0.8rem; color: var(--text-muted, #718096); font-weight: 500">
+            {{ routeCoords.length }} puntos marcados
           </span>
-          <div style="display: flex; gap: 8px;">
+          <div style="display: flex; gap: 8px">
             <button class="btn btn-secondary" (click)="limpiarMapa()">Limpiar</button>
-            <button class="btn btn-primary" (click)="guardarRuta()" [disabled]="routeCoords.length < 2 || saving">
+            <button
+              class="btn btn-primary"
+              (click)="guardarRuta()"
+              [disabled]="routeCoords.length < 2 || saving"
+              [title]="saving ? 'Guardando tu ruta...' : 'Crear y guardar esta ruta'"
+            >
               <span *ngIf="saving" class="loader-white"></span>
-              <span *ngIf="!saving">Guardar Ruta</span>
+              <span *ngIf="!saving">Crear Ruta</span>
             </button>
           </div>
         </div>
-        
-        <p class="table-message error" *ngIf="error" style="margin-top: 8px; font-size: 0.8rem;">{{ error }}</p>
+
+        <p class="table-message error" *ngIf="error" style="margin-top: 8px; font-size: 0.8rem">
+          {{ error }}
+        </p>
       </div>
     </div>
-    
+
     <!-- Contenedor Leaflet -->
     <div id="map" class="map-container"></div>
   </div>

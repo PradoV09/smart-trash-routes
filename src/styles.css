@@ -7,23 +7,23 @@
 }
 
 :root {
-  --primary-dark: #001d39;
+  --primary-dark: #0F1923;
   --secondary-teal: #4e8ea2;
-  --bg-color: #f8f9fa;
-  --card-bg: #ffffff;
-  --text-main: #333333;
-  --text-muted: #666666;
-  --gray-light: #f0f2f5;
-  --border-color: #e2e8f0;
+  --bg-color: #0F1923;
+  --card-bg: #1A2535;
+  --text-main: #C8D6E5;
+  --text-muted: #8A9BBE;
+  --gray-light: #1E2D40;
+  --border-color: #2A3A50;
 
   --status-green: #10b981;
-  --status-green-bg: #d1fae5;
+  --status-green-bg: rgba(16, 185, 129, 0.12);
   --status-blue: #3b82f6;
-  --status-blue-bg: #dbeafe;
+  --status-blue-bg: rgba(59, 130, 246, 0.12);
   --status-orange: #f59e0b;
-  --status-orange-bg: #fef3c7;
+  --status-orange-bg: rgba(245, 158, 11, 0.12);
   --status-red: #ef4444;
-  --status-red-bg: #fee2e2;
+  --status-red-bg: rgba(239, 68, 68, 0.12);
 }
 
 html,
@@ -53,8 +53,9 @@ app-root {
 /* Base Card Style */
 .admin-card {
   background-color: var(--card-bg);
-  border-radius: 20px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+  border-radius: 12px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--border-color);
   padding: 24px;
   display: flex;
   flex-direction: column;
@@ -78,7 +79,7 @@ app-root {
 .view-header h1 {
   font-size: 24px;
   font-weight: 700;
-  color: var(--primary-dark);
+  color: #E8EDF4;
   margin: 0;
 }
 
@@ -132,14 +133,14 @@ app-root {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: #2A3A50;
   border-radius: 10px;
   border: 2px solid transparent;
   background-clip: content-box;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: #3A4F6A;
   border: 2px solid transparent;
   background-clip: content-box;
 }
@@ -151,7 +152,7 @@ app-root {
 .sidebar,
 .content-area {
   scrollbar-width: thin;
-  scrollbar-color: #cbd5e1 transparent;
+  scrollbar-color: #2A3A50 transparent;
 }
 
 .data-table-header {
@@ -160,7 +161,7 @@ app-root {
   border-radius: 10px 10px 0 0;
   padding: 16px;
   font-weight: 600;
-  color: var(--primary-dark);
+  color: #8A9BBE;
   border-bottom: 2px solid var(--border-color);
   position: sticky;
   top: -24px;
@@ -178,7 +179,7 @@ app-root {
 }
 
 .data-table-row:hover {
-  background-color: #fafafa;
+  background-color: rgba(59, 130, 246, 0.04);
 }
 
 .data-table-row:last-child {

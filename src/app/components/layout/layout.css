@@ -10,14 +10,14 @@
   flex-direction: column;
   flex: 1;
   min-width: 0;
-  background-color: var(--bg-color);
+  background-color: #0F1923;
   height: 100%;
   overflow: hidden;
 }
 
 .content-area {
   flex: 1;
-  padding: 1.5rem;
+  padding: 0;
   overflow-y: auto;
   display: flex;
   flex-direction: column;

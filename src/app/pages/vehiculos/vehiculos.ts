@@ -32,11 +32,11 @@ export class Vehiculos implements OnInit {
     capacidad_m3: string;
     estado: EstadoVehiculo;
   } = {
-    placa: '',
-    modelo: '',
-    capacidad_m3: '',
-    estado: 'disponible'
-  };
+      placa: '',
+      modelo: '',
+      capacidad_m3: '',
+      estado: 'disponible'
+    };
 
   ngOnInit(): void {
     this.loadVehiculos();
@@ -129,12 +129,12 @@ export class Vehiculos implements OnInit {
       next: () => {
         this.saving.set(false);
         this.showForm = false;
-        
+
         Swal.fire({
           title: this.editingId ? '¡Vehículo Actualizado!' : '¡Vehículo Creado!',
           text: `El vehículo se guardó exitosamente en el sistema.`,
           icon: 'success',
-          confirmButtonColor: '#5D93A4',
+          confirmButtonColor: '#2dcecc',
           timer: 2500,
           showConfirmButton: false
         });
@@ -178,7 +178,7 @@ export class Vehiculos implements OnInit {
               title: '¡Eliminado!',
               text: 'El vehículo ha sido eliminado exitosamente.',
               icon: 'success',
-              confirmButtonColor: '#5D93A4',
+              confirmButtonColor: '#2dcecc',
               timer: 2000,
               showConfirmButton: false
             });

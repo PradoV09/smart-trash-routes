@@ -15,8 +15,8 @@
 /* PANEL IZQUIERDO */
 .left-panel {
   flex: 1;
-  background: linear-gradient(180deg, #001D39 0%, #0A4174 50%, #4E8EA2 100%);
-  color: white;
+  background: linear-gradient(135deg, var(--primary-dark) 0%, #1a2535 50%, var(--secondary-teal) 100%);
+  color: var(--text-main);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -43,7 +43,7 @@
 /* PANEL DERECHO */
 .right-panel {
   flex: 1.2;
-  background-color: #BDD8E9; /* Color exacto de la imagen */
+  background-color: var(--bg-color);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -51,25 +51,27 @@
 }
 
 .form-box {
-  background: white;
+  background: var(--card-bg);
   padding: 50px 40px;
-  border-radius: 40px; /* Bordes muy redondeados como en la imagen */
+  border-radius: 12px;
   width: 100%;
   max-width: 450px;
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--border-color);
 }
 
 .form-header h2 {
   font-size: 22px;
   font-weight: 700;
   margin-bottom: 8px;
-  color: #000;
+  color: var(--text-main);
 }
 
 .form-header h3 {
   font-size: 20px;
   font-weight: 600;
   margin-bottom: 30px;
+  color: var(--text-muted);
 }
 
 .input-group {
@@ -80,16 +82,22 @@ label {
   display: block;
   font-size: 18px;
   margin-bottom: 8px;
-  color: #333;
+  color: var(--text-main);
 }
 
 input {
   width: 100%;
   padding: 14px;
-  border: 1px solid #BDC3C7;
+  border: 1px solid var(--border-color);
   border-radius: 8px;
   font-size: 16px;
-  background-color: #fff;
+  background-color: var(--gray-light);
+  color: var(--text-main);
+}
+
+input:focus {
+  outline: none;
+  border-color: var(--secondary-teal);
 }
 
 .forgot-password {
@@ -99,17 +107,17 @@ input {
 }
 
 .forgot-password a {
-  color: #000;
+  color: var(--text-main);
   font-weight: 700;
   text-decoration: underline;
 }
 
 .btn-login {
-  width: 80%; /* Botón centrado y no tan ancho */
+  width: 80%;
   display: block;
   margin: 0 auto;
   padding: 14px;
-  background-color: #5D93A4; /* Tono de la imagen */
+  background-color: var(--secondary-teal);
   color: white;
   border: none;
   border-radius: 10px;
@@ -120,7 +128,7 @@ input {
 }
 
 .btn-login:hover {
-  background-color: #4E8EA2;
+  background-color: #3b7488;
 }
 
 /* --- RESPONSIVE --- */
@@ -157,9 +165,9 @@ input {
 }
 
 .alert-error {
-  background-color: #FFF0F0;
-  border-left: 4px solid #E74C3C;
-  color: #C0392B;
+  background-color: var(--status-red-bg);
+  border-left: 4px solid var(--status-red);
+  color: var(--status-red);
 }
 
 .alert-icon {
@@ -167,6 +175,12 @@ input {
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(-5px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

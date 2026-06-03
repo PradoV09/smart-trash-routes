@@ -1,86 +1,255 @@
 <div class="dashboard-wrapper">
+  <!-- ═══ HEADER ═══ -->
   <header class="dashboard-header">
-    <h1>Hola de nuevo, {{ userName() }}</h1>
-    <p>Resumen de operaciones y estado actual de Smart Trash Routes.</p>
+    <div class="header-left">
+      <h1>{{ getGreeting() }}, {{ userName() }}</h1>
+      <p class="header-subtitle">Resumen de operaciones · {{ currentDate() | date:'EEEE, d MMMM yyyy':'':'es' }}</p>
+    </div>
+    <div class="header-right">
+      <div class="live-indicator">
+        <span class="live-dot"></span>
+        <span class="live-text">Sistema activo</span>
+      </div>
+    </div>
   </header>
 
   @if (isLoading()) {
+  <!-- ═══ SKELETON LOADING ═══ -->
+  <div class="quick-actions-grid skeleton-grid">
+    @for (i of [1, 2, 3, 4]; track i) {
+    <div class="skeleton-card">
+      <div class="skeleton-icon-sm"></div>
+      <div class="skeleton-line"></div>
+    </div>
+    }
+  </div>
   <div class="stats-grid skeleton-grid">
-    @for (i of [1, 2, 3, 4, 5, 6]; track i) {
-    <div class="stat-card skeleton">
-      <div class="skeleton-icon"></div>
-      <div class="skeleton-line-small"></div>
-      <div class="skeleton-line-large"></div>
+    @for (i of [1, 2, 3]; track i) {
+    <div class="skeleton-card large">
+      <div class="skeleton-icon-lg"></div>
+      <div class="skeleton-lines">
+        <div class="skeleton-line"></div>
+        <div class="skeleton-line short"></div>
+      </div>
     </div>
     }
   </div>
   } @else {
-  <div class="stats-grid">
-    <!-- Tarjeta Usuarios -->
-    <div class="stat-card">
-      <div class="card-icon">
-        <mat-icon class="icon">badge</mat-icon>
-      </div>
-      <div class="card-content">
-        <p class="card-label">Usuarios Registrados</p>
-        <h2 class="card-value">{{ usuarios() }}</h2>
-      </div>
-    </div>
 
-    <!-- Tarjeta Vehiculos -->
-    <div class="stat-card">
-      <div class="card-icon">
-        <mat-icon class="icon">directions_car</mat-icon>
-      </div>
-      <div class="card-content">
-        <p class="card-label">Vehículos</p>
-        <h2 class="card-value">{{ vehiculos() }}</h2>
-      </div>
+  <!-- ═══ ACCESOS RÁPIDOS ═══ -->
+  <section class="section-block">
+    <div class="section-label">
+      <mat-icon class="section-label-icon">bolt</mat-icon>
+      <span>Accesos rápidos</span>
     </div>
+    <div class="quick-actions-grid">
+      <button class="quick-action-btn highlighted" (click)="navigateTo('/vehiculos')">
+        <div class="qa-icon-wrapper accent-blue">
+          <mat-icon class="qa-icon">local_shipping</mat-icon>
+        </div>
+        <span class="qa-label">Agregar vehículo</span>
+        <mat-icon class="qa-arrow">arrow_forward</mat-icon>
+      </button>
 
-    <!-- Tarjeta Rutas -->
-    <div class="stat-card">
-      <div class="card-icon">
-        <mat-icon class="icon">location_on</mat-icon>
-      </div>
-      <div class="card-content">
-        <p class="card-label">Rutas</p>
-        <h2 class="card-value">{{ rutas() }}</h2>
-      </div>
-    </div>
+      <button class="quick-action-btn highlighted" (click)="navigateTo('/admin/tripulaciones')">
+        <div class="qa-icon-wrapper accent-emerald">
+          <mat-icon class="qa-icon">group_add</mat-icon>
+        </div>
+        <span class="qa-label">Nuevo equipo</span>
+        <mat-icon class="qa-arrow">arrow_forward</mat-icon>
+      </button>
 
-    <!-- Tarjeta Reportes -->
-    <div class="stat-card">
-      <div class="card-icon">
-        <mat-icon class="icon">bar_chart</mat-icon>
-      </div>
-      <div class="card-content">
-        <p class="card-label">Reportes</p>
-        <h2 class="card-value">{{ reportes() }}</h2>
-      </div>
-    </div>
+      <button class="quick-action-btn" (click)="navigateTo('/asignaciones')">
+        <div class="qa-icon-wrapper accent-amber">
+          <mat-icon class="qa-icon">assignment_turned_in</mat-icon>
+        </div>
+        <span class="qa-label">Nueva asignación</span>
+        <mat-icon class="qa-arrow">arrow_forward</mat-icon>
+      </button>
 
-    <!-- Tarjeta Tripulación -->
-    <div class="stat-card">
-      <div class="card-icon">
-        <mat-icon class="icon">group</mat-icon>
-      </div>
-      <div class="card-content">
-        <p class="card-label">Tripulaciones</p>
-        <h2 class="card-value">{{ tripulaciones() }}</h2>
-      </div>
+      <button class="quick-action-btn" (click)="navigateTo('/reportes')">
+        <div class="qa-icon-wrapper accent-purple">
+          <mat-icon class="qa-icon">insert_chart</mat-icon>
+        </div>
+        <span class="qa-label">Ver reportes</span>
+        <mat-icon class="qa-arrow">arrow_forward</mat-icon>
+      </button>
     </div>
+  </section>
 
-    <!-- Tarjeta Asignaciones -->
-    <div class="stat-card">
-      <div class="card-icon">
-        <mat-icon class="icon">assignment</mat-icon>
+  <!-- ═══ KPIs OPERACIONALES ═══ -->
+  <section class="section-block">
+    <div class="section-label">
+      <mat-icon class="section-label-icon">analytics</mat-icon>
+      <span>Métricas del sistema</span>
+    </div>
+    <div class="stats-grid">
+      <!-- Rutas totales -->
+      <div class="stat-card">
+        <div class="stat-icon-wrapper" [class.warning-glow]="rutas() === 0">
+          <mat-icon class="stat-icon">alt_route</mat-icon>
+        </div>
+        <div class="stat-content">
+          <p class="stat-label">Rutas totales</p>
+          <h2 class="stat-value" [class.warning-value]="rutas() === 0">{{ rutas() }}</h2>
+          <p class="stat-status"
+             [class.status-warning]="rutasStatus().type === 'warning'"
+             [class.status-info]="rutasStatus().type === 'info'"
+             [class.status-success]="rutasStatus().type === 'success'">
+            <span class="status-dot"></span>
+            {{ rutasStatus().text }}
+          </p>
+        </div>
+        <div class="stat-decoration"></div>
       </div>
-      <div class="card-content">
-        <p class="card-label">Asignaciones</p>
-        <h2 class="card-value">{{ asignaciones() }}</h2>
+
+      <!-- Vehículos -->
+      <div class="stat-card">
+        <div class="stat-icon-wrapper" [class.warning-glow]="vehiculos() === 0">
+          <mat-icon class="stat-icon">local_shipping</mat-icon>
+        </div>
+        <div class="stat-content">
+          <p class="stat-label">Vehículos</p>
+          <h2 class="stat-value" [class.warning-value]="vehiculos() === 0">{{ vehiculos() }}</h2>
+          <p class="stat-status"
+             [class.status-warning]="vehiculosStatus().type === 'warning'"
+             [class.status-info]="vehiculosStatus().type === 'info'"
+             [class.status-success]="vehiculosStatus().type === 'success'">
+            <span class="status-dot"></span>
+            {{ vehiculosStatus().text }}
+          </p>
+        </div>
+        <div class="stat-decoration"></div>
+      </div>
+
+      <!-- Usuarios registrados -->
+      <div class="stat-card">
+        <div class="stat-icon-wrapper" [class.warning-glow]="usuarios() <= 1">
+          <mat-icon class="stat-icon">people</mat-icon>
+        </div>
+        <div class="stat-content">
+          <p class="stat-label">Usuarios registrados</p>
+          <h2 class="stat-value" [class.warning-value]="usuarios() <= 1">{{ usuarios() }}</h2>
+          <p class="stat-status"
+             [class.status-warning]="usuariosStatus().type === 'warning'"
+             [class.status-info]="usuariosStatus().type === 'info'"
+             [class.status-success]="usuariosStatus().type === 'success'">
+            <span class="status-dot"></span>
+            {{ usuariosStatus().text }}
+          </p>
+        </div>
+        <div class="stat-decoration"></div>
       </div>
     </div>
+  </section>
+
+  <!-- ═══ CONTENT GRID: Table + Sidebar ═══ -->
+  <div class="content-grid">
+
+    <!-- ═══ TABLA RUTAS DEL DÍA ═══ -->
+    <section class="section-block routes-section">
+      <div class="section-header-row">
+        <div class="section-label">
+          <mat-icon class="section-label-icon">today</mat-icon>
+          <span>Rutas del día</span>
+        </div>
+        <button class="btn-link" (click)="navigateTo('/rutas')">
+          Ver todas
+          <mat-icon class="btn-link-icon">arrow_forward</mat-icon>
+        </button>
+      </div>
+
+      <div class="routes-table-wrapper">
+        <table class="routes-table">
+          <thead>
+            <tr>
+              <th>Ruta</th>
+              <th>Vehículo asignado</th>
+              <th>Conductor</th>
+              <th>Estado</th>
+              <th>Hora estimada</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (ruta of rutasDelDia(); track ruta.nombre) {
+            <tr class="route-row">
+              <td class="route-name">
+                <mat-icon class="route-icon">route</mat-icon>
+                {{ ruta.nombre }}
+              </td>
+              <td>
+                <span [class.text-muted]="ruta.vehiculo === 'Sin asignar'">{{ ruta.vehiculo }}</span>
+              </td>
+              <td>
+                <span [class.text-muted]="ruta.conductor === '—'">{{ ruta.conductor }}</span>
+              </td>
+              <td>
+                <span class="badge-status" [attr.data-status]="ruta.estado">
+                  {{ getEstadoLabel(ruta.estado) }}
+                </span>
+              </td>
+              <td class="text-secondary">
+                <mat-icon class="time-icon">schedule</mat-icon>
+                {{ ruta.horaEstimada }}
+              </td>
+            </tr>
+            } @empty {
+            <tr>
+              <td colspan="5" class="empty-table-state" style="text-align: center; padding: 2rem; color: #5A6F8E;">
+                <mat-icon style="font-size: 2rem; height: 32px; width: 32px; margin-bottom: 8px;">map</mat-icon>
+                <p style="margin: 0;">No hay asignaciones ni rutas para el día de hoy.</p>
+              </td>
+            </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ═══ PANEL USUARIOS ACTIVOS ═══ -->
+    <section class="section-block users-section">
+      <div class="section-header-row">
+        <div class="section-label">
+          <mat-icon class="section-label-icon">supervisor_account</mat-icon>
+          <span>Usuarios activos</span>
+        </div>
+        <button class="btn-link" (click)="navigateTo('/users')">
+          Gestionar
+          <mat-icon class="btn-link-icon">arrow_forward</mat-icon>
+        </button>
+      </div>
+
+      <div class="users-list">
+        @for (user of usuariosActivos(); track user.nombre) {
+        <div class="user-item">
+          <div class="user-avatar" [class.online]="user.online">
+            <span class="avatar-initials">{{ user.iniciales }}</span>
+            <span class="online-indicator" [class.is-online]="user.online" [class.is-offline]="!user.online"></span>
+          </div>
+          <div class="user-info">
+            <span class="user-name">{{ user.nombre }}</span>
+            <span class="user-role">{{ user.rol }}</span>
+          </div>
+          <span class="user-activity">{{ user.ultimaActividad }}</span>
+        </div>
+        }
+      </div>
+
+      @if (soloAdminActivo()) {
+      <div class="empty-users-state">
+        <div class="empty-illustration">
+          <mat-icon class="empty-icon">person_add</mat-icon>
+        </div>
+        <p class="empty-title">Aún no hay más usuarios registrados</p>
+        <p class="empty-desc">Agrega miembros a tu equipo para gestionar las operaciones de recolección.</p>
+        <button class="btn-add-user" (click)="navigateTo('/users')">
+          <mat-icon>person_add</mat-icon>
+          Agregar usuario
+        </button>
+      </div>
+      }
+    </section>
   </div>
+
   }
 </div>

@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, inject, ChangeDetectorRef, effect, afterNextRender } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef, effect, afterNextRender, AfterViewInit } from '@angular/core';
 import type * as L from 'leaflet';
 import { FormsModule } from '@angular/forms';
 import { isPlatformBrowser } from '@angular/common';
@@ -22,11 +22,12 @@ let Swal: any;
   templateUrl: './rutas.html',
   styleUrl: './rutas.css',
 })
-export class Rutas implements OnInit {
+export class Rutas implements OnInit, AfterViewInit {
   map!: L.Map;
   routeCoords: [number, number][] = [];
   polyline!: L.Polyline;
   markers: L.CircleMarker[] = [];
+  cargandoSegmento = false;
 
   // Capas para las rutas activas/hover
   private selectedLayer: L.GeoJSON | null = null;
@@ -57,79 +58,194 @@ export class Rutas implements OnInit {
       const selected = this.rutasState.selectedRuta();
       this.renderSelectedRoute(selected);
     });
+  }
 
-    // Mover inicialización del mapa a afterNextRender para SSR
+  sidebarOpen = true;
+
+  toggleSidebar() {
+    this.sidebarOpen = !this.sidebarOpen;
+
+    // Invalidate map size after CSS transition (300ms) to ensure Leaflet recalculates bounds
+    setTimeout(() => {
+      if (this.map) {
+        this.map.invalidateSize();
+      }
+    }, 300);
+  }
+
+  ngAfterViewInit() {
     if (isPlatformBrowser(this.platformId)) {
-      afterNextRender(() => {
+      // Esperar un tick para asegurar que el DOM esté completamente renderizado
+      setTimeout(() => {
         this.initMap();
-      });
+      }, 100);
     }
   }
 
   ngOnInit() {
     this.perfilId = this.authService.getPerfilId()?.trim() ?? '';
     this.loadRutas();
+    this.loadSwal(); // Cargar Swal dinámicamente
   }
 
-  private initMap() {
-    // Lazy load leaflet solo en navegador
-    if (!L_instance) {
-      L_instance = require('leaflet');
+  private async loadSwal() {
+    if (!Swal) {
+      try {
+        const swalModule = await import('sweetalert2');
+        Swal = (swalModule as any).default || swalModule;
+      } catch (e) {
+        console.error('Error cargando Swal:', e);
+      }
     }
-    const L = L_instance;
-
-    // Inicializamos el mapa con una vista por defecto
-    this.map = L.map('map').setView([3.88124, -77.01103], 13);
-
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '© OpenStreetMap'
-    }).addTo(this.map);
-
-    this.polyline = L.polyline([], { color: '#2dcecc', weight: 5 }).addTo(this.map);
-
-    // --- NUEVA LÓGICA DE GEOLOCALIZACIÓN ---
-
-    // 1. Intentar localizar al usuario
-    this.map.locate({ setView: true, maxZoom: 16 });
-
-    // 2. Si tiene éxito, poner un marcador azul especial
-    this.map.on('locationfound', (e: L.LocationEvent) => {
-      const radius = e.accuracy / 2;
-
-      // Marcador de ubicación actual
-      L.marker(e.latlng).addTo(this.map)
-        .bindPopup(`Estás a ${radius.toFixed(0)} metros de este punto`).openPopup();
-
-      // Círculo de precisión opcional
-      L.circle(e.latlng, radius).addTo(this.map);
-    });
-
-    // 3. Si falla (el usuario deniega el permiso), mostrar error
-    this.map.on('locationerror', (e: any) => {
-      console.warn("Acceso a la ubicación denegado o no disponible.");
-      // El mapa se quedará en la posición por defecto [3.88, -77.01]
-    });
-
-    // --- FIN LÓGICA DE GEOLOCALIZACIÓN ---
-
-    this.map.on('click', (e: L.LeafletMouseEvent) => {
-      const { lat, lng } = e.latlng;
-      this.addPoint(lat, lng);
-    });
   }
 
-  addPoint(lat: number, lng: number) {
+  private async initMap() {
+    if (this.map) return; // Evitar doble inicialización
+
+    try {
+      // Verificar que el elemento del mapa existe en el DOM
+      const mapElement = document.getElementById('map');
+      if (!mapElement) {
+        console.error('Error: No se encontró el elemento #map en el DOM');
+        this.error = 'Error: El contenedor del mapa no se encontró en la página.';
+        this.cdr.detectChanges();
+        return;
+      }
+
+      // Lazy load leaflet solo en navegador usando import() dinámico
+      if (!L_instance) {
+        const leafletModule = await import('leaflet');
+        // En módulos ES (Vite), el objeto real puede estar en .default
+        L_instance = (leafletModule as any).default || leafletModule;
+      }
+      const L = L_instance;
+
+      // Inicializamos el mapa con una vista por defecto
+      this.map = L.map('map').setView([3.88124, -77.01103], 13);
+
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap'
+      }).addTo(this.map);
+
+      this.polyline = L.polyline([], { color: '#2dcecc', weight: 5 }).addTo(this.map);
+
+      // --- NUEVA LÓGICA DE GEOLOCALIZACIÓN ---
+
+      // 1. Intentar localizar al usuario
+      this.map.locate({ setView: true, maxZoom: 16 });
+
+      // 2. Si tiene éxito, poner un marcador azul especial
+      this.map.on('locationfound', (e: L.LocationEvent) => {
+        const radius = e.accuracy / 2;
+
+        // Marcador de ubicación actual
+        L.marker(e.latlng).addTo(this.map)
+          .bindPopup(`Estás a ${radius.toFixed(0)} metros de este punto`).openPopup();
+
+        // Círculo de precisión opcional
+        L.circle(e.latlng, radius).addTo(this.map);
+      });
+
+      // 3. Si falla (el usuario deniega el permiso), mostrar error
+      this.map.on('locationerror', (e: any) => {
+        console.warn("Acceso a la ubicación denegado o no disponible.");
+        // El mapa se quedará en la posición por defecto [3.88, -77.01]
+      });
+
+      // --- FIN LÓGICA DE GEOLOCALIZACIÓN ---
+
+      this.map.on('click', async (e: L.LeafletMouseEvent) => {
+        if (this.cargandoSegmento) return; // ignorar clic si ya está calculando
+        const { lat, lng } = e.latlng;
+        await this.addPoint(lat, lng);
+      });
+
+      // Asegurar que el mapa tome el tamaño del contenedor correctamente
+      setTimeout(() => {
+        if (this.map) {
+          this.map.invalidateSize();
+        }
+      }, 300); // Aumentado a 300ms para asegurar que el DOM esté estable
+    } catch (e: any) {
+      console.error('Error inicializando el mapa:', e);
+      this.error = 'Error cargando mapa: ' + (e.message || e.toString());
+      this.cdr.detectChanges();
+    }
+  }
+
+  // ── NUEVO: función que consulta OSRM entre dos puntos ──
+  private async getSegmentoEnCalles(
+    desde: [number, number], // [lat, lng]
+    hasta: [number, number]  // [lat, lng]
+  ): Promise<[number, number][]> {
+    try {
+      // OSRM espera [lng, lat] separados por ;
+      const url = `https://router.project-osrm.org/route/v1/driving/` +
+        `${desde[1]},${desde[0]};${hasta[1]},${hasta[0]}` +
+        `?overview=full&geometries=geojson`;
+
+      const res = await fetch(url);
+      const data = await res.json();
+
+      if (data.code !== 'Ok' || !data.routes?.length) {
+        // Si OSRM falla, devuelve línea recta como fallback
+        return [desde, hasta];
+      }
+
+      // OSRM devuelve [lng, lat], convertimos a [lat, lng] para Leaflet
+      return data.routes[0].geometry.coordinates.map(
+        (c: [number, number]) => [c[1], c[0]] as [number, number]
+      );
+    } catch (error) {
+      console.warn('Error consultando OSRM:', error);
+      // Fallback: línea recta si la consulta falla
+      return [desde, hasta];
+    }
+  }
+
+  // ── MODIFICADO: addPoint ahora es async y llama OSRM ──
+  async addPoint(lat: number, lng: number) {
     if (!this.map || !this.polyline || !L_instance) {
       return; // Mapa no inicializado aún
     }
     const L = L_instance;
-    // Nota: GeoJSON usa [longitud, latitud]
-    this.routeCoords.push([lng, lat]);
-    this.polyline.setLatLngs(this.routeCoords.map(c => [c[1], c[0]]));
 
-    // Marcador visual para el punto
-    const marker = L.circleMarker([lat, lng], { radius: 5, color: '#1a1a2e' }).addTo(this.map);
-    this.markers.push(marker); // Guardamos la referencia para poder borrarlo luego
+    const nuevoLatLng: [number, number] = [lat, lng];
+
+    if (this.routeCoords.length === 0) {
+      // Primer punto: solo guardar, nada que trazar aún
+      this.routeCoords.push([lng, lat]);
+
+    } else {
+      // ── NUEVO: calcular segmento por calles desde el último punto ──
+      const ultimoGuardado = this.routeCoords[this.routeCoords.length - 1];
+      const desdeLatLng: [number, number] = [ultimoGuardado[1], ultimoGuardado[0]];
+
+      // Mostrar feedback visual mientras carga OSRM
+      this.cargandoSegmento = true;
+
+      const segmento = await this.getSegmentoEnCalles(desdeLatLng, nuevoLatLng);
+
+      this.cargandoSegmento = false;
+
+      // Agregar todos los puntos intermedios del segmento a routeCoords
+      // (son los puntos que OSRM calculó siguiendo las calles)
+      for (const punto of segmento) {
+        this.routeCoords.push([punto[1], punto[0]]); // guardar como [lng, lat] para GeoJSON
+      }
+    }
+
+    // Redibujar la polilínea completa con todos los segmentos acumulados
+    this.polyline.setLatLngs(
+      this.routeCoords.map(c => [c[1], c[0]] as [number, number])
+    );
+
+    // Marcador visual solo en el punto donde el usuario hizo clic
+    const marker = L.circleMarker([lat, lng], {
+      radius: 5,
+      color: '#1a1a2e'
+    }).addTo(this.map);
+    this.markers.push(marker);
   }
 
   // Mejora: Función para borrar solo el último punto (Undo)
@@ -168,9 +284,10 @@ export class Rutas implements OnInit {
     if (!this.nombreRuta || this.routeCoords.length < 2) {
       Swal.fire({
         icon: 'warning',
-        title: 'Faltan datos',
-        text: 'Por favor, ingresa un nombre y marca al menos 2 puntos para la ruta en el mapa.',
-        confirmButtonColor: '#5D93A4'
+        title: 'Información incompleta',
+        text: 'Necesitas un nombre y al menos 2 puntos en el mapa. 📍',
+        confirmButtonColor: '#2dcecc',
+        confirmButtonText: 'Entendido'
       });
       return;
     }
@@ -184,6 +301,15 @@ export class Rutas implements OnInit {
       } as Record<string, unknown>
     };
 
+    // Mostrar modal de "Guardando..." con spinner
+    Swal.fire({
+      title: 'Guardando tu ruta',
+      html: '<div class="swal-loading-content"><div class="swal-spinner"></div><p>Estamos procesando tu ruta, esto toma unos segundos...</p></div>',
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      showConfirmButton: false
+    });
+
     this.saving = true;
     this.error = '';
     const request$ = this.rutaService.crearRutaPorShape(payload);
@@ -191,20 +317,35 @@ export class Rutas implements OnInit {
     request$.subscribe({
       next: (res) => {
         this.saving = false;
+
+        // Mensaje de éxito con microcopia amigable
         Swal.fire({
-          title: '¡Ruta Guardada!',
-          text: 'La ruta se ha registrado exitosamente.',
+          title: '✨ ¡Ruta creada exitosamente!',
+          text: `"${this.nombreRuta}" ya está lista para usar. Tu ruta está guardada y aparecerá en el panel de la izquierda.`,
           icon: 'success',
-          confirmButtonColor: '#5D93A4',
-          timer: 2000,
-          showConfirmButton: false
+          confirmButtonColor: '#2dcecc',
+          confirmButtonText: 'Perfecto',
+          timer: 4000,
+          timerProgressBar: true
         });
+
         this.limpiarMapa();
         this.loadRutas();
         this.cdr.detectChanges();
       },
-      error: () => {
+      error: (err) => {
         this.saving = false;
+
+        // Mensaje de error con microcopia amigable
+        const errorMsg = err?.error?.message || 'Parece que hubo un problema al guardar.';
+        Swal.fire({
+          title: 'Oops, algo salió mal',
+          text: `No pudimos guardar la ruta en este momento. Razón: ${errorMsg}. Intenta de nuevo en unos momentos.`,
+          icon: 'error',
+          confirmButtonColor: '#2dcecc',
+          confirmButtonText: 'Intentar de nuevo'
+        });
+
         this.error = 'Error al guardar la ruta.';
         this.cdr.detectChanges();
       }
