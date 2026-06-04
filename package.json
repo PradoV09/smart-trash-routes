@@ -7,7 +7,8 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "serve:ssr:smart-trash-routes": "node dist/smart-trash-routes/server/server.mjs"
+    "serve:ssr:smart-trash-routes": "node dist/smart-trash-routes/server/server.mjs",
+    "start:prod": "node dist/smart-trash-routes/server/server.mjs"
   },
   "private": true,
   "packageManager": "npm@11.9.0",

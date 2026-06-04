@@ -79,6 +79,30 @@ app.get('/api/admin/usuarios', (req, res) => {
   }
 });
 
+// POST /api/auth/login
+app.post('/api/auth/login', (req, res) => {
+  const { identifier, contraseña } = req.body;
+  
+  // Mock login - accept any credentials for development
+  // In production, this would validate against a database
+  const mockToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlciI6ImFkbWluQG1haWwuY29tIiwicm9sIjoiYWRtaW4ifQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c';
+  
+  res.json({
+    success: true,
+    message: 'Inicio de sesión exitoso.',
+    data: {
+      access_token: mockToken,
+      token_type: 'bearer',
+      usuario: {
+        id_usuario: 1,
+        username: identifier,
+        rol: 'admin',
+        perfil_id: '1'
+      }
+    }
+  });
+});
+
 /**
  * Serve static files from /browser
  */
