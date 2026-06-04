@@ -151,16 +151,26 @@ export class Rutas implements OnInit, AfterViewInit, OnDestroy {
       // 1. Intentar localizar al usuario
       this.map.locate({ setView: true, maxZoom: 16 });
 
-      // 2. Si tiene éxito, poner un marcador azul especial
+      // 2. Si tiene éxito, poner un marcador azul especial usando Material Icons
       this.map.on('locationfound', (e: L.LocationEvent) => {
         const radius = e.accuracy / 2;
 
+        // Crear icono personalizado para ubicación del usuario usando Material Icons
+        const userLocationIcon = L.divIcon({
+          className: 'user-location-marker',
+          html: `<div style="background-color: #2dcecc; width: 36px; height: 36px; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 8px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center;">
+            <span class="material-icons" style="font-size: 20px; color: white;">my_location</span>
+          </div>`,
+          iconSize: [36, 36],
+          iconAnchor: [18, 18]
+        });
+
         // Marcador de ubicación actual
-        L.marker(e.latlng).addTo(this.map)
+        L.marker(e.latlng, { icon: userLocationIcon }).addTo(this.map)
           .bindPopup(`Estás a ${radius.toFixed(0)} metros de este punto`).openPopup();
 
         // Círculo de precisión opcional
-        L.circle(e.latlng, radius).addTo(this.map);
+        L.circle(e.latlng, radius, { color: '#2dcecc', fillColor: '#2dcecc', fillOpacity: 0.2 }).addTo(this.map);
       });
 
       // 3. Si falla (el usuario deniega el permiso), mostrar error
@@ -571,16 +581,14 @@ export class Rutas implements OnInit, AfterViewInit, OnDestroy {
     if (!this.map || !L_instance) return;
     const L = L_instance;
 
-    // Crear icono personalizado para vehículos
+    // Crear icono personalizado para vehículos usando Material Icons
     const vehicleIcon = L.divIcon({
       className: 'vehicle-marker',
-      html: `<div style="background-color: #ff6b6b; width: 30px; height: 30px; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 8px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center;">
-        <svg viewBox="0 0 24 24" width="18" height="18" fill="white">
-          <path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z"/>
-        </svg>
+      html: `<div style="background-color: #ff6b6b; width: 36px; height: 36px; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 8px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center;">
+        <span class="material-icons" style="font-size: 20px; color: white;">local_shipping</span>
       </div>`,
-      iconSize: [30, 30],
-      iconAnchor: [15, 15]
+      iconSize: [36, 36],
+      iconAnchor: [18, 18]
     });
 
     // IDs de vehículos actuales
