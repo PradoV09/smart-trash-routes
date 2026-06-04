@@ -12,9 +12,29 @@ app.use(express.json());
 // Load mock data files
 const loadMockData = (filename) => {
   try {
-    const filePath = path.join(__dirname, 'public', 'api', 'admin', filename);
-    const data = fs.readFileSync(filePath, 'utf-8');
-    return JSON.parse(data);
+    // Try multiple possible paths for Railway deployment
+    const possiblePaths = [
+      path.join(__dirname, 'dist', 'browser', 'api', 'admin', filename),
+      path.join(__dirname, 'public', 'api', 'admin', filename),
+      path.join(process.cwd(), 'public', 'api', 'admin', filename),
+      path.join(__dirname, '..', 'public', 'api', 'admin', filename),
+      path.join(process.cwd(), 'dist', 'public', 'api', 'admin', filename),
+    ];
+    
+    for (const filePath of possiblePaths) {
+      try {
+        if (fs.existsSync(filePath)) {
+          const data = fs.readFileSync(filePath, 'utf-8');
+          console.log(`Loaded ${filename} from ${filePath}`);
+          return JSON.parse(data);
+        }
+      } catch (err) {
+        // Continue to next path
+      }
+    }
+    
+    console.error(`Could not find ${filename} in any of the expected paths`);
+    return null;
   } catch (error) {
     console.error(`Error loading ${filename}:`, error);
     return null;
