@@ -113,7 +113,7 @@
 
         <div class="form-group">
           <label>Fecha y Hora de Salida</label>
-          <input type="datetime-local" name="fecha" [(ngModel)]="newAsignacion.fecha" required class="form-control">
+          <input type="datetime-local" name="fecha" [(ngModel)]="newAsignacion.fecha" [min]="minDate" required class="form-control">
         </div>
 
         <div class="modal-footer">

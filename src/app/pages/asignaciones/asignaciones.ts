@@ -44,9 +44,26 @@ export class Asignaciones implements OnInit {
   selectedAsignacion = signal<Asignacion | null>(null);
   loadingRutas = signal(false);
 
+  // Minimum date for date picker (current date)
+  minDate = signal('');
+
   ngOnInit() {
     this.loadAsignaciones();
     this.cargarRutas();
+    this.setMinDate();
+  }
+
+  setMinDate() {
+    // Set minimum date to current date in ISO format for datetime-local input
+    const now = new Date();
+    // Get local date components
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    // Format: YYYY-MM-DDTHH:mm (datetime-local format without timezone)
+    this.minDate.set(`${year}-${month}-${day}T${hours}:${minutes}`);
   }
 
   loadAsignaciones() {
@@ -77,7 +94,9 @@ export class Asignaciones implements OnInit {
 
   openCreateForm() {
     this.showForm.set(true);
-    
+    // Update min date to current time when opening the form
+    this.setMinDate();
+
     // Cargar vehículos disponibles
     this.vehiculoService.getVehiculos().subscribe({
       next: (res: any) => {
@@ -104,6 +123,15 @@ export class Asignaciones implements OnInit {
       alert('Todos los campos son obligatorios, incluyendo la tripulación.');
       return;
     }
+
+    // Validate that the date is in the future
+    const selectedDate = new Date(this.newAsignacion.fecha);
+    const now = new Date();
+    if (selectedDate <= now) {
+      alert('La fecha debe ser futura. No se permiten fechas pasadas o actuales.');
+      return;
+    }
+
     this.saving.set(true);
 
     let isoDate = this.newAsignacion.fecha;
