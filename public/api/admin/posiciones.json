@@ -1,0 +1,23 @@
+{
+  "success": true,
+  "data": [
+    {
+      "id_asignacion": 2,
+      "id_vehiculo": 2,
+      "placa": "DEF-456",
+      "latitud": -12.04318,
+      "longitud": -77.02824,
+      "estado": "en_ruta",
+      "ultima_actualizacion": "2025-06-04T11:30:00Z"
+    },
+    {
+      "id_asignacion": 4,
+      "id_vehiculo": 5,
+      "placa": "MNO-345",
+      "latitud": -12.04518,
+      "longitud": -77.02924,
+      "estado": "en_ruta",
+      "ultima_actualizacion": "2025-06-04T11:28:00Z"
+    }
+  ]
+}

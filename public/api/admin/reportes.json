@@ -1,8 +1,45 @@
 {
   "success": true,
-  "data": {
-    "total": 5,
-    "criticas": 1,
-    "resueltas": 4
-  }
+  "data": [
+    {
+      "id_registro": 1,
+      "asunto": "falla",
+      "comentario": "Motor perdiendo potencia en subidas",
+      "estado": "alta",
+      "fecha": "2023-10-25T08:30:00Z",
+      "terminado": false
+    },
+    {
+      "id_registro": 2,
+      "asunto": "incidencia",
+      "comentario": "Calle cerrada por obras en la ruta 3",
+      "estado": "media",
+      "fecha": "2023-10-25T14:45:00Z",
+      "terminado": false
+    },
+    {
+      "id_registro": 3,
+      "asunto": "falla",
+      "comentario": "Sistema hidráulico compactador lento",
+      "estado": "media",
+      "fecha": "2023-10-26T09:15:00Z",
+      "terminado": false
+    },
+    {
+      "id_registro": 4,
+      "asunto": "incidencia",
+      "comentario": "Contenedor desbordado en punto 4",
+      "estado": "baja",
+      "fecha": "2023-10-26T19:20:00Z",
+      "terminado": true
+    },
+    {
+      "id_registro": 5,
+      "asunto": "falla",
+      "comentario": "Neumático pinchado",
+      "estado": "alta",
+      "fecha": "2023-10-27T06:10:00Z",
+      "terminado": false
+    }
+  ]
 }

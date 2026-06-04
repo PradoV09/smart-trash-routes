@@ -6,6 +6,7 @@ import {
 } from '@angular/ssr/node';
 import express from 'express';
 import { join } from 'node:path';
+import { readFileSync } from 'node:fs';
 
 const browserDistFolder = join(import.meta.dirname, '../browser');
 
@@ -13,16 +14,70 @@ const app = express();
 const angularApp = new AngularNodeAppEngine();
 
 /**
- * Example Express Rest API endpoints can be defined here.
- * Uncomment and define endpoints as necessary.
- *
- * Example:
- * ```ts
- * app.get('/api/{*splat}', (req, res) => {
- *   // Handle API request
- * });
- * ```
+ * API Endpoints for mock data
  */
+
+// Load mock data files
+const loadMockData = (filename: string) => {
+  try {
+    const filePath = join(import.meta.dirname, '../../public/api/admin', filename);
+    const data = readFileSync(filePath, 'utf-8');
+    return JSON.parse(data);
+  } catch (error) {
+    console.error(`Error loading ${filename}:`, error);
+    return null;
+  }
+};
+
+// GET /api/admin/reportes
+app.get('/api/admin/reportes', (req, res) => {
+  const mockData = loadMockData('reportes.json');
+  if (mockData) {
+    res.json(mockData);
+  } else {
+    res.status(500).json({ success: false, message: 'Error loading reportes data' });
+  }
+});
+
+// GET /api/admin/posiciones/activas
+app.get('/api/admin/posiciones/activas', (req, res) => {
+  const mockData = loadMockData('posiciones.json');
+  if (mockData) {
+    res.json(mockData);
+  } else {
+    res.status(404).json({ success: false, message: 'No posiciones data found' });
+  }
+});
+
+// GET /api/admin/asignaciones
+app.get('/api/admin/asignaciones', (req, res) => {
+  const mockData = loadMockData('asignaciones.json');
+  if (mockData) {
+    res.json(mockData);
+  } else {
+    res.status(500).json({ success: false, message: 'Error loading asignaciones data' });
+  }
+});
+
+// GET /api/admin/vehiculos
+app.get('/api/admin/vehiculos', (req, res) => {
+  const mockData = loadMockData('vehiculos.json');
+  if (mockData) {
+    res.json(mockData);
+  } else {
+    res.status(500).json({ success: false, message: 'Error loading vehiculos data' });
+  }
+});
+
+// GET /api/admin/usuarios
+app.get('/api/admin/usuarios', (req, res) => {
+  const mockData = loadMockData('usuarios.json');
+  if (mockData) {
+    res.json(mockData);
+  } else {
+    res.status(500).json({ success: false, message: 'Error loading usuarios data' });
+  }
+});
 
 /**
  * Serve static files from /browser
