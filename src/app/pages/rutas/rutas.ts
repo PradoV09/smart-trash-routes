@@ -603,7 +603,7 @@ export class Rutas implements OnInit, AfterViewInit, OnDestroy {
         // Crear nuevo marcador
         const marker = L.marker(latLng, { icon: vehicleIcon })
           .addTo(this.map)
-          .bindPopup(`Vehículo #${vehicleId}<br>Última actualización: ${new Date(pos.timestamp).toLocaleTimeString()}`);
+          .bindPopup(`Vehículo #${vehicleId}<br>Última actualización: ${new Date(pos.ultima_actualizacion || pos.timestamp).toLocaleTimeString()}`);
         this.vehicleMarkers.set(vehicleId, marker);
       }
     });
