@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, inject, ChangeDetectorRef, effect, afterNextRender, AfterViewInit } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef, effect, afterNextRender, AfterViewInit, OnDestroy } from '@angular/core';
 import type * as L from 'leaflet';
 import { FormsModule } from '@angular/forms';
 import { isPlatformBrowser } from '@angular/common';
@@ -10,6 +10,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { AuthService } from '../../services/auth.service';
 import { SidebarRutasComponent } from './components/sidebar-rutas/sidebar-rutas';
 import { RutasStateService } from '../../services/rutas-state.service';
+import { PosicionesService } from '../../services/posiciones.service';
+import { interval, Subscription } from 'rxjs';
 
 // Lazy imports para objetos que requieren window
 let L_instance: typeof L;
@@ -22,7 +24,7 @@ let Swal: any;
   templateUrl: './rutas.html',
   styleUrl: './rutas.css',
 })
-export class Rutas implements OnInit, AfterViewInit {
+export class Rutas implements OnInit, AfterViewInit, OnDestroy {
   map!: L.Map;
   routeCoords: [number, number][] = [];
   polyline!: L.Polyline;
@@ -33,16 +35,23 @@ export class Rutas implements OnInit, AfterViewInit {
   private selectedLayer: L.GeoJSON | null = null;
   private hoverLayer: L.GeoJSON | null = null;
 
+  // Marcadores de vehículos activos
+  private vehicleMarkers: Map<number, L.Marker> = new Map();
+
   private rutaService = inject(RutaService);
   private authService = inject(AuthService);
   private cdr = inject(ChangeDetectorRef);
   public rutasState = inject(RutasStateService);
   private platformId = inject(PLATFORM_ID);
+  private posicionesService = inject(PosicionesService);
 
   rutas: Ruta[] = [];
   loading = false;
   saving = false;
   error = '';
+
+  // Polling para actualización en tiempo real
+  private pollingSubscription: Subscription | null = null;
 
   // Datos para formulario
   private perfilId = '';
@@ -86,6 +95,14 @@ export class Rutas implements OnInit, AfterViewInit {
     this.perfilId = this.authService.getPerfilId()?.trim() ?? '';
     this.loadRutas();
     this.loadSwal(); // Cargar Swal dinámicamente
+    this.startVehicleTracking(); // Iniciar seguimiento de vehículos
+  }
+
+  ngOnDestroy() {
+    // Limpiar polling al destruir el componente
+    if (this.pollingSubscription) {
+      this.pollingSubscription.unsubscribe();
+    }
   }
 
   private async loadSwal() {
@@ -522,5 +539,81 @@ export class Rutas implements OnInit, AfterViewInit {
       return id;
     }
     return null;
+  }
+
+  // ── SEGUIMIENTO DE VEHÍCULOS EN TIEMPO REAL ──
+
+  startVehicleTracking() {
+    // Cargar posiciones iniciales
+    this.loadActiveVehicles();
+
+    // Iniciar polling cada 10 segundos
+    this.pollingSubscription = interval(10000).subscribe(() => {
+      this.loadActiveVehicles();
+    });
+  }
+
+  loadActiveVehicles() {
+    if (!isPlatformBrowser(this.platformId)) return;
+
+    this.posicionesService.getPosicionesActivas().subscribe({
+      next: (res: any) => {
+        const posiciones = res.data || res;
+        this.updateVehicleMarkers(posiciones);
+      },
+      error: (err) => {
+        console.error('Error al cargar posiciones activas:', err);
+      }
+    });
+  }
+
+  updateVehicleMarkers(posiciones: any[]) {
+    if (!this.map || !L_instance) return;
+    const L = L_instance;
+
+    // Crear icono personalizado para vehículos
+    const vehicleIcon = L.divIcon({
+      className: 'vehicle-marker',
+      html: `<div style="background-color: #ff6b6b; width: 30px; height: 30px; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 8px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center;">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="white">
+          <path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z"/>
+        </svg>
+      </div>`,
+      iconSize: [30, 30],
+      iconAnchor: [15, 15]
+    });
+
+    // IDs de vehículos actuales
+    const currentVehicleIds = new Set<number>();
+
+    // Actualizar o crear marcadores
+    posiciones.forEach((pos: any) => {
+      const vehicleId = pos.id_vehiculo;
+      currentVehicleIds.add(vehicleId);
+
+      const latLng: [number, number] = [pos.latitud, pos.longitud];
+
+      if (this.vehicleMarkers.has(vehicleId)) {
+        // Actualizar marcador existente
+        const marker = this.vehicleMarkers.get(vehicleId);
+        if (marker) {
+          marker.setLatLng(latLng);
+        }
+      } else {
+        // Crear nuevo marcador
+        const marker = L.marker(latLng, { icon: vehicleIcon })
+          .addTo(this.map)
+          .bindPopup(`Vehículo #${vehicleId}<br>Última actualización: ${new Date(pos.timestamp).toLocaleTimeString()}`);
+        this.vehicleMarkers.set(vehicleId, marker);
+      }
+    });
+
+    // Eliminar marcadores de vehículos que ya no están activos
+    this.vehicleMarkers.forEach((marker, vehicleId) => {
+      if (!currentVehicleIds.has(vehicleId)) {
+        this.map.removeLayer(marker);
+        this.vehicleMarkers.delete(vehicleId);
+      }
+    });
   }
 }
