@@ -15,7 +15,7 @@ import { VehiculoService } from '../../services/vehiculo.service';
 })
 export class Vehiculos implements OnInit {
   private vehiculoService = inject(VehiculoService);
-  private readonly PLACA_REGEX = /^[A-Z]{3}[0-9]{3}$/;
+  private readonly PLACA_REGEX = /^[A-Z]{3}\s*[0-9]{3}$/;
 
   vehiculos = signal<Vehiculo[]>([]);
   loading = signal(false);
@@ -97,7 +97,7 @@ export class Vehiculos implements OnInit {
     }
 
     if (!this.PLACA_REGEX.test(placaNormalizada)) {
-      this.error.set('La placa debe tener formato ABC123 (3 letras y 3 numeros).');
+      this.error.set('La placa debe tener formato ABC123 o ABC 123 (3 letras y 3 numeros).');
       return;
     }
 
@@ -257,7 +257,7 @@ export class Vehiculos implements OnInit {
   }
 
   private normalizePlaca(value: string): string {
-    return (value || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6);
+    return (value || '').toUpperCase().replace(/[^A-Z0-9\s]/g, '').trim();
   }
 
   private getApiErrorMessage(err: HttpErrorResponse, fallback: string): string {
